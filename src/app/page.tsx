@@ -15,6 +15,7 @@ import CustomerReviews from "@/components/CustomerReviews";
 import BlogSection from "@/components/BlogSection";
 import TrustBar from "@/components/TrustBar";
 import Footer from "@/components/Footer";
+import AboutUs from "@/components/AboutUs";
 
 function HomeContent() {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -28,6 +29,7 @@ function HomeContent() {
       <main className="w-full">
         <HeroSlider />
         <CategorySection />
+        <AboutUs/>
         <OccasionSection />
         <Popular/>
         <BulkOrder/>

@@ -181,22 +181,17 @@ export default function BlogSection() {
 
           <Link
             href="/blog"
-            className="group hidden md:inline-flex items-center gap-3 font-sans text-[11.5px] font-bold uppercase tracking-[0.18em] text-gray-600 hover:text-pink transition-all duration-300 bg-white px-6 py-3 rounded-full border border-gray-200 hover:border-pink/30 hover:shadow-[0_4px_20px_rgba(233,30,140,0.12)]"
+            className="group hidden md:inline-flex items-center gap-3 rounded-full border border-gray-200 bg-white px-6 py-3 font-sans text-[11.5px] font-bold uppercase tracking-[0.18em] text-gray-600 transition-all duration-300 hover:border-pink/30 hover:text-pink hover:shadow-[0_4px_20px_rgba(233,30,140,0.12)]"
           >
             <span className="relative">
               View All Posts
-              <span
-                className="absolute -bottom-0.5 left-0 w-full h-[1.5px] rounded-full scale-x-0 origin-left group-hover:scale-x-100 transition-transform duration-300"
-                style={{ background: "linear-gradient(90deg,#8b0b13,#e91e8c)" }}
-              />
+              <span className="absolute -bottom-0.5 left-0 h-[1.5px] w-full origin-left scale-x-0 rounded-full bg-[linear-gradient(90deg,#8b0b13,#e91e8c)] transition-transform duration-300 group-hover:scale-x-100" />
             </span>
-            <span
-              className="inline-flex items-center justify-center w-7 h-7 rounded-full transition-all duration-300 group-hover:bg-pink"
-              style={{ background: "linear-gradient(135deg, rgba(139,11,19,0.08), rgba(233,30,140,0.1))" }}
-            >
+
+            <span className="inline-flex h-7 w-7 items-center justify-center rounded-full bg-[linear-gradient(135deg,rgba(139,11,19,0.08),rgba(233,30,140,0.1))] transition-all duration-300 group-hover:bg-pink">
               <ArrowRight
                 size={12}
-                className="text-pink group-hover:text-white group-hover:translate-x-0.5 transition-all duration-200"
+                className="text-pink transition-all duration-200 group-hover:translate-x-0.5 group-hover:text-white"
               />
             </span>
           </Link>
