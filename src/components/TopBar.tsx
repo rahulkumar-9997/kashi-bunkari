@@ -3,7 +3,7 @@ import React from "react";
 export const TopBar = () => {
   return (
     <>
-      <div className="w-full bg-gradient-to-r from-[#8b0b13] via-[#b8870a] to-[#8b0b13] py-1 px-4 border-b border-[#e9d27d]/30">
+      <div className="hidden sm:block w-full bg-linear-to-r from-[#8b0b13] via-[#b8870a] to-[#8b0b13] py-1 px-4 border-b border-[#e9d27d]/30">
         <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-2 sm:gap-4">
           <div className="flex items-center gap-3 flex-1 min-w-0">            
             <p className="font-sans text-white text-[11.5px] sm:text-[12px] font-medium tracking-wide truncate">

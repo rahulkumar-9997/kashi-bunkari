@@ -122,7 +122,7 @@ export default function HeroSlider() {
         <CarouselContent className="ml-0">
           {SLIDES.map((s, idx) => (
             <CarouselItem key={s.id} className="pl-0">
-              <div className="relative w-full overflow-hidden min-h-[520px] h-[90vh] max-h-[750px]">
+              <div className="relative w-full overflow-hidden h-[50vh] min-h-[320px] sm:h-[65vh] md:h-[75vh] lg:h-[90vh] max-h-[750px]">
                 <SlideBg gradient={s.bg} accent={s.accent} />
                 {s.imgMobile && (
                   <div className="absolute inset-0 md:hidden">
