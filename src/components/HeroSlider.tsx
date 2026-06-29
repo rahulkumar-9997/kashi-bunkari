@@ -52,35 +52,6 @@ const SLIDES = [
   },
 ];
 
-function SlideBg({ gradient, accent }: { gradient: string; accent: string }) {
-  return (
-    <div className={`absolute inset-0 bg-linear-to-br ${gradient}`}>
-      <svg
-        className="absolute inset-0 w-full h-full opacity-[0.07]"
-        xmlns="http://www.w3.org/2000/svg"
-      >
-        <defs>
-          <pattern
-            id={`weave-${accent.replace("#", "")}`}
-            x="0"
-            y="0"
-            width="20"
-            height="20"
-            patternUnits="userSpaceOnUse"
-          >
-            <rect x="0" y="0" width="4" height="4" fill={accent} rx="0.5" />
-            <rect x="10" y="10" width="4" height="4" fill={accent} rx="0.5" />
-          </pattern>
-        </defs>
-        <rect
-          width="100%"
-          height="100%"
-          fill={`url(#weave-${accent.replace("#", "")})`}
-        />
-      </svg>
-    </div>
-  );
-}
 
 export default function HeroSlider() {
   const carouselRef = useRef(null);
@@ -122,32 +93,37 @@ export default function HeroSlider() {
         <CarouselContent className="ml-0">
           {SLIDES.map((s, idx) => (
             <CarouselItem key={s.id} className="pl-0">
-              <div className="relative w-full overflow-hidden h-[50vh] min-h-50 sm:h-[65vh] md:h-[75vh] lg:h-[90vh] max-h-187.5">
-                <SlideBg gradient={s.bg} accent={s.accent} />
+              <div className="relative w-full overflow-hidden">
+                {/* ── MOBILE image — full, no crop ── */}
                 {s.imgMobile && (
-                  <div className="absolute inset-0 md:hidden">
+                  <div className="md:hidden w-full">
                     <Image
                       src={s.imgMobile}
                       alt={`${s.line1} ${s.line2}`}
-                      fill
-                      className="w-full"
+                      width={750}
+                      height={1100}
+                      className="w-full h-auto object-contain"
                       priority={idx === 0}
                       sizes="100vw"
                     />
                   </div>
                 )}
+
+                {/* ── DESKTOP image — full, no crop ── */}
                 {s.imgDesktop && (
-                  <div className="absolute inset-0 hidden md:block">
+                  <div className="hidden md:block w-full">
                     <Image
                       src={s.imgDesktop}
                       alt={`${s.line1} ${s.line2}`}
-                      fill
-                      className="w-full"
+                      width={1920}
+                      height={800}
+                      className="w-full h-auto object-contain"
                       priority={idx === 0}
                       sizes="100vw"
                     />
                   </div>
                 )}
+
                 {/* ── MOBILE overlay — strong bottom-up gradient ── */}
                 <div
                   className="absolute inset-0 z-10 md:hidden"
@@ -205,6 +181,7 @@ export default function HeroSlider() {
                       </div>
                     </div>
                   </div> */}
+
                 {/* Slide counter — desktop only */}
                 <div className="absolute bottom-6 right-6 z-30 hidden md:flex items-baseline gap-1.5">
                   <span
