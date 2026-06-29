@@ -20,6 +20,11 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" className={cn(cormorant.variable, "font-sans", geist.variable)}>
+      <head>
+        <link rel="icon" href="/images/fav.webp" />
+        <link rel="apple-touch-icon" href="/images/fav.webp" />
+        <link rel="shortcut icon" href="/images/fav.webp" />
+      </head>
       <body>{children}</body>
     </html>
   );
