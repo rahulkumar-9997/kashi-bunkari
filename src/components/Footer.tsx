@@ -220,14 +220,14 @@ export default function Footer() {
               {
                 Icon: MapPin,
                 label: "Visit Us",
-                value: "D-200, Sector 2, Greater Noida, UP – 201302",
+                value: "AB2, Virat complex, ramkatora,piplanikatra,varanasi-221010, India",
                 href: "#",
               },
               {
                 Icon: Phone,
                 label: "Call Us",
-                value: "+91-9270588878",
-                href: "tel:+919270588878",
+                value: "+91-9108900000",
+                href: "tel:+919108900000",
               },
               {
                 Icon: Mail,
