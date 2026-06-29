@@ -110,18 +110,7 @@ export default function OccasionSection() {
                     onError={(e) => {
                       e.currentTarget.style.display = "none";
                     }}
-                  />
-
-                  {/* Gradient overlay */}
-                  <div
-                    className="absolute inset-0 z-10"
-                    style={{
-                      background: `radial-gradient(ellipse at 30% 30%, ${item.c3}55 0%, transparent 55%), linear-gradient(to bottom, ${item.c1}22 0%, ${item.c2}bb 55%, ${item.c1}ee 100%)`,
-                    }}
-                  />
-                  <div className="absolute inset-0 z-10 bg-black opacity-25" />
-
-                  {/* Dot texture */}
+                  />                  
                   <div
                     className="absolute inset-0 z-10 pointer-events-none opacity-[0.07]"
                     style={{
@@ -142,25 +131,18 @@ export default function OccasionSection() {
 
                   {/* Content */}
                   <div className="absolute inset-0 z-30 flex flex-col items-center justify-end pb-3.5 px-2 text-center">
-                    <p className="font-serif text-white text-[14px] font-semibold leading-tight mb-1.5 drop-shadow-md">
+                    <p className="font-serif text-white text-[18px] lg:text-[16px] font-semibold leading-tight mb-1.5 drop-shadow-md">
                       {item.name}
                     </p>
                     <div className="flex items-center gap-1.5 opacity-75 group-hover:opacity-100 transition-opacity duration-300">
-                      <span className="font-sans text-[8px] font-bold uppercase tracking-[0.16em] text-white/75">
+                      <span className="font-sans text-[12px] text-white">
                         Shop
                       </span>
                       <span className="h-px bg-white/40 w-3 transition-[width] duration-300 group-hover:w-5" />
                       <ChevronRight size={9} className="text-white/60" />
                     </div>
                   </div>
-
-                  {/* Bottom glow line */}
-                  <div
-                    className="absolute bottom-0 left-0 right-0 h-[2px] z-30 scale-x-0 transition-transform duration-500 group-hover:scale-x-100"
-                    style={{
-                      background: `linear-gradient(90deg, transparent, ${item.c3}cc, transparent)`,
-                    }}
-                  />
+                 
                 </div>
               </Link>
             ))}
