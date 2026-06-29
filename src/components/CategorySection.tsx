@@ -46,7 +46,7 @@ export default function CategorySection() {
           </div>
 
           <Link
-            href="/categories"
+            href="/category/slug"
             className="hidden md:inline-flex items-center gap-2.5 font-sans text-[13px] font-semibold uppercase tracking-[0.18em] text-gray-500 hover:text-pink transition-colors duration-200 group shrink-0 pb-1"
           >
             View All
@@ -68,7 +68,7 @@ export default function CategorySection() {
                   key={cat.id}
                   className="pl-3 md:pl-5 basis-1/2 sm:basis-1/3 md:basis-1/4 lg:basis-1/5"
                 >
-                  <Link href="#" className="cat-card block group outline-none">
+                  <Link href="/category/slug" className="cat-card block group outline-none">
                     <div className="cat-shell relative rounded-2xl overflow-hidden bg-[#f4f1ee] border border-slate-100">
                       <div className="relative overflow-hidden" style={{ aspectRatio: "2/3" }}>
                         <div className="cat-img-wrap absolute inset-0">

@@ -3,6 +3,7 @@ import { Cormorant_Garamond, DM_Sans, Geist } from "next/font/google";
 import "./globals.css";
 import { cn } from "@/lib/utils";
 import LenisProvider from "@/components/LenisProvider";
+import LayoutWrapper from "@/components/LayoutWrapper";
 const cormorant = Cormorant_Garamond({
   subsets: ["latin"],
   weight: ["300", "400", "600", "700"],
@@ -27,7 +28,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       </head>
       <body>
         <LenisProvider>
-          {children}
+          <LayoutWrapper>
+            {children}
+          </LayoutWrapper>
         </LenisProvider>
       </body>
     </html>
