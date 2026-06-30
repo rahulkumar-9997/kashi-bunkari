@@ -206,7 +206,7 @@ export default function HeroSlider() {
               key={i}
               onClick={() => api?.scrollTo(i)}
               aria-label={`Go to slide ${i + 1}`}
-              className="rounded-full border-none transition-all duration-300"
+              className="rounded-full border-none transition-all duration-300 cursor-pointer"
               style={{
                 background: i === current ? "#fff" : "rgba(255,255,255,0.35)",
                 width: i === current ? 18 : 7,
@@ -217,13 +217,13 @@ export default function HeroSlider() {
         </div>
 
         <CarouselPrevious
-          className="absolute left-4 top-1/2 -translate-y-1/2 bg-white hover:bg-white text-black border-none h-12 w-12 rounded-full shadow-lg z-10 hidden md:flex"
+          className="absolute left-4 top-1/2 -translate-y-1/2 bg-white hover:bg-white text-black border-none h-12 w-12 rounded-full shadow-lg z-10 hidden md:flex cursor-pointer"
           size="icon"
         >
           <ChevronLeft className="h-6 w-6" />
         </CarouselPrevious>
         <CarouselNext
-          className="absolute right-4 top-1/2 -translate-y-1/2 bg-white hover:bg-white text-black border-none h-12 w-12 rounded-full shadow-lg z-10 hidden md:flex"
+          className="absolute right-4 top-1/2 -translate-y-1/2 bg-white hover:bg-white text-black border-none h-12 w-12 rounded-full shadow-lg z-10 hidden md:flex cursor-pointer"
           size="icon"
         >
           <ChevronRight className="h-6 w-6" />
