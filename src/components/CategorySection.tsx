@@ -85,12 +85,12 @@ export default function CategorySection() {
                           Shop Now
                         </span>
                         <div className="cat-bottom-content absolute bottom-0 left-0 right-0 px-4 pb-5">
-                          <p className="font-serif text-[17px] md:text-[17px] font-semibold text-white leading-tight drop-shadow mb-2.5">
+                          <p className="font-serif text-[18px] md:text-[18px] font-semibold text-white leading-tight drop-shadow mb-2.5">
                             {cat.name}
                           </p>
                           <div className="w-8 h-px bg-white/40 mb-3" />
                           <div className="flex items-center justify-between">
-                            <span className="font-sans text-[12px] font-semibold tracking-[0.15em] text-white/70">
+                            <span className="font-sans text-[15px] text-white/70">
                               Explore
                             </span>
                             <span className="cat-arrow inline-flex items-center justify-center w-7 h-7 rounded-full bg-white shadow-lg shrink-0">

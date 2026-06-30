@@ -135,7 +135,7 @@ export default function OccasionSection() {
                       {item.name}
                     </p>
                     <div className="flex items-center gap-1.5 opacity-75 group-hover:opacity-100 transition-opacity duration-300">
-                      <span className="font-sans text-[12px] text-white">
+                      <span className="font-sans text-[14px] text-white">
                         Shop
                       </span>
                       <span className="h-px bg-white/40 w-3 transition-[width] duration-300 group-hover:w-5" />

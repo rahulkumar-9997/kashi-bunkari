@@ -235,7 +235,7 @@ export default function BlogSection() {
                     className="font-serif text-white leading-[1.2] mb-3 group-hover:text-rose-200 transition-colors duration-300"
                     decorator="none"
                   />
-                <p className="font-sans text-[16px] text-white/70 leading-relaxed mb-5 line-clamp-2">
+                <p className="font-sans text-[15px] text-white/70 leading-relaxed mb-5 line-clamp-2">
                   {featured.excerpt}
                 </p>
                 <div className="flex items-center justify-end">
@@ -293,10 +293,10 @@ export default function BlogSection() {
                     <Heading
                     level={4}
                     text={blog.title}
-                    className="font-sans  text-gray-900 group-hover:text-[#8b0b13] transition-colors duration-200 leading-snug line-clamp-2 mb-1.5"
+                    className="font-sans text-[18px] text-gray-900 group-hover:text-[#8b0b13] transition-colors duration-200 leading-snug line-clamp-2 mb-1.5"
                     decorator="none"
                     />
-                    <p className="font-sans text-[16px] text-gray-500 leading-relaxed line-clamp-2">
+                    <p className="font-sans text-[15px] text-gray-500 leading-relaxed line-clamp-2">
                       {blog.excerpt}
                     </p>
                   </div>
