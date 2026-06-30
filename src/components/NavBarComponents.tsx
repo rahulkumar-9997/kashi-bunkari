@@ -723,7 +723,7 @@ export default function NavBarComponents() {
               onMouseLeave={() => setActiveDropdown(null)}
             >
               <button
-                className="relative flex items-center gap-1.5 px-4 h-11 font-sans text-[15px] font-medium whitespace-nowrap transition-colors duration-200 cursor-pointer"
+                className="text-gray-600 relative flex items-center gap-1.5 px-4 h-11 font-sans text-[15px] font-medium whitespace-nowrap transition-colors duration-200 cursor-pointer"
               >
                 About
                 <svg
