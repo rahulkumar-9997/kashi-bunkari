@@ -520,7 +520,7 @@ export default function CategoryPage({ slug }: Props) {
                   {products.map((product) => (
                     <Link
                       key={product.id}
-                      href={product.slug}
+                      href="/products/slug1/slug2"
                       className="prod-card group block outline-none select-none w-full border border-gray-200 rounded-xl bg-white transition-all duration-300 ease-in-out hover:border-maroon/30 cursor-pointer hover:shadow-md overflow-hidden"
                     >
                       <div
