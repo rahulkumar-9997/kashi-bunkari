@@ -194,41 +194,17 @@ export default function BlogDetailsPage() {
                     <div className="body-content"
                         dangerouslySetInnerHTML={{ __html: blog.content }}
                     />
-                    {/* Tags */}
-                    <div className="flex flex-wrap items-center gap-2 mt-9 pt-6 border-t border-[#E4D9C4]">
-                    {blog.tags.map((tag) => (
-                        <span
-                        key={tag}
-                        className="font-sans text-[10.5px] font-semibold uppercase tracking-[0.06em] text-gray-500 bg-gray-50 px-2.5 py-1 rounded-full"
-                        >
-                        {tag}
-                        </span>
-                    ))}
-                    </div>
-
                     {/* Share */}
                     <div className="flex items-center gap-3 mt-6">
-                    <span className="font-sans text-[11px] font-semibold uppercase tracking-[0.1em] text-gray-400">
-                        Share
-                    </span>
-                    <button
-                        onClick={handleCopyLink}
-                        className="inline-flex items-center gap-1.5 font-sans text-[11.5px] font-semibold text-maroon hover:text-[#8b1a34] transition-colors cursor-pointer"
-                    >
-                        {copied ? <Check size={13} /> : <Link2 size={13} />}
-                        {copied ? "Copied" : "Copy link"}
-                    </button>
-                    </div>
-
-                    {/* Back link */}
-                    <div className="mt-10 sm:mt-12">
-                    <Link
-                        href="/blog"
-                        className="inline-flex items-center gap-2 font-sans text-[12px] font-bold uppercase tracking-[0.1em] text-maroon border-b-2 border-maroon pb-1 hover:gap-3 transition-all duration-200"
-                    >
-                        <ArrowLeft size={14} />
-                        Back to Journal
-                    </Link>
+                        <span className="font-sans text-[11px] font-semibold uppercase tracking-widest text-gray-400">
+                            Share
+                        </span>
+                        <button
+                            onClick={handleCopyLink}
+                            className="inline-flex items-center gap-1.5 font-sans text-[11.5px] font-semibold text-maroon hover:text-[#8b1a34] transition-colors cursor-pointer">
+                            {copied ? <Check size={13} /> : <Link2 size={13} />}
+                            {copied ? "Copied" : "Copy link"}
+                        </button>
                     </div>
                 </div>
             </div>
