@@ -180,7 +180,7 @@ export default function BlogSection() {
           </div>
 
           <Link
-            href="/blog"
+            href="/blogs"
             className="group hidden md:inline-flex items-center gap-3 rounded-full border border-gray-200 bg-white px-6 py-3 font-sans text-[11.5px] font-bold uppercase tracking-[0.18em] text-gray-600 transition-all duration-300 hover:border-pink/30 hover:text-pink hover:shadow-[0_4px_20px_rgba(233,30,140,0.12)]"
           >
             <span className="relative">
@@ -198,7 +198,7 @@ export default function BlogSection() {
         </div>
         <div className="grid grid-cols-1 lg:grid-cols-[1.4fr_1fr] gap-6 md:gap-8">
           {/* ── LEFT: Featured Hero Card ── */}
-          <Link href={featured.slug} className="group block outline-none">
+          <Link href="blogs/slug1" className="group block outline-none">
             <div className="relative overflow-hidden rounded-2xl bg-gray-200 h-105 md:h-130 shadow-lg hover:shadow-2xl transition-all duration-500">
               <Image
                 src={featured.image}
@@ -265,7 +265,7 @@ export default function BlogSection() {
             {rest.map((blog, idx) => (
               <Link
                 key={blog.id}
-                href={blog.slug}
+                href="/blogs/slug1"
                 className="group flex gap-4 bg-white rounded-xl border border-gray-100/80 p-2 hover:-translate-y-1 hover:shadow-[0_12px_40px_rgba(0,0,0,0.08)] hover:border-pink/20 transition-all duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] outline-none"
               >
                 {/* Thumbnail with hover effect */}
@@ -319,22 +319,21 @@ export default function BlogSection() {
               </Link>
             ))}
             <Link
-              href="/blog"
+              href="/blogs"
               className="group flex items-center justify-center gap-3 bg-white rounded-xl border border-gray-200 py-4 font-sans text-[11px] font-bold uppercase tracking-[0.18em] text-gray-500 hover:text-[#8b0b13] hover:border-magenta/40 hover:bg-linear-to-r hover:from-pink-50/50 hover:to-rose-50/50 transition-all duration-300"
             >
               <span>Explore All Articles</span>
               <ArrowRight
                 size={13}
                 className="group-hover:translate-x-1 transition-transform duration-300"
-              />
-              
+              />              
             </Link>
           </div>
         </div>
 
         <div className="md:hidden mt-10 flex items-center justify-center">
           <Link
-            href="/blog"
+            href="/blogs"
             className="group inline-flex items-center gap-3 font-sans text-[12px] font-bold uppercase tracking-[0.16em] text-gray-500 hover:text-pink transition-all duration-300 bg-white border border-gray-200 px-6 py-3 rounded-full hover:border-pink/30 hover:shadow-md hover:bg-pink/5"
           >
             View All Posts

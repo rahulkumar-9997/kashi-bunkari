@@ -15,7 +15,7 @@ const PRODUCTS = [
     mrp: 2860,
     discount: 33,
     isNew: true,
-    slug: "/products/chinon-silk-party-wear",
+    slug: "/products/slug1/slug2",
   },
   {
     id: 2,
@@ -27,7 +27,7 @@ const PRODUCTS = [
     mrp: null,
     discount: null,
     isNew: false,
-    slug: "/products/banarasi-soft-silk-white",
+    slug: "/products/slug1/slug2",
   },
   {
     id: 3,
@@ -39,7 +39,7 @@ const PRODUCTS = [
     mrp: null,
     discount: null,
     isNew: true,
-    slug: "/products/festive-georgette-red",
+    slug: "/products/slug1/slug2",
   },
   {
     id: 4,
@@ -51,7 +51,7 @@ const PRODUCTS = [
     mrp: 5200,
     discount: 16,
     isNew: false,
-    slug: "/products/vishtha-silk-border",
+    slug: "/products/slug1/slug2",
   },
   {
     id: 5,
@@ -63,7 +63,7 @@ const PRODUCTS = [
     mrp: null,
     discount: null,
     isNew: true,
-    slug: "/products/pure-cotton-anarkali",
+    slug: "/products/slug1/slug2",
   },
   {
     id: 6,
@@ -75,7 +75,7 @@ const PRODUCTS = [
     mrp: null,
     discount: null,
     isNew: false,
-    slug: "/products/kanjivaram-silk",
+    slug: "/products/slug1/slug2",
   },
   {
     id: 7,
@@ -87,7 +87,7 @@ const PRODUCTS = [
     mrp: 15000,
     discount: 17,
     isNew: true,
-    slug: "/products/bridal-velvet-lehenga",
+    slug: "/products/slug1/slug2",
   },
   {
     id: 8,
@@ -99,7 +99,7 @@ const PRODUCTS = [
     mrp: null,
     discount: null,
     isNew: false,
-    slug: "/products/katan-silk-zari-ivory",
+    slug: "/products/slug1/slug2",
   },
 //   {
 //     id: 9,
