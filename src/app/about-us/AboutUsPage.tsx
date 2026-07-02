@@ -88,54 +88,54 @@ export default function AboutUsPage() {
             <div className="mx-auto max-w-7xl lg:py-15 md:py-10 sm:py-10 py-8 px-4 relative z-10">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-center">
                 <div className="order-2 lg:order-1">
-                <div className="inline-flex items-center gap-3 bg-[#AD8A3B]/10 px-4 py-2 rounded-full mb-6">
-                    <span className="w-2 h-2 rounded-full bg-pink-700 animate-pulse" />
-                    <span className="font-sans text-[10px] font-bold uppercase tracking-[0.2em] text-pink-700">
-                    Our Story
-                    </span>
-                </div>
-                <Heading
-                    level={1}
-                    text="About the Brand"
-                    allowHTML
-                    className="font-serif text-3xl md:text-4xl font-bold leading-[1.1] text-maroon mb-4"
-                    decorator="none"
-                    decoratorClassName=""
-                />
-                <p className="mt-1 font-sans lg:text-[16px] text-[16px] text-gray-600 leading-relaxed max-w-lg">
-                    Discover the heritage and artistry of Banaras with Kasi
-                    Bunkari's exclusive collection of handwoven Banarasi Silk
-                    Sarees.
-                </p>
-                <p className="mt-2 font-sans lg:text-[16px] text-[16px] text-gray-600 leading-relaxed max-w-lg">
-                    Immerse yourself in the heritage of Kasibunkari, where timeless
-                    elegance and exquisite craftsmanship unite to create sarees of
-                    unparalleled beauty.
-                </p>
-                <div className="flex flex-wrap gap-4 mt-8">
-                    <Link
-                    href="/"
-                    className="group inline-flex items-center gap-3 px-8 py-3.5 bg-maroon text-white font-sans text-[12px] font-bold uppercase tracking-[0.12em] rounded-full hover:bg-[#AD8A3B] transition-all duration-300 hover:shadow-xl hover:shadow-[#AD8A3B]/25 hover:-translate-y-0.5"
-                    >
-                    Explore Collections
-                    <ArrowRight
-                        size={15}
-                        className="transition-transform duration-300 group-hover:translate-x-1"
+                    <div className="inline-flex items-center gap-3 bg-[#AD8A3B]/10 px-4 py-2 rounded-full mb-6">
+                        <span className="w-2 h-2 rounded-full bg-pink-700 animate-pulse" />
+                        <span className="font-sans text-[10px] font-bold uppercase tracking-[0.2em] text-pink-700">
+                        Our Story
+                        </span>
+                    </div>
+                    <Heading
+                        level={1}
+                        text="About the Brand"
+                        allowHTML
+                        className="font-serif text-3xl md:text-4xl font-bold leading-[1.1] text-maroon mb-4"
+                        decorator="none"
+                        decoratorClassName=""
                     />
-                    </Link>
-                    <Link
-                    href="/bulk-orders"
-                    className="group inline-flex items-center gap-2 px-8 py-3.5 font-sans text-[12px] font-bold uppercase tracking-[0.12em] text-maroon border-2 border-maroon/20 rounded-full hover:border-[#AD8A3B] hover:text-[#AD8A3B] transition-all duration-300"
-                    >
-                    Bulk Orders
-                    </Link>
-                </div>
+                    <p className="mt-1 font-sans lg:text-[16px] text-[16px] text-gray-600 leading-relaxed max-w-lg">
+                        Discover the heritage and artistry of Banaras with Kasi
+                        Bunkari's exclusive collection of handwoven Banarasi Silk
+                        Sarees.
+                    </p>
+                    <p className="mt-2 font-sans lg:text-[16px] text-[16px] text-gray-600 leading-relaxed max-w-lg">
+                        Immerse yourself in the heritage of Kasibunkari, where timeless
+                        elegance and exquisite craftsmanship unite to create sarees of
+                        unparalleled beauty.
+                    </p>
+                    <div className="flex flex-wrap gap-4 mt-8">
+                        <Link
+                        href="/"
+                        className="group inline-flex items-center gap-3 px-8 py-3.5 bg-maroon text-white font-sans text-[12px] font-bold uppercase tracking-[0.12em] rounded-full hover:bg-[#AD8A3B] transition-all duration-300 hover:shadow-xl hover:shadow-[#AD8A3B]/25 hover:-translate-y-0.5"
+                        >
+                        Explore Collections
+                        <ArrowRight
+                            size={15}
+                            className="transition-transform duration-300 group-hover:translate-x-1"
+                        />
+                        </Link>
+                        <Link
+                        href="/bulk-orders"
+                        className="group inline-flex items-center gap-2 px-8 py-3.5 font-sans text-[12px] font-bold uppercase tracking-[0.12em] text-maroon border-2 border-maroon/20 rounded-full hover:border-[#AD8A3B] hover:text-[#AD8A3B] transition-all duration-300"
+                        >
+                        Bulk Orders
+                        </Link>
+                    </div>
                 </div>
                 <div className="order-1 lg:order-2 flex justify-center">
                 <div className="relative">
                     <div className="absolute -inset-6 sm:-inset-8 border-2 border-[#AD8A3B]/10 rounded-full animate-spin-slow" />
                     <div className="absolute -inset-10 sm:-inset-12 border border-[#AD8A3B]/5 rounded-full" />
-                    <div className="relative flex items-center justify-center w-64 h-64 sm:w-72 sm:h-72 lg:w-80 lg:h-80 rounded-full bg-gradient-to-br from-[#FBF3D9] to-white border-2 border-[#AD8A3B]/20 shadow-2xl p-8 sm:p-10">
+                    <div className="relative flex items-center justify-center w-40 h-40 sm:w-72 sm:h-72 lg:w-80 lg:h-80 rounded-full bg-linear-to-br from-[#FBF3D9] to-white border-2 border-[#AD8A3B]/20 shadow-2xl p-8 sm:p-10">
                     <Image
                         src="/images/aboutUs.webp"
                         alt="Kasibunkari Logo"
