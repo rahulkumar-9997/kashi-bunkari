@@ -284,7 +284,7 @@ export default function AboutUsPage() {
         <section className="w-full relative overflow-hidden bg-linear-to-br from-[#FCFBF8] via-white to-[#F5F1E8]">        
             <div className="absolute -top-32 -left-32 h-96 w-96 rounded-full bg-champagne/20 blur-[120px]" />
             <div className="absolute -bottom-32 -right-32 h-96 w-96 rounded-full bg-maroon/10 blur-[120px]" />
-            <div className="w-full max-w-7xl relative mx-auto lg:py-10 md:py-10 sm:py-10 py-8">
+            <div className="w-full max-w-7xl relative mx-auto lg:py-10 md:py-10 sm:py-10 py-8 lg:px-0 px-4">
                 <div className="text-center mb-10">
                     <div className="flex items-center justify-center gap-3 mb-4">
                         <span className="w-12 h-0.5 bg-linear-to-r from-transparent to-[#AD8A3B]" />
