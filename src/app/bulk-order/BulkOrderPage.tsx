@@ -128,45 +128,44 @@ export default function BulkOrderPage() {
                     </div>
                     <div className="relative">
                         <div className="grid grid-cols-2 gap-4">
-                            {/* Top Left - Large Number */}
-                            <div className="col-span-2 bg-[#FBF3D9]/30 rounded-2xl p-6 border border-[#E4D9C4]/20">
-                            <div className="flex items-center justify-between">
-                                <div>
-                                <p className="font-sans text-[10px] uppercase tracking-[0.2em] text-[#AD8A3B]/60">
-                                    Minimum Order
-                                </p>
-                                <p className="font-serif text-[32px] font-bold text-maroon">
-                                    25
-                                </p>
-                                <p className="font-sans text-[11px] text-gray-400">
-                                    Pieces
-                                </p>
+                            <div className="col-span-2 bg-champagne/30 rounded-xl p-6 border border-[#E4D9C4]/20">
+                                <div className="flex items-center justify-between">
+                                    <div>
+                                        <p className="font-sans text-[14px] text-maroon/60">
+                                            Minimum Order
+                                        </p>
+                                        <p className="font-serif text-[32px] font-bold text-maroon">
+                                            25
+                                        </p>
+                                        <p className="font-sans text-[14px] text-gray-400">
+                                            Pieces
+                                        </p>
+                                    </div>
+                                    <div className="w-px h-12 bg-[#E4D9C4]/30" />
+                                    <div>
+                                        <p className="font-sans text-[14px] text-maroon/60">
+                                            Turnaround
+                                        </p>
+                                        <p className="font-serif text-[32px] font-bold text-maroon">
+                                            15-25
+                                        </p>
+                                        <p className="font-sans text-[14px] text-gray-400">
+                                            Days
+                                        </p>
+                                    </div>
+                                    <div className="w-px h-12 bg-[#E4D9C4]/30" />
+                                    <div>
+                                        <p className="font-sans text-[14px] text-maroon/60">
+                                            Customisation
+                                        </p>
+                                        <p className="font-serif text-[32px] font-bold text-maroon">
+                                            ✓
+                                        </p>
+                                        <p className="font-sans text-[14px] text-gray-400">
+                                            Available
+                                        </p>
+                                    </div>
                                 </div>
-                                <div className="w-px h-12 bg-[#E4D9C4]/30" />
-                                <div>
-                                <p className="font-sans text-[10px] uppercase tracking-[0.2em] text-[#AD8A3B]/60">
-                                    Turnaround
-                                </p>
-                                <p className="font-serif text-[32px] font-bold text-maroon">
-                                    15-25
-                                </p>
-                                <p className="font-sans text-[11px] text-gray-400">
-                                    Days
-                                </p>
-                                </div>
-                                <div className="w-px h-12 bg-[#E4D9C4]/30" />
-                                <div>
-                                <p className="font-sans text-[10px] uppercase tracking-[0.2em] text-[#AD8A3B]/60">
-                                    Customisation
-                                </p>
-                                <p className="font-serif text-[32px] font-bold text-maroon">
-                                    ✓
-                                </p>
-                                <p className="font-sans text-[11px] text-gray-400">
-                                    Available
-                                </p>
-                                </div>
-                            </div>
                             </div>
 
                             {/* Bottom Left */}
