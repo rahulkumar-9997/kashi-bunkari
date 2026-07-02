@@ -3,6 +3,7 @@ import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import Heading from "@/components/Heading/Heading";
+import Breadcrumb from "@/components/Breadcrumb/Breadcrumb";
 import {
   ChevronRight,
   SlidersHorizontal,
@@ -359,44 +360,14 @@ export default function CategoryPage({ slug }: Props) {
 
   return (
     <div className="w-full min-h-screen">
-      <div className="relative overflow-hidden bg-gray-50 py-2 md:py-3">
-        <div
-          className="absolute inset-0"
-          style={{
-            backgroundImage:
-              "repeating-linear-gradient(30deg, transparent, transparent 38px, rgba(244,114,182,0.05) 38px, rgba(244,114,182,0.05) 40px)",
-          }}
-        />
-        <div className="relative mx-auto max-w-7xl px-2 md:px-8 lg:px-1">
-          <div className="flex flex-wrap items-center gap-2 text-[12px]">
-            <Link href="/" className="text-gray-00 text-[14px] transition ">
-              Home
-            </Link>
-            <ChevronRight size={14} className="text-gray-500" />
-            <Link
-              href="/collections"
-              className="text-gray-500 transition text-[14px]"
-            >
-              Collections
-            </Link>
-            <ChevronRight size={14} className="text-gray-500" />
-            <span className="font-medium text-gray-500 text-[14px]">
-              Category Name
-            </span>
-          </div>
-          {/* <Heading
-                  level={1}
-                  text={meta.label}
-                  className="font-serif mt-6 font-serif text-[18px] font-semibold leading-none tracking-tight text-maroon"
-                  decorator="none"
-              />
-              {meta.description && (
-                <p className="mt-5 max-w-2xl text-[15px] leading-8 text-white/65">
-                  {meta.description}
-                </p>
-              )} */}
-        </div>
-      </div>
+      <Breadcrumb
+        items={[
+          { label: "Home", href: "/" },
+          { label: "Collections", href: "/collections" },
+          { label: "Category Name" },
+        ]}
+      />
+      
       <section className="w-full lg:px-12 md:px-10 px-4">
         <div className="mx-auto w-full max-w-7xl relative lg:py-10 md:py-10 sm:py-10 py-8">
           <div className="flex gap-5">

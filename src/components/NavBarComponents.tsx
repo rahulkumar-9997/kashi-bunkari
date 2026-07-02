@@ -1,5 +1,22 @@
 "use client";
 import { useState } from "react";
+import Link from "next/link";
+const companyLinks = [
+  {
+    label: "Our Story",
+    href: "/about-us",
+  },
+  {
+    label: "Bulk Orders",
+    href: "/bulk-orders",
+    badge: "B2B",
+    badgeColor: "#0EA5E9",
+  },
+  {
+    label: "Contact Us",
+    href: "/contact-us",
+  },
+];
 export default function NavBarComponents() {
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
   return (
@@ -751,29 +768,26 @@ export default function NavBarComponents() {
                       "linear-gradient(90deg, rgba(236,72,153,0.4), #ec4899, rgba(236,72,153,0.4))",
                   }}
                 />
-                {[
-                  { label: "Our Story", badge: "", badgeColor: "" },
-                  { label: "Bulk Orders", badge: "B2B", badgeColor: "#0ea5e9" },
-                  { label: "Contact Us", badge: "", badgeColor: "" },
-                ].map(({ label, badge, badgeColor }) => (
-                  <a
+                {companyLinks.map(({ label, href, badge, badgeColor }) => (
+                  <Link
                     key={label}
-                    href="#"
-                    className="flex items-center justify-between px-5 py-2.5 text-[13.5px] text-gray-600 hover:bg-pink/5 hover:text-pink transition-all duration-150 group/item"
+                    href={href}
+                    className="group/item flex items-center justify-between px-5 py-2.5 text-[13.5px] text-gray-600 transition-all duration-200 hover:bg-[#AD8A3B]/5 hover:text-[#AD8A3B]"
                   >
                     <span className="flex items-center gap-2.5">
-                      <span className="w-1 h-1 rounded-full bg-gray-300 group-hover/item:bg-pink transition-colors shrink-0" />
+                      <span className="h-1 w-1 rounded-full bg-gray-300 transition-colors group-hover/item:bg-[#AD8A3B]" />
                       {label}
                     </span>
+
                     {badge && (
                       <span
-                        className="badge"
-                        style={{ background: badgeColor }}
+                        className="rounded-full px-2 py-0.5 text-[10px] font-semibold text-white"
+                        style={{ backgroundColor: badgeColor }}
                       >
                         {badge}
                       </span>
                     )}
-                  </a>
+                  </Link>
                 ))}
               </div>
             </li>

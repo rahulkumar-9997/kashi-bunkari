@@ -2,6 +2,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import Heading from "@/components/Heading/Heading";
+import Breadcrumb from "@/components/Breadcrumb/Breadcrumb";
 import {
   ChevronRight,
   ArrowRight,
@@ -78,29 +79,12 @@ export default function BlogListPage() {
   return (
     <div className="w-full min-h-screen">
         {/* ══ BREADCRUMB ══ */}
-        <section className="breadcrumb">
-            <div className="relative overflow-hidden bg-gray-50 py-2 md:py-3">
-            <div
-                className="absolute inset-0"
-                style={{
-                backgroundImage:
-                    "repeating-linear-gradient(30deg, transparent, transparent 38px, rgba(244, 114, 182, 0.05) 38px, rgba(244, 114, 182, 0.05) 40px)",
-                }}
-            />
-            <div className="relative mx-auto max-w-7xl px-2 md:px-8 lg:px-1">
-                <div className="flex flex-wrap items-center gap-2 text-[12px]">
-                <Link
-                    className="text-gray-500 text-[14px] transition hover:text-maroon"
-                    href="/"
-                >
-                    Home
-                </Link>
-                <ChevronRight size={14} className="text-gray-500" />
-                <span className="font-medium text-maroon text-[14px]">Blog</span>
-                </div>
-            </div>
-            </div>
-        </section>
+        <Breadcrumb
+            items={[
+                { label: "Home", href: "/" },
+                { label: "Blogs", href: "/blogs" },
+            ]}
+        />
         {/* ══ HEADER ══ */}
         <section className="relative overflow-hidden ">
         <div aria-hidden className="absolute inset-0 z-0 opacity-100 bg-[radial-gradient(circle_at_15%_20%,rgba(236,72,153,0.18)_0%,transparent_35%),radial-gradient(circle_at_85%_15%,rgba(255,193,7,0.18)_0%,transparent_35%),radial-gradient(circle_at_50%_100%,rgba(139,26,52,0.12)_0%,transparent_45%)]"/>
@@ -207,17 +191,15 @@ export default function BlogListPage() {
                                 <p className="font-sans text-[16px] text-gray-600 leading-relaxed line-clamp-2 mb-4">
                                 {post.excerpt}
                                 </p>
-
-                                <div className="mt-auto flex items-center justify-between pt-3 border-t border-[#E4D9C4]">
-                                    <span className="font-sans text-[14px] text-gray-400">
-                                        Read More
-                                    </span>
-                                    <div className="w-7 h-7 rounded-full bg-[#AD8A3B]/10 flex items-center justify-center group-hover:bg-[#AD8A3B] transition-colors duration-300">
+                                <div className="mt-auto pt-2">
+                                   <div className="group/btn relative flex w-full items-center justify-center gap-2 overflow-hidden rounded-lg bg-[#F6F1E8] px-4 py-3 font-sans text-[13px] font-semibold text-maroon transition-all duration-300 group-hover:bg-maroon group-hover:text-white">
+                                        <span className="relative z-10">Read More</span>
                                         <ArrowRight
-                                        size={13}
-                                        className="text-[#AD8A3B] group-hover:text-white transition-colors duration-300"
+                                        size={14}
+                                        className="relative z-10 transition-transform duration-300 group-hover:translate-x-1"
                                         />
-                                    </div>
+                                        <span className="absolute inset-0 bg-linear-to-r from-[#AD8A3B] to-[#e91e8c] opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                                    </div> 
                                 </div>
                             </div>
                         </Link>
