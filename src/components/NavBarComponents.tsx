@@ -8,7 +8,7 @@ const companyLinks = [
   },
   {
     label: "Bulk Orders",
-    href: "/bulk-orders",
+    href: "/bulk-order",
     badge: "B2B",
     badgeColor: "#0EA5E9",
   },

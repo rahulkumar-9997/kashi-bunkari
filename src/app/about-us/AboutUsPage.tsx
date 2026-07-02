@@ -124,7 +124,7 @@ export default function AboutUsPage() {
                         />
                         </Link>
                         <Link
-                        href="/bulk-orders"
+                        href="/bulk-order"
                         className="group inline-flex items-center gap-2 px-8 py-3.5 font-sans text-[12px] font-bold uppercase tracking-[0.12em] text-maroon border-2 border-maroon/20 rounded-full hover:border-[#AD8A3B] hover:text-[#AD8A3B] transition-all duration-300"
                         >
                         Bulk Orders
