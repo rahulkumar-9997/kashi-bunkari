@@ -25,6 +25,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <link rel="icon" href="/images/fav.webp" />
         <link rel="apple-touch-icon" href="/images/fav.webp" />
         <link rel="shortcut icon" href="/images/fav.webp" />
+        <meta name="theme-color" content="#8b0b13"></meta>
       </head>
       <body>
         <LenisProvider>
