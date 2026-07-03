@@ -1,4 +1,3 @@
-// src/app/bulk-order/page.tsx
 import type { Metadata } from "next";
 import BulkOrderPage from "./BulkOrderPage";
 
