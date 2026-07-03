@@ -12,7 +12,7 @@ import {
 } from "lucide-react";
 import Breadcrumb from "@/components/Breadcrumb/Breadcrumb";
 import ContactForm from "@/components/Form/ContactForm";
-
+import Heading from "@/components/Heading/Heading";
 const InstagramIcon = ({ size = 16 }: { size?: number }) => (
   <svg
     width={size}
@@ -83,10 +83,14 @@ export default function ContactUsPage() {
       <section className="w-full overflow-hidden">
         <div className="w-full max-w-7xl relative mx-auto lg:py-10 md:py-11 sm:py-12 py-8 md:px-0 px-4">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12">
-            <div>
-              <h2 className="font-serif text-[30px] sm:text-[34px] font-bold text-maroon mb-3">
-                Get in Touch
-              </h2>
+            <div>              
+                <Heading
+                    level={1}
+                    text='Get in <span class="text-magenta/90 font-medium">Touch</span>'
+                    className="font-serif text-[30px] sm:text-[34px] font-bold text-maroon mb-3"
+                    decorator="none"
+                    allowHTML
+                />
               <div className="space-y-4">
                 <div className="group rounded-xl px-3 py-3 bg-white border border-maroon/20">
                   <div className="flex items-center gap-3 mb-2">
@@ -94,9 +98,9 @@ export default function ContactUsPage() {
                       <Phone size={16} className="text-maroon" />
                     </div>
                     <div>
-                      <h6 className="font-sans text-[18px] font-bold text-maroon">
+                      <span className="font-sans text-[18px] font-normal text-maroon">
                         Call Us
-                      </h6>
+                      </span>
                       <a
                         href="tel:+919696588343"
                         className="block font-sans text-[15px] text-gray-600 hover:text-[#AD8A3B] transition-colors"
@@ -112,9 +116,9 @@ export default function ContactUsPage() {
                       <Mail size={16} className="text-maroon" />
                     </div>
                     <div>
-                      <h6 className="font-sans text-[18px] font-bold text-maroon">
+                      <span className="font-sans text-[18px] font-normal text-maroon">
                         Mail Us
-                      </h6>
+                      </span>
                       <a
                         href="mailto:kasibunkari@gmail.com"
                         className="block font-sans text-[15px] text-gray-600 hover:text-[#AD8A3B] transition-colors"
@@ -131,9 +135,9 @@ export default function ContactUsPage() {
                       <MessageCircle size={16} className="text-maroon" />
                     </div>
                     <div>
-                      <h6 className="font-sans text-[18px] font-bold text-maroon">
+                      <span className="font-sans text-[18px] font-normal text-maroon">
                         Chat With Us
-                      </h6>
+                      </span>
                       <a
                         href="https://wa.me/919696588343"
                         target="_blank"
@@ -151,9 +155,9 @@ export default function ContactUsPage() {
                       <MapPin size={16} className="text-[#AD8A3B]" />
                     </div>
                     <div>
-                      <h6 className="font-sans text-[18px] font-bold text-maroon">
+                      <span className="font-sans text-[18px] font-normal text-maroon">
                         Visit Us
-                      </h6>
+                      </span>
                       <p className="font-sans text-[14px] text-gray-600 leading-relaxed mb-3">
                         AB2, Virat Complex, Ramkatora, Piplani Katra, Jaitpura,
                         Varanasi, Uttar Pradesh 221010
@@ -167,9 +171,13 @@ export default function ContactUsPage() {
             <div className="relative">
               <div className="relative rounded-xl shadow-[0_8px_10px_rgb(0,0,0,0.08)] px-4 py-4 bg-white border border-maroon/20 overflow-hidden">
                 <div className="relative">
-                  <h2 className="font-serif text-[26px] sm:text-[30px] font-bold text-maroon mb-8">
-                    Contact Us
-                  </h2>
+                    <Heading
+                    level={2}
+                    text='Contact Us'
+                    className="font-serif text-[26px] sm:text-[30px] font-bold text-maroon mb-4"
+                    decorator="none"
+                    allowHTML
+                    />
                   <ContactForm />
                 </div>
               </div>
@@ -188,10 +196,14 @@ export default function ContactUsPage() {
                                 <div className="w-12 h-12 rounded-full bg-linear-to-br from-[#AD8A3B]/10 to-[#C9A84C]/10 flex items-center justify-center">
                                     <Clock size={20} className="text-magenta" />
                                 </div>
-                            <div>
-                            <h6 className="font-sans text-[18px] font-bold text-maroon/60">
-                                Opening Hours
-                            </h6>
+                            <div>                            
+                            <Heading
+                            level={3}
+                            text='Opening Hours'
+                            className="font-sans text-[18px] font-bold text-maroon/60"
+                            decorator="none"
+                            allowHTML
+                            />
                             <div className="w-12 h-px bg-linear-to-r from-magenta to-transparent mt-1" />
                         </div>
                         </div>

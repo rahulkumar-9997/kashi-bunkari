@@ -212,11 +212,11 @@ export default function AboutUsPage() {
                 {/* Right - Content */}
                 <div className="lg:pl-4">
                 <div className="inline-flex items-center gap-3 mb-4">
-                    <span className="w-10 h-[2px] bg-linear-to-r from-transparent to-[#AD8A3B]" />
+                    <span className="w-10 h-0.5 bg-linear-to-r from-transparent to-[#AD8A3B]" />
                     <span className="font-sans text-[10px] sm:text-[11px] font-bold uppercase tracking-[0.24em] text-pink-700">
                     Our Story
                     </span>
-                    <span className="w-10 h-[2px] bg-linear-to-l from-transparent to-[#AD8A3B]" />
+                    <span className="w-10 h-0.5 bg-linear-to-l from-transparent to-[#AD8A3B]" />
                 </div>
                 {/* Main Heading */}
                 <Heading

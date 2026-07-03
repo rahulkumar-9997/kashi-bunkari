@@ -100,11 +100,11 @@ export default function AboutUs() {
               </span>
             </div>
             <Heading
-                level={2}
-                text="Where Tradition Meets <span style='background: linear-gradient(135deg, #8b1a34, #e91e8c); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-style: italic; font-weight: 300;'>Elegance</span>"
-                allowHTML
-                className="text-maroon leading-[1.1] tracking-tight mb-3.5"
-                decorator="none"
+              level={2}
+              text='Where Tradition Meets <span class="bg-[linear-gradient(135deg,#8b1a34,#e91e8c)] bg-clip-text text-transparent italic font-light">Elegance</span>'
+              allowHTML
+              className="text-maroon leading-[1.1] tracking-tight mb-3.5"
+              decorator="none"
             />
             <p className="font-sans text-[16px] text-gray-400 mt-3 tracking-wid leading-[1.8] mb-5">
               Master artisans of Varanasi craft each piece with centuries-old
