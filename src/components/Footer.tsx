@@ -4,38 +4,38 @@ import Link from "next/link";
 import Image from "next/image";
 import Heading from "./Heading/Heading";
 import { MapPin, Phone, Mail, ChevronRight, Send } from "lucide-react";
-
+const currentYear = new Date().getFullYear();
 export const FOOTER_LINKS = [
   {
     heading: "Shop",
     links: [
       {
         title: "New Arrivals",
-        href: "/collections/new-arrivals",
+        href: "/new-arrivals",
       },
       {
         title: "Banarasi Sarees",
-        href: "/collections/banarasi-sarees",
+        href: "/banarasi-sarees",
       },
       {
         title: "Designer Lehenga",
-        href: "/collections/designer-lehenga",
+        href: "/designer-lehenga",
       },
       {
         title: "Party Wear Suits",
-        href: "/collections/party-wear-suits",
+        href: "/party-wear-suits",
       },
       {
         title: "Festive Collection",
-        href: "/collections/festive-collection",
+        href: "/festive-collection",
       },
       {
         title: "Unstitched Suits",
-        href: "/collections/unstitched-suits",
+        href: "/unstitched-suits",
       },
       {
         title: "Flash Sale",
-        href: "/collections/flash-sale",
+        href: "/flash-sale",
       },
     ],
   },
@@ -47,8 +47,8 @@ export const FOOTER_LINKS = [
         href: "/track-order",
       },
       {
-        title: "Returns & Exchange",
-        href: "/returns-exchange",
+        title: "Refund Policy",
+        href: "/refund-policy",
       },
       {
         title: "Size Guide",
@@ -56,11 +56,11 @@ export const FOOTER_LINKS = [
       },
       {
         title: "Bulk Orders",
-        href: "/bulk-orders",
+        href: "/bulk-order",
       },
       {
         title: "Contact Us",
-        href: "/contact",
+        href: "/contact-us",
       },
       {
         title: "FAQs",
@@ -199,6 +199,12 @@ const CONTACT = [
   },
 ];
 
+const FOOTER_BOTTOM_LINKS = [
+  { title: "Privacy Policy", href: "/privacy-policy" },
+  { title: "Refund Policy", href: "/refund-policy" },
+  { title: "Shipping Policy", href: "/shipping-policy" },
+  { title: "Terms and Conditions", href: "/terms-and-conditions" },
+];
 export default function Footer() {
   const [email, setEmail] = useState("");
   const [subscribed, setSubscribed] = useState(false);
@@ -317,21 +323,23 @@ export default function Footer() {
       <div className="border-t border-[#8b1a3414] bg-[linear-gradient(135deg,#fff8f6,#ffffff,#fdf4f7)]">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-4 py-5 flex flex-col sm:flex-row items-center justify-between gap-3">
           <p className="font-sans text-[11px] md:text-[12px] text-gray-400 text-center sm:text-left">
-            © 2025 Kasibunkari India Pvt. Ltd. All Rights Reserved.
+            © {currentYear} Kasibunkari India Pvt. Ltd. All Rights Reserved.
             <span className="hidden sm:inline ml-1">
               · Crafted with love in Varanasi.
             </span>
           </p>
           <div className="flex items-center gap-4">
-            {["Privacy", "Terms", "Sitemap"].map((item, i) => (
-              <span key={item} className="flex items-center gap-4">
+            {FOOTER_BOTTOM_LINKS.map((item, i) => (
+              <span key={item.title} className="flex items-center gap-4">
                 <Link
-                  href="#"
+                  href={item.href}
                   className="font-sans text-[11px] md:text-[12px] text-gray-400 hover:text-pink transition-colors duration-200"
                 >
-                  {item}
+                  {item.title}
                 </Link>
-                {i < 2 && <span className="w-px h-3 bg-gray-200" />}
+                {i < FOOTER_BOTTOM_LINKS.length - 1 && (
+                  <span className="w-px h-3 bg-gray-200" />
+                )}
               </span>
             ))}
           </div>

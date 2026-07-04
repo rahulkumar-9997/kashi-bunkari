@@ -23,7 +23,6 @@ export default function RefundPolicyPage() {
       </section>
       <section className="relative overflow-hidden">
         <div className="w-full max-w-5xl relative mx-auto lg:py-10 md:py-11 sm:py-12 py-8 md:px-0 px-4">
-          {/* Intro */}
           <div className="mb-8">
             <p className="font-sans text-[14px] sm:text-[15px] text-gray-600 leading-relaxed">
               Our team of artisans invest great efforts and love in the making
@@ -34,25 +33,22 @@ export default function RefundPolicyPage() {
               You can always contact us on WhatsApp{" "}
               <a
                 href="https://wa.me/919696588343"
-                className="text-[#AD8A3B] hover:text-maroon transition-colors underline"
+                className="text-black hover:text-maroon transition-colors underline"
               >
                 +91 9696588343
               </a>{" "}
               or email us on{" "}
               <a
                 href="mailto:kasibunkari@gmail.com"
-                className="text-[#AD8A3B] hover:text-maroon transition-colors underline"
+                className="text-black hover:text-maroon transition-colors underline"
               >
                 kasibunkari@gmail.com
               </a>{" "}
               if you're unsure about the size or design.
             </p>
           </div>
-
-          <div className="h-px bg-gradient-to-r from-transparent via-[#E4D9C4] to-transparent my-8" />
-
-          {/* Refund Policy */}
-          <div className="mb-8">
+          <div className="h-px bg-linear-to-r from-transparent via-[#E4D9C4] to-transparent my-4" />
+          <div className="mb-4">
             <h2 className="font-serif text-[18px] sm:text-[20px] font-bold text-maroon mb-3">
               Refund Policy
             </h2>
@@ -64,20 +60,20 @@ export default function RefundPolicyPage() {
 
               <ul className="space-y-3">
                 <li className="flex items-start gap-3">
-                  <span className="w-1.5 h-1.5 rounded-full bg-[#AD8A3B] mt-2 flex-shrink-0" />
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#AD8A3B] mt-2 shrink-0" />
                   <span>
                     Eligible products (If found Damaged) can only be returned
                     within 7 days after recieving your order.
                   </span>
                 </li>
                 <li className="flex items-start gap-3">
-                  <span className="w-1.5 h-1.5 rounded-full bg-[#AD8A3B] mt-2 flex-shrink-0" />
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#AD8A3B] mt-2 shrink-0" />
                   <span>
                     In the unlikely event that your merchandise arrives damaged,
                     you should email us at{" "}
                     <a
                       href="mailto:kasibunkari@gmail.com"
-                      className="text-[#AD8A3B] hover:text-maroon transition-colors underline"
+                      className="text-black hover:text-maroon transition-colors underline"
                     >
                       kasibunkari@gmail.com
                     </a>{" "}
@@ -95,7 +91,7 @@ export default function RefundPolicyPage() {
 
               <ul className="space-y-3">
                 <li className="flex items-start gap-3">
-                  <span className="w-1.5 h-1.5 rounded-full bg-[#AD8A3B] mt-2 flex-shrink-0" />
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#AD8A3B] mt-2 shrink-0" />
                   <span>
                     Our team must receive and approve your request. We will let
                     you know if the return was approved or not. Once your
@@ -104,14 +100,14 @@ export default function RefundPolicyPage() {
                   </span>
                 </li>
                 <li className="flex items-start gap-3">
-                  <span className="w-1.5 h-1.5 rounded-full bg-[#AD8A3B] mt-2 flex-shrink-0" />
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#AD8A3B] mt-2 shrink-0" />
                   <span>
                     We'll send you a return shipping label, as well as
                     instructions on how and where to send your package.
                   </span>
                 </li>
                 <li className="flex items-start gap-3">
-                  <span className="w-1.5 h-1.5 rounded-full bg-[#AD8A3B] mt-2 flex-shrink-0" />
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#AD8A3B] mt-2 shrink-0" />
                   <span>
                     Items sent back to us without first requesting a return will
                     not be accepted.Please make sure the product is unwashed or
@@ -119,14 +115,14 @@ export default function RefundPolicyPage() {
                   </span>
                 </li>
                 <li className="flex items-start gap-3">
-                  <span className="w-1.5 h-1.5 rounded-full bg-[#AD8A3B] mt-2 flex-shrink-0" />
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#AD8A3B] mt-2 shrink-0" />
                   <span>
                     We aim to process all returns within 10 days. If you have
                     any questions about your return, feel free to reach out to
                     us at{" "}
                     <a
                       href="mailto:kasibunkari@gmail.com"
-                      className="text-[#AD8A3B] hover:text-maroon transition-colors underline"
+                      className="text-black hover:text-maroon transition-colors underline"
                     >
                       kasibunkari@gmail.com
                     </a>
@@ -134,14 +130,14 @@ export default function RefundPolicyPage() {
                   </span>
                 </li>
                 <li className="flex items-start gap-3">
-                  <span className="w-1.5 h-1.5 rounded-full bg-[#AD8A3B] mt-2 flex-shrink-0" />
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#AD8A3B] mt-2 shrink-0" />
                   <span>
                     After confirmation you will receive your amount within 10
                     working days in your bank account.
                   </span>
                 </li>
                 <li className="flex items-start gap-3">
-                  <span className="w-1.5 h-1.5 rounded-full bg-[#AD8A3B] mt-2 flex-shrink-0" />
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#AD8A3B] mt-2 shrink-0" />
                   <span>
                     All returns are subject to the discretion of Kasibunkari.
                   </span>
@@ -150,7 +146,7 @@ export default function RefundPolicyPage() {
             </div>
           </div>
 
-          <div className="h-px bg-gradient-to-r from-transparent via-[#E4D9C4] to-transparent my-8" />
+          <div className="h-px bg-linear-to-r from-transparent via-[#E4D9C4] to-transparent my-8" />
 
           {/* Cancellation Policy */}
           <div className="mb-8">
@@ -169,14 +165,14 @@ export default function RefundPolicyPage() {
                 WhatsApp us on{" "}
                 <a
                   href="https://wa.me/919696588343"
-                  className="text-[#AD8A3B] hover:text-maroon transition-colors underline"
+                  className="text-black hover:text-maroon transition-colors underline"
                 >
                   +91 9696588343
                 </a>{" "}
                 or email us on{" "}
                 <a
                   href="mailto:kasibunkari@gmail.com"
-                  className="text-[#AD8A3B] hover:text-maroon transition-colors underline"
+                  className="text-black hover:text-maroon transition-colors underline"
                 >
                   kasibunkari@gmail.com
                 </a>
@@ -184,7 +180,7 @@ export default function RefundPolicyPage() {
             </div>
           </div>
 
-          <div className="h-px bg-gradient-to-r from-transparent via-[#E4D9C4] to-transparent my-8" />
+          <div className="h-px bg-linear-to-r from-transparent via-[#E4D9C4] to-transparent my-8" />
 
           {/* Exchange Policy */}
           <div>
@@ -203,15 +199,15 @@ export default function RefundPolicyPage() {
               </p>
               <ul className="space-y-3">
                 <li className="flex items-start gap-3">
-                  <span className="w-1.5 h-1.5 rounded-full bg-[#AD8A3B] mt-2 flex-shrink-0" />
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#AD8A3B] mt-2 shrink-0" />
                   <span>Not like the Color</span>
                 </li>
                 <li className="flex items-start gap-3">
-                  <span className="w-1.5 h-1.5 rounded-full bg-[#AD8A3B] mt-2 flex-shrink-0" />
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#AD8A3B] mt-2 shrink-0" />
                   <span>Or simply a change of mind</span>
                 </li>
                 <li className="flex items-start gap-3">
-                  <span className="w-1.5 h-1.5 rounded-full bg-[#AD8A3B] mt-2 flex-shrink-0" />
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#AD8A3B] mt-2 shrink-0" />
                   <span>
                     Items bought on sale/discount cannot be exchanged.
                   </span>
@@ -239,7 +235,7 @@ export default function RefundPolicyPage() {
                   please email us at{" "}
                   <a
                     href="mailto:kasibunkari@gmail.com"
-                    className="text-[#AD8A3B] hover:text-maroon transition-colors underline"
+                    className="text-black hover:text-maroon transition-colors underline"
                   >
                     kasibunkari@gmail.com
                   </a>{" "}
@@ -247,15 +243,15 @@ export default function RefundPolicyPage() {
                 </p>
                 <ul className="mt-3 space-y-3">
                   <li className="flex items-start gap-3">
-                    <span className="w-1.5 h-1.5 rounded-full bg-[#AD8A3B] mt-2 flex-shrink-0" />
+                    <span className="w-1.5 h-1.5 rounded-full bg-[#AD8A3B] mt-2 shrink-0" />
                     <span>Order number</span>
                   </li>
                   <li className="flex items-start gap-3">
-                    <span className="w-1.5 h-1.5 rounded-full bg-[#AD8A3B] mt-2 flex-shrink-0" />
+                    <span className="w-1.5 h-1.5 rounded-full bg-[#AD8A3B] mt-2 shrink-0" />
                     <span>Delivery address</span>
                   </li>
                   <li className="flex items-start gap-3">
-                    <span className="w-1.5 h-1.5 rounded-full bg-[#AD8A3B] mt-2 flex-shrink-0" />
+                    <span className="w-1.5 h-1.5 rounded-full bg-[#AD8A3B] mt-2 shrink-0" />
                     <span>
                       Specify the reason for exchange and in case of a defective
                       or incorrect product, please send us an image of the item
@@ -278,7 +274,7 @@ export default function RefundPolicyPage() {
                 including tags, order invoice etc.
               </p>
 
-              <div className="p-4 rounded-lg bg-gradient-to-r from-[#FBF6ED] to-white border border-[#AD8A3B]/30">
+              <div className="p-4 rounded-lg bg-linear-to-r from-[#FBF6ED] to-white border border-[#AD8A3B]/30">
                 <p>
                   If there is a genuine defect in the product, we're happy to
                   exchange your product for a replacement, the same product, or
