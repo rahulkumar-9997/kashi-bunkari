@@ -1,6 +1,7 @@
 "use client";
 import { useState, useEffect, useRef } from "react";
 import { useCart } from "./CartContext";
+import { useAuthModal } from "@/components/Auth/AuthModalContext";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -10,6 +11,7 @@ export default function LogoSearchBar({
   onMenuOpen: () => void;
 }) {
   const { cartCount, openCart } = useCart();
+  const { openLogin } = useAuthModal();
   const [scrolled, setScrolled] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchValue, setSearchValue] = useState("");
@@ -51,8 +53,7 @@ export default function LogoSearchBar({
   const showAnimatedPlaceholder = !isSearchFocused && !searchValue;
 
   return (
-    <>
-      
+    <>      
       <div
         className="w-full bg-white border-b border-gray-100 sticky top-0 z-[300] transition-shadow"
         style={{
@@ -197,7 +198,9 @@ export default function LogoSearchBar({
             </button>
 
             {/* Desktop — Account */}
-            <button className="hidden md:flex flex-col items-center gap-0.5 px-3 py-1.5 text-maroon hover:text-pink transition-colors cursor-pointer">
+            <button
+             onClick={openLogin}
+             className="hidden md:flex flex-col items-center gap-0.5 px-3 py-1.5 text-maroon hover:text-pink transition-colors cursor-pointer">
               <svg
                 width="22"
                 height="22"
@@ -335,7 +338,9 @@ export default function LogoSearchBar({
           </button>
 
           {/* Account */}
-          <button className="flex-1 min-w-0 flex flex-col items-center justify-center gap-0.5 py-2.5 text-maroon hover:text-pink transition-colors cursor-pointer">
+          <button
+           onClick={openLogin}
+           className="flex-1 min-w-0 flex flex-col items-center justify-center gap-0.5 py-2.5 text-maroon hover:text-pink transition-colors cursor-pointer">
             <svg
               width="21"
               height="21"
