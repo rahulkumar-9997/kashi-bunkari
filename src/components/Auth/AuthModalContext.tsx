@@ -1,4 +1,3 @@
-// src/components/Auth/AuthModalContext.tsx
 "use client";
 import { createContext, useContext, useState, ReactNode } from "react";
 

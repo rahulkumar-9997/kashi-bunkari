@@ -1,4 +1,3 @@
-// src/components/Auth/OtpLoginForm.tsx
 "use client";
 import { useEffect, useRef, useState } from "react";
 import { ArrowRight, Check, AlertCircle, Loader2 } from "lucide-react";
@@ -9,7 +8,6 @@ const OTP_LENGTH = 6;
 const RESEND_SECONDS = 30;
 
 type Props = {
-  /** Slightly tighter spacing/typography for use inside the modal. */
   compact?: boolean;
   onSuccess?: () => void;
 };
@@ -24,8 +22,6 @@ export default function OtpLoginForm({ compact = false, onSuccess }: Props) {
   const [resendIn, setResendIn] = useState(RESEND_SECONDS);
 
   const otpRefs = useRef<Array<HTMLInputElement | null>>([]);
-
-  // Countdown for "Resend OTP"
   useEffect(() => {
     if (step !== "otp" || resendIn <= 0) return;
     const t = setTimeout(() => setResendIn((s) => s - 1), 1000);
