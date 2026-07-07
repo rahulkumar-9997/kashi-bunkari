@@ -147,7 +147,7 @@ export default function OtpLoginForm({ compact = false, onSuccess }: Props) {
   return (
     <div className={gap}>
       {error && (
-        <div className="flex items-start gap-2.5 rounded-lg bg-[#FBEAEA] border border-[#E7B8B8] px-4 py-3">
+        <div className="flex items-start gap-2.5 rounded-lg bg-[#FBEAEA] border border-[#E7B8B8] px-4 py-2.5">
           <AlertCircle size={16} className="text-[#B3261E] shrink-0 mt-0.5" />
           <p className="font-sans text-[12.5px] font-medium text-[#B3261E]">
             {error}
@@ -214,7 +214,7 @@ export default function OtpLoginForm({ compact = false, onSuccess }: Props) {
             </span>
           </button>
 
-          <p className="font-sans text-[11.5px] text-gray-400 leading-relaxed text-center">
+          <p className="font-sans text-[13px] text-gray-400 leading-relaxed text-center">
             By continuing, you agree to Kasibunkari&apos;s{" "}
             <Link
               href="/terms-and-conditions"
