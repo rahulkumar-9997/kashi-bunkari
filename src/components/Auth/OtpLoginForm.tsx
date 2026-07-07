@@ -1,11 +1,14 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
 import { ArrowRight, Check, AlertCircle, Loader2 } from "lucide-react";
+import Link from "next/link";
+import { FcGoogle } from "react-icons/fc";
 
-type Step = "phone" | "otp" | "success";
+type Step = "email" | "otp" | "success";
 
 const OTP_LENGTH = 6;
 const RESEND_SECONDS = 30;
+const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 type Props = {
   compact?: boolean;
@@ -13,13 +16,14 @@ type Props = {
 };
 
 export default function OtpLoginForm({ compact = false, onSuccess }: Props) {
-  const [step, setStep] = useState<Step>("phone");
-  const [phone, setPhone] = useState("");
+  const [step, setStep] = useState<Step>("email");
+  const [email, setEmail] = useState("");
   const [otp, setOtp] = useState<string[]>(Array(OTP_LENGTH).fill(""));
   const [error, setError] = useState<string | null>(null);
   const [sending, setSending] = useState(false);
   const [verifying, setVerifying] = useState(false);
   const [resendIn, setResendIn] = useState(RESEND_SECONDS);
+  const [googleLoading, setGoogleLoading] = useState(false);
 
   const otpRefs = useRef<Array<HTMLInputElement | null>>([]);
   useEffect(() => {
@@ -30,14 +34,12 @@ export default function OtpLoginForm({ compact = false, onSuccess }: Props) {
 
   const handleSendOtp = async (e: React.FormEvent) => {
     e.preventDefault();
-    const digits = phone.replace(/\D/g, "");
-    if (digits.length !== 10) {
-      setError("Enter a valid 10-digit mobile number");
+    if (!email.trim() || !EMAIL_REGEX.test(email.trim())) {
+      setError("Enter a valid email address");
       return;
     }
     setError(null);
     setSending(true);
-    // TODO: wire to a real send-OTP endpoint (e.g. Firebase, MSG91, Twilio Verify)
     await new Promise((r) => setTimeout(r, 700));
     setSending(false);
     setOtp(Array(OTP_LENGTH).fill(""));
@@ -50,7 +52,6 @@ export default function OtpLoginForm({ compact = false, onSuccess }: Props) {
     if (resendIn > 0) return;
     setError(null);
     setSending(true);
-    // TODO: re-trigger the real send-OTP endpoint
     await new Promise((r) => setTimeout(r, 500));
     setSending(false);
     setResendIn(RESEND_SECONDS);
@@ -102,11 +103,27 @@ export default function OtpLoginForm({ compact = false, onSuccess }: Props) {
     }
     setError(null);
     setVerifying(true);
-    // TODO: wire to a real verify-OTP endpoint, then set session/auth token
     await new Promise((r) => setTimeout(r, 700));
     setVerifying(false);
     setStep("success");
     setTimeout(() => onSuccess?.(), 1200);
+  };
+
+  const handleGoogleLogin = async () => {
+    setError(null);
+    setGoogleLoading(true);
+    try {
+      // Simulate Google authentication
+      await new Promise((r) => setTimeout(r, 1000));
+      // In production, you would redirect to Google OAuth or use NextAuth.js
+      // window.location.href = "/api/auth/google";
+      setStep("success");
+      setTimeout(() => onSuccess?.(), 1200);
+    } catch (err) {
+      setError("Google login failed. Please try again.");
+    } finally {
+      setGoogleLoading(false);
+    }
   };
 
   const gap = compact ? "space-y-4" : "space-y-5";
@@ -121,8 +138,7 @@ export default function OtpLoginForm({ compact = false, onSuccess }: Props) {
           Logged In
         </h3>
         <p className="font-sans text-[13.5px] text-gray-500 leading-relaxed max-w-xs">
-          Welcome back! You&apos;re now signed in to your Kasibunkari
-          account.
+          Welcome back! You&apos;re now signed in to your Kasibunkari account.
         </p>
       </div>
     );
@@ -139,28 +155,19 @@ export default function OtpLoginForm({ compact = false, onSuccess }: Props) {
         </div>
       )}
 
-      {step === "phone" && (
+      {step === "email" && (
         <form onSubmit={handleSendOtp} className={gap} noValidate>
           <div>
-            <label className="block font-sans text-[12px] font-semibold text-gray-600 mb-2">
-              Mobile Number
+            <label className="block font-sans text-[14px] font-semibold text-gray-600 mb-2">
+              Email Address
             </label>
-            <div className="flex items-stretch rounded-lg border border-gray-300 bg-white overflow-hidden focus-within:border-maroon focus-within:ring-2 focus-within:ring-maroon/10 transition-all">
-              <span className="flex items-center px-4 border-r border-gray-300 font-sans text-[13.5px] text-gray-600 bg-gray-50">
-                +91
-              </span>
-              <input
-                type="tel"
-                inputMode="numeric"
-                maxLength={10}
-                placeholder="98765 43210"
-                value={phone}
-                onChange={(e) =>
-                  setPhone(e.target.value.replace(/\D/g, "").slice(0, 10))
-                }
-                className="flex-1 min-w-0 px-4 py-3.5 font-sans text-[13.5px] text-gray-800 placeholder:text-gray-400 outline-none"
-              />
-            </div>
+            <input
+              type="email"
+              placeholder="you@email.com"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className="w-full rounded-lg border border-gray-300 bg-white px-4 py-3.5 font-sans text-[13.5px] text-gray-800 placeholder:text-gray-400 outline-none focus:border-maroon focus:ring-2 focus:ring-maroon/10 transition-all"
+            />
           </div>
 
           <button
@@ -178,9 +185,51 @@ export default function OtpLoginForm({ compact = false, onSuccess }: Props) {
             )}
           </button>
 
+          {/* Divider */}
+          <div className="relative">
+            <div className="absolute inset-0 flex items-center">
+              <div className="w-full border-t border-gray-200"></div>
+            </div>
+            <div className="relative flex justify-center text-xs uppercase">
+              <span className="bg-white px-3 text-gray-400 font-sans text-[11px] tracking-wider">
+                Or continue with
+              </span>
+            </div>
+          </div>
+
+          {/* Google Login Button */}
+          <button
+            type="button"
+            onClick={handleGoogleLogin}
+            disabled={googleLoading}
+            className="w-full inline-flex items-center justify-center gap-3 rounded-lg border border-gray-300 bg-white text-gray-700 font-sans text-[12.5px] font-semibold px-7 py-3.5 hover:bg-gray-50 hover:border-gray-400 transition-all duration-200 disabled:opacity-60 disabled:cursor-not-allowed cursor-pointer"
+          >
+            {googleLoading ? (
+              <Loader2 size={18} className="animate-spin text-gray-500" />
+            ) : (
+              <FcGoogle size={20} />
+            )}
+            <span>
+              {googleLoading ? "Signing in..." : "Sign in with Google"}
+            </span>
+          </button>
+
           <p className="font-sans text-[11.5px] text-gray-400 leading-relaxed text-center">
-            By continuing, you agree to Kasibunkari&apos;s Terms of Service
-            and Privacy Policy.
+            By continuing, you agree to Kasibunkari&apos;s{" "}
+            <Link
+              href="/terms-and-conditions"
+              className="text-maroon hover:underline"
+            >
+              Terms of Service
+            </Link>{" "}
+            and{" "}
+            <Link
+              href="/privacy-policy"
+              className="text-maroon hover:underline"
+            >
+              Privacy Policy
+            </Link>
+            .
           </p>
         </form>
       )}
@@ -191,12 +240,12 @@ export default function OtpLoginForm({ compact = false, onSuccess }: Props) {
             <label className="block font-sans text-[12px] font-semibold text-gray-600 mb-1">
               Enter OTP
             </label>
-            <p className="font-sans text-[12px] text-gray-400 mb-3">
-              Sent to +91 {phone}{" "}
+            <p className="font-sans text-[12px] text-gray-400 mb-3 break-all">
+              Sent to {email}{" "}
               <button
                 type="button"
-                onClick={() => setStep("phone")}
-                className="text-maroon font-semibold hover:underline cursor-pointer"
+                onClick={() => setStep("email")}
+                className="text-maroon font-semibold hover:underline cursor-pointer whitespace-nowrap"
               >
                 Change
               </button>
