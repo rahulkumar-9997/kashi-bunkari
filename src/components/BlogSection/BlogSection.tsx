@@ -1,80 +1,36 @@
 "use client";
 import Image from "next/image";
 import Link from "next/link";
-import Heading from "./Heading/Heading";
-import {
-  ChevronRight,
-  Clock,
-  User,
-  ArrowRight,
-  Sparkles,
-  BookOpen,
-  Heart,
-  Eye,
-} from "lucide-react";
+import Heading from "@/components/Heading/Heading";
+import { ChevronRight, Clock, ArrowRight, BookOpen, Eye } from "lucide-react";
+import { useHomeBlogs } from "@/hooks/useHomeBlogs";
+import BlogSectionSkeleton from "./BlogSectionSkeleton";
+import type { HomeBlog } from "@/types/blog";
+const TAG_COLORS = ["#8b1a34", "#1a4a2e", "#7a5200", "#0d2a5c", "#5c1a7a"];
+function colorForTag(tag: string) {
+  let hash = 0;
+  for (let i = 0; i < tag.length; i++)
+    hash = tag.charCodeAt(i) + ((hash << 5) - hash);
+  return TAG_COLORS[Math.abs(hash) % TAG_COLORS.length];
+}
+function cleanExcerpt(raw: string) {
+  return raw.replace(/\r\n/g, " ").replace(/\s+/g, " ").trim();
+}
 
-const BLOGS = [
-  {
-    id: 1,
-    category: "Style Guide",
-    categoryColor: "#8b1a34",
-    title: "How to Drape a Banarasi Saree Perfectly for Weddings",
-    excerpt:
-      "Master the art of draping a Banarasi silk saree with our step-by-step guide. From pleating to pinning — look effortlessly regal on any occasion.",
-    image: "/images/products/1.webp",
-    author: "Meera Sharma",
-    date: "June 20, 2025",
-    readTime: "5 min read",
-    slug: "/blog/drape-banarasi-saree-weddings",
-    featured: true,
-  },
-  {
-    id: 2,
-    category: "Fabric Guide",
-    categoryColor: "#1a4a2e",
-    title: "Katan vs Georgette vs Tissue Silk — Which Saree is Right for You?",
-    excerpt:
-      "Confused between silk varieties? We break down the differences in texture, weight, and occasion-fit so you can shop with confidence.",
-    image: "/images/products/2.webp",
-    author: "Sunita Agarwal",
-    date: "June 14, 2025",
-    readTime: "7 min read",
-    slug: "/blog/katan-vs-georgette-vs-tissue",
-    featured: false,
-  },
-  {
-    id: 3,
-    category: "Festive Edit",
-    categoryColor: "#7a5200",
-    title: "Top 10 Lehengas for the 2025 Wedding Season",
-    excerpt:
-      "From bridal reds to pastel duets — our curated edit of the most sought-after lehenga styles this wedding season.",
-    image: "/images/products/1.webp",
-    author: "Anjali Mehta",
-    date: "June 8, 2025",
-    readTime: "4 min read",
-    slug: "/blog/top-10-lehengas-wedding-season-2025",
-    featured: false,
-  },
-  {
-    id: 4,
-    category: "Care Tips",
-    categoryColor: "#0d2a5c",
-    title: "How to Store and Care for Your Silk Sarees at Home",
-    excerpt:
-      "Silk sarees are investments. Learn the right way to fold, store, and clean your precious Banarasi and Kanjivaram sarees.",
-    image: "/images/products/2.webp",
-    author: "Meera Sharma",
-    date: "May 30, 2025",
-    readTime: "6 min read",
-    slug: "/blog/care-silk-sarees-home",
-    featured: false,
-  },
-];
+function formatViews(count: string) {
+  const n = Number(count) || 0;
+  if (n >= 1000) return `${(n / 1000).toFixed(1)}K views`;
+  return `${n} view${n === 1 ? "" : "s"}`;
+}
 
 export default function BlogSection() {
-  const featured = BLOGS.find((b) => b.featured)!;
-  const rest = BLOGS.filter((b) => !b.featured);
+  const { data: blogs = [], isLoading, isError } = useHomeBlogs();
+
+  if (isLoading) return <BlogSectionSkeleton />;
+  if (isError || blogs.length === 0) return null;
+
+  const featured: HomeBlog = blogs[0];
+  const rest: HomeBlog[] = blogs.slice(1);
 
   return (
     <section className="w-full bg-linear-to-b from-[#faf9f7] via-white to-[#faf9f7] lg:px-12 md:px-10 px-4 overflow-hidden relative">
@@ -173,9 +129,10 @@ export default function BlogSection() {
 
             {/* Description */}
             <p className="mt-5 max-w-xl font-sans text-[16px] leading-7 text-gray-600">
-              Explore expert Banarasi saree styling tips, handloom craftsmanship,
-              buying guides, festive fashion inspiration, and traditional weaving
-              stories curated by our artisans and textile experts.
+              Explore expert Banarasi saree styling tips, handloom
+              craftsmanship, buying guides, festive fashion inspiration, and
+              traditional weaving stories curated by our artisans and textile
+              experts.
             </p>
           </div>
 
@@ -196,12 +153,16 @@ export default function BlogSection() {
             </span>
           </Link>
         </div>
+
         <div className="grid grid-cols-1 lg:grid-cols-[1.4fr_1fr] gap-6 md:gap-8">
           {/* ── LEFT: Featured Hero Card ── */}
-          <Link href="blogs/slug1" className="group block outline-none">
+          <Link
+            href={`/blogs/${featured.slug}`}
+            className="group block outline-none"
+          >
             <div className="relative overflow-hidden rounded-2xl bg-gray-200 h-105 md:h-130 shadow-lg hover:shadow-2xl transition-all duration-500">
               <Image
-                src={featured.image}
+                src={featured.main_image}
                 alt={featured.title}
                 fill
                 className="object-cover object-top transition-transform duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-[1.05]"
@@ -212,31 +173,31 @@ export default function BlogSection() {
               <div className="absolute top-5 left-5 right-5 flex items-center justify-between z-10">
                 <span
                   className="font-sans text-[8px] font-bold uppercase tracking-[0.22em] text-white px-3 py-1.5 rounded-full shadow-lg backdrop-blur-sm"
-                  style={{ background: `${featured.categoryColor}dd` }}
+                  style={{ background: `${colorForTag(featured.tag)}dd` }}
                 >
-                  {featured.category}
-                </span>                
+                  {featured.tag}
+                </span>
               </div>
               <div className="absolute bottom-0 left-0 right-0 z-10 p-6 md:p-8">
                 <div className="flex items-center gap-3 mb-3">
-                  <span className="flex items-center gap-1.5 font-sans text-[12px] text-white/60 bg-white/10 backdrop-blur-sm px-2.5 py-1 rounded-full">
+                  <span className="flex items-center gap-1.5 font-sans text-[12px] text-white bg-white/10 backdrop-blur-sm px-2.5 py-1 rounded-full">
                     <Clock size={10} />
-                    {featured.readTime}
+                    {featured.reading_title}
                   </span>
                   <span className="w-1 h-1 rounded-full bg-white/50" />
-                  <span className="flex items-center gap-1.5 font-sans text-[12px] text-white/60 bg-white/10 backdrop-blur-sm px-2.5 py-1 rounded-full">
+                  <span className="flex items-center gap-1.5 font-sans text-[12px] text-white bg-white/10 backdrop-blur-sm px-2.5 py-1 rounded-full">
                     <Eye size={10} />
-                    2.4K views
+                    {formatViews(featured.view_count)}
                   </span>
                 </div>
                 <Heading
-                    level={3}
-                    text={featured.title}
-                    className="font-serif text-white leading-[1.2] mb-3 group-hover:text-rose-200 transition-colors duration-300"
-                    decorator="none"
-                  />
+                  level={3}
+                  text={featured.title}
+                  className="font-serif text-white leading-[1.2] mb-3 group-hover:text-rose-200 transition-colors duration-300"
+                  decorator="none"
+                />
                 <p className="font-sans text-[15px] text-white/70 leading-relaxed mb-5 line-clamp-2">
-                  {featured.excerpt}
+                  {cleanExcerpt(featured.short_desc)}
                 </p>
                 <div className="flex items-center justify-end">
                   <span className="inline-flex items-center gap-2 font-sans text-[10px] font-bold uppercase tracking-[0.16em] text-white bg-white/15 hover:bg-white/25 backdrop-blur-sm px-4 py-2.5 rounded-full transition-all duration-300 group-hover:gap-3 group-hover:bg-white/30">
@@ -262,53 +223,49 @@ export default function BlogSection() {
 
           {/* ── RIGHT: Premium List Cards ── */}
           <div className="flex flex-col gap-4">
-            {rest.map((blog, idx) => (
+            {rest.map((blog) => (
               <Link
                 key={blog.id}
-                href="/blogs/slug1"
+                href={`/blogs/${blog.slug}`}
                 className="group flex gap-4 bg-white rounded-xl border border-gray-100/80 p-2 hover:-translate-y-1 hover:shadow-[0_12px_40px_rgba(0,0,0,0.08)] hover:border-pink/20 transition-all duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] outline-none"
               >
                 {/* Thumbnail with hover effect */}
                 <div className="relative overflow-hidden rounded-lg shrink-0 w-27.7 h-27.5 md:w-30 md:h-30 bg-gray-100">
                   <Image
-                    src={blog.image}
+                    src={blog.main_image}
                     alt={blog.title}
                     fill
                     className="object-cover object-top transition-transform duration-500 group-hover:scale-110"
                     sizes="120px"
                   />
-                  {/* Overlay on hover */}
                   <div className="absolute inset-0 bg-linear-to-t from-black/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-
-                  {/* Category chip */}
                   <span
                     className="absolute bottom-2 left-2 font-sans text-[8px] font-bold uppercase tracking-[0.22em] text-white px-3 py-1.5 rounded-full shadow-lg backdrop-blur-sm z-10"
-                    style={{ background: `${blog.categoryColor}cc` }}
+                    style={{ background: `${colorForTag(blog.tag)}cc` }}
                   >
-                    {blog.category}
+                    {blog.tag}
                   </span>
                 </div>
                 <div className="flex-1 min-w-0 flex flex-col justify-between">
                   <div>
                     <Heading
-                    level={4}
-                    text={blog.title}
-                    className="font-sans text-[18px] text-gray-900 group-hover:text-[#8b0b13] transition-colors duration-200 leading-snug line-clamp-2 mb-1.5"
-                    decorator="none"
+                      level={4}
+                      text={blog.title}
+                      className="font-sans text-[18px] text-gray-900 group-hover:text-[#8b0b13] transition-colors duration-200 leading-snug line-clamp-2 mb-1.5"
+                      decorator="none"
                     />
                     <p className="font-sans text-[15px] text-gray-500 leading-relaxed line-clamp-2">
-                      {blog.excerpt}
+                      {cleanExcerpt(blog.short_desc)}
                     </p>
                   </div>
                   <div className="flex items-center justify-between mt-1">
                     <div className="flex items-center gap-2 text-gray-400">
-                      
                       <span className="flex items-center gap-1 font-sans text-[12px]">
                         <Clock size={9} />
-                        {blog.readTime}
+                        {blog.reading_title}
                       </span>
                     </div>
-                    <div className="flex items-center gap-2">                      
+                    <div className="flex items-center gap-2">
                       <ChevronRight
                         size={16}
                         className="text-gray-300 group-hover:text-pink group-hover:translate-x-0.5 transition-all duration-200"
@@ -326,7 +283,7 @@ export default function BlogSection() {
               <ArrowRight
                 size={13}
                 className="group-hover:translate-x-1 transition-transform duration-300"
-              />              
+              />
             </Link>
           </div>
         </div>
@@ -344,7 +301,7 @@ export default function BlogSection() {
               />
             </span>
           </Link>
-        </div>        
+        </div>
       </div>
     </section>
   );

@@ -76,13 +76,10 @@ export const FOOTER_LINKS = [
         href: "/about-us",
       },
       {
-        title: "Handloom Heritage",
-        href: "/handloom-heritage",
+        title: "Blogs",
+        href: "/blogs",
       },
-      {
-        title: "Artisan Partners",
-        href: "/artisan-partners",
-      },
+      
       {
         title: "Privacy Policy",
         href: "/privacy-policy",

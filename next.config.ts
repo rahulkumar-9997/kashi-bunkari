@@ -1,7 +1,15 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  /* config options here */
+  htmlLimitedBots: /.*/,
+  images: {
+    remotePatterns: [
+      {
+        protocol: "http",
+        hostname: "kasi.wizards.co.in",
+      },
+    ],
+  },
 };
 
 export default nextConfig;

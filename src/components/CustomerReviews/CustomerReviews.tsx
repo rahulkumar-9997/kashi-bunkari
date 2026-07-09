@@ -1,5 +1,7 @@
 "use client";
-import { useRef, useState, useEffect, useCallback } from "react";
+import { useRef, useState, useEffect, useCallback, useMemo } from "react";
+import Heading from "../Heading/Heading";
+import Image from "next/image";
 import {
   Star,
   BadgeCheck,
@@ -14,89 +16,47 @@ import {
   type CarouselApi,
 } from "@/components/ui/carousel";
 import Autoplay from "embla-carousel-autoplay";
-
-const REVIEWS = [
-  {
-    id: 1,
-    name: "Priya Sharma",
-    location: "New Delhi",
-    avatar: "PS",
-    avatarBg: "linear-gradient(135deg,#8b1a34,#c9396a)",
-    rating: 5,
-    product: "Banarasi Katan Silk Saree",
-    review:
-      "Absolutely stunning saree! The quality is exceptional and the zari work is just breathtaking. I wore it at my sister's wedding and received so many compliments.",
-    date: "2 weeks ago",
-    verified: true,
-  },
-  {
-    id: 2,
-    name: "Anjali Mehta",
-    location: "Mumbai",
-    avatar: "AM",
-    avatarBg: "linear-gradient(135deg,#1a4a2e,#3a9a64)",
-    rating: 5,
-    product: "Chinon Silk Party Wear",
-    review:
-      "The fabric is so soft and the embroidery is done with such precision. Packaging was also very premium. Kasibunkari has become my go-to for ethnic wear.",
-    date: "1 month ago",
-    verified: true,
-  },
-  {
-    id: 3,
-    name: "Sunita Agarwal",
-    location: "Varanasi",
-    avatar: "SA",
-    avatarBg: "linear-gradient(135deg,#3a1a5c,#8a4ab8)",
-    rating: 5,
-    product: "Bridal Velvet Lehenga",
-    review:
-      "I ordered the bridal lehenga for my wedding and it exceeded all my expectations. The deep rose color is exactly as shown, and the stitching quality is outstanding.",
-    date: "3 weeks ago",
-    verified: true,
-  },
-  {
-    id: 4,
-    name: "Kavitha Nair",
-    location: "Bangalore",
-    avatar: "KN",
-    avatarBg: "linear-gradient(135deg,#0d2a5c,#3a7fd6)",
-    rating: 5,
-    product: "Kanjivaram Silk Saree",
-    review:
-      "Pure Kanjivaram at this price is a steal. The weight and feel of the silk is authentic. I'm from South India so I know my Kanjivaram — genuinely excellent quality.",
-    date: "1 week ago",
-    verified: true,
-  },
-  {
-    id: 5,
-    name: "Ritu Khanna",
-    location: "Jaipur",
-    avatar: "RK",
-    avatarBg: "linear-gradient(135deg,#5c1a00,#c04a7a)",
-    rating: 5,
-    product: "Georgette Festive Saree",
-    review:
-      "Ordered for Diwali and it arrived beautifully packed. The georgette is really good quality — not too heavy, drapes perfectly. Colour is vibrant and true to photos.",
-    date: "5 days ago",
-    verified: true,
-  },
-  {
-    id: 6,
-    name: "Deepa Verma",
-    location: "Lucknow",
-    avatar: "DV",
-    avatarBg: "linear-gradient(135deg,#1a3a0a,#4a9a2a)",
-    rating: 5,
-    product: "Tissue Silk Saree",
-    review:
-      "Being from Lucknow, I'm very particular about fabric quality. Kasibunkari never disappoints. The tissue silk has that characteristic shimmer and flawless weaving.",
-    date: "2 months ago",
-    verified: true,
-  },
+import { useTestimonials } from "@/hooks/useTestimonials";
+import CustomerReviewsSkeleton from "./CustomerReviewsSkeleton";
+import type { Testimonial } from "@/types/testimonial";
+const AVATAR_GRADIENTS = [
+  "linear-gradient(135deg,#8b1a34,#c9396a)",
+  "linear-gradient(135deg,#1a4a2e,#3a9a64)",
+  "linear-gradient(135deg,#3a1a5c,#8a4ab8)",
+  "linear-gradient(135deg,#0d2a5c,#3a7fd6)",
+  "linear-gradient(135deg,#5c1a00,#c04a7a)",
+  "linear-gradient(135deg,#1a3a0a,#4a9a2a)",
 ];
+function gradientForName(name: string) {
+  let hash = 0;
+  for (let i = 0; i < name.length; i++)
+    hash = name.charCodeAt(i) + ((hash << 5) - hash);
+  return AVATAR_GRADIENTS[Math.abs(hash) % AVATAR_GRADIENTS.length];
+}
+function initialsOf(name: string) {
+  return name
+    .split(" ")
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((w) => w[0]?.toUpperCase())
+    .join("");
+}
+function computeStats(reviews: Testimonial[]) {
+  const total = reviews.length;
+  const avg = total
+    ? (reviews.reduce((sum, r) => sum + r.rating, 0) / total).toFixed(1)
+    : "0.0";
+  const breakdown = [5, 4, 3].map((star) => {
+    const count = reviews.filter((r) => r.rating === star).length;
+    const pct = total ? Math.round((count / total) * 100) : 0;
+    return { star, pct: `${pct}%` };
+  });
+  return { total, avg, breakdown };
+}
 
 export default function CustomerReviews() {
+  const { data: reviews = [], isLoading, isError } = useTestimonials();
+
   const carouselRef = useRef(null);
   const plugin = useRef(
     Autoplay({
@@ -124,6 +84,11 @@ export default function CustomerReviews() {
       api.off("select", onSelect);
     };
   }, [api, onSelect]);
+
+  const stats = useMemo(() => computeStats(reviews), [reviews]);
+
+  if (isLoading) return <CustomerReviewsSkeleton />;
+  if (isError || reviews.length === 0) return null;
 
   return (
     <section className="w-full overflow-hidden bg-white">
@@ -156,13 +121,23 @@ export default function CustomerReviews() {
                 Customer Testimonials
               </span>
             </div>
-            <h2 className="font-serif text-[clamp(28px,4vw,40px)] font-bold text-white leading-[1.08] tracking-tight mb-4">
-              Loved by{" "}
-              <span className="italic font-light text-pink-200">Thousands</span>{" "}
-              Customers
-              <br />
-              Across India
-            </h2>
+            <Heading
+              level={2}
+              className="font-serif text-[clamp(28px,4vw,40px)] font-bold text-white leading-[1.08] tracking-tight mb-4"
+              text={`
+                Loved by
+                <span class="italic font-light text-pink-200">
+                  Thousands
+                </span>
+                Customers
+                <br />
+                Across India
+              `}
+              allowHTML
+              decorator="none"
+              decoratorClassName="w-24 mt-3"
+            />
+            
             <p className="font-sans text-[16px] text-white mt-3 tracking-wid">
               Real stories from women who found their dream outfit with us
             </p>
@@ -171,7 +146,7 @@ export default function CustomerReviews() {
           <div className="flex items-center gap-6 shrink-0 rounded-2xl px-7 py-6 border border-white/10 backdrop-blur-sm bg-white/15">
             <div className="text-center">
               <p className="font-serif text-[58px] font-bold text-white leading-none">
-                4.9
+                {stats.avg}
               </p>
               <div className="flex gap-1 mt-2 justify-center">
                 {[1, 2, 3, 4, 5].map((s) => (
@@ -188,11 +163,7 @@ export default function CustomerReviews() {
             </div>
             <div className="w-px h-16 bg-white/15" />
             <div className="flex flex-col gap-2.5">
-              {[
-                { star: 5, pct: "88%" },
-                { star: 4, pct: "9%" },
-                { star: 3, pct: "3%" },
-              ].map(({ star, pct }) => (
+              {stats.breakdown.map(({ star, pct }) => (
                 <div key={star} className="flex items-center gap-2.5">
                   <span className="font-sans text-[10px] font-medium text-white w-3">
                     {star}
@@ -213,7 +184,7 @@ export default function CustomerReviews() {
                 </div>
               ))}
               <p className="font-sans text-[9px] text-white uppercase tracking-wider mt-1">
-                Based on 500+ reviews
+                Based on {stats.total}+ reviews
               </p>
             </div>
           </div>
@@ -228,7 +199,7 @@ export default function CustomerReviews() {
               plugins={[plugin.current]}
               opts={{
                 align: "start",
-                loop: true,
+                loop: reviews.length > 3,
                 slidesToScroll: 1,
                 dragFree: true,
                 duration: 35,
@@ -236,10 +207,10 @@ export default function CustomerReviews() {
               className="w-full"
             >
               <CarouselContent className="-ml-3 md:-ml-5">
-                {REVIEWS.map((review, idx) => (
+                {reviews.map((review, idx) => (
                   <CarouselItem
                     key={review.id}
-                    className="pl-3 md:pl-5 basis-full sm:basis-1/2 lg:basis-1/3"
+                    className="pl-3 md:pl-5 basis-full sm:basis-1/2 lg:basis-1/3 h-full"
                   >
                     <div
                       className={
@@ -260,31 +231,34 @@ export default function CustomerReviews() {
                                 <Star
                                   key={s}
                                   size={13}
-                                  className="fill-amber-400 text-amber-400"
+                                  className={
+                                    s <= review.rating
+                                      ? "fill-amber-400 text-amber-400"
+                                      : "text-gray-200"
+                                  }
                                 />
                               ))}
                             </div>
-                            <span className="font-sans text-[12px] text-gray-400">
-                              {review.date}
-                            </span>
                           </div>
                           <p className="font-serif text-[16px] text-gray-700 leading-[1.8] mb-5 italic relative z-10">
-                            "{review.review}"
+                            {review.content}
                           </p>
-                          <span
-                            className="inline-flex items-center gap-1.5 font-sans text-[8.5px] font-bold uppercase tracking-[0.18em] px-3 py-1.5 rounded-full mb-5"
-                            style={{
-                              color: "#8b1a34",
-                              background: "rgba(139,26,52,0.06)",
-                              border: "1px solid rgba(139,26,52,0.14)",
-                            }}
-                          >
+                          {review.designation && (
                             <span
-                              className="w-1 h-1 rounded-full animate-pulse"
-                              style={{ background: "#e91e8c" }}
-                            />
-                            {review.product}
-                          </span>
+                              className="inline-flex items-center gap-1.5 font-sans text-[8.5px] font-bold uppercase tracking-[0.18em] px-3 py-1.5 rounded-full mb-5"
+                              style={{
+                                color: "#8b1a34",
+                                background: "rgba(139,26,52,0.06)",
+                                border: "1px solid rgba(139,26,52,0.14)",
+                              }}
+                            >
+                              <span
+                                className="w-1 h-1 rounded-full animate-pulse"
+                                style={{ background: "#e91e8c" }}
+                              />
+                              {review.designation}
+                            </span>
+                          )}
                           <div className="relative flex items-center mb-5">
                             <div className="flex-1 h-px bg-gray-100" />
                             <div className="w-1.5 h-1.5 rotate-45 bg-gray-200 mx-3 shrink-0" />
@@ -292,29 +266,39 @@ export default function CustomerReviews() {
                           </div>
                           <div className="flex items-center justify-between">
                             <div className="flex items-center gap-3">
-                              <div className="relative shrink-0">
-                                <div
-                                  className="w-10 h-10 rounded-full flex items-center justify-center font-sans text-[12px] font-bold text-white shadow-sm transition-transform duration-300 group-hover:scale-110"
-                                  style={{ background: review.avatarBg }}
-                                >
-                                  {review.avatar}
-                                </div>
+                              <div className="relative shrink-0 w-10 h-10 rounded-full overflow-hidden transition-transform duration-300 group-hover:scale-110">
+                                {review.image ? (
+                                  <Image
+                                    src={review.image}
+                                    alt={review.name}
+                                    fill
+                                    className="object-cover"
+                                    sizes="40px"
+                                  />
+                                ) : (
+                                  <div
+                                    className="w-full h-full flex items-center justify-center font-sans text-[12px] font-bold text-white shadow-sm"
+                                    style={{
+                                      background: gradientForName(review.name),
+                                    }}
+                                  >
+                                    {initialsOf(review.name)}
+                                  </div>
+                                )}
                               </div>
                               <div>
                                 <p className="font-sans text-[14px] font-semibold text-gray-800 leading-tight">
                                   {review.name}
                                 </p>
                                 <p className="font-sans text-[12px] text-gray-400 mt-0.5">
-                                  {review.location}
+                                  {review.city}
                                 </p>
                               </div>
                             </div>
-                            {review.verified && (
-                              <span className="inline-flex items-center gap-1 font-sans text-[8px] font-bold uppercase tracking-wide text-emerald-600 bg-emerald-50 border border-emerald-100 px-2 py-0.5 rounded-full">
-                                <BadgeCheck size={9} />
-                                Verified
-                              </span>
-                            )}
+                            <span className="inline-flex items-center gap-1 font-sans text-[8px] font-bold uppercase tracking-wide text-emerald-600 bg-emerald-50 border border-emerald-100 px-2 py-0.5 rounded-full">
+                              <BadgeCheck size={9} />
+                              Verified
+                            </span>
                           </div>
                         </div>
                       </div>

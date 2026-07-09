@@ -1,5 +1,4 @@
 "use client";
-
 import { useState } from "react";
 import { CartProvider } from "@/components/CartContext";
 import { TopBar } from "@/components/TopBar";

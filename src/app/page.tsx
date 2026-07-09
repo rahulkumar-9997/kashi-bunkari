@@ -1,30 +1,37 @@
-"use client";
-import { useState } from "react";
+import { Suspense  } from "react";
 import { CartProvider } from "@/components/CartContext";
-import HeroSlider from "@/components/HeroSlider";
+import HeroSliderServer from "@/components/HeroSlider/HeroSliderServer";
+import HeroSliderSkeleton from "@/components/HeroSlider/HeroSliderSkeleton";
 import CategorySection from "@/components/CategorySection";
 import OccasionSection from "@/components/OccasionSection";
 import Popular from "@/components/Popular";
 import NewArrivals from "@/components/NewArrivals";
 import BulkOrder from "@/components/BulkOrder";
-import CustomerReviews from "@/components/CustomerReviews";
-import BlogSection from "@/components/BlogSection";
+import CustomerReviewsServer from "@/components/CustomerReviews/CustomerReviewsServer";
+import CustomerReviewsSkeleton from "@/components/CustomerReviews/CustomerReviewsSkeleton";
+import BlogSectionServer from "@/components/BlogSection/BlogSectionServer";
+import BlogSectionSkeleton from "@/components/BlogSection/BlogSectionSkeleton";
 import TrustBar from "@/components/TrustBar";
 import AboutUs from "@/components/AboutUs";
 
 function HomeContent() {
-  const [menuOpen, setMenuOpen] = useState(false);
   return (
     <>
-      <HeroSlider />
+      <Suspense fallback={<HeroSliderSkeleton />}>
+        <HeroSliderServer />
+      </Suspense>
       <CategorySection />
       <AboutUs />
       <OccasionSection />
       <Popular />
       <BulkOrder />
       <NewArrivals />
-      <CustomerReviews />
-      <BlogSection />
+      <Suspense fallback={<CustomerReviewsSkeleton />}>
+        <CustomerReviewsServer />
+      </Suspense>
+      <Suspense fallback={<BlogSectionSkeleton />}>
+        <BlogSectionServer />
+      </Suspense>
       <TrustBar />
     </>
   );
