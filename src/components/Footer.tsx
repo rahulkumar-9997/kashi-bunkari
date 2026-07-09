@@ -11,31 +11,31 @@ export const FOOTER_LINKS = [
     links: [
       {
         title: "New Arrivals",
-        href: "/new-arrivals",
+        href: "#",
       },
       {
         title: "Banarasi Sarees",
-        href: "/banarasi-sarees",
+        href: "#",
       },
       {
         title: "Designer Lehenga",
-        href: "/designer-lehenga",
+        href: "#",
       },
       {
         title: "Party Wear Suits",
-        href: "/party-wear-suits",
+        href: "#",
       },
       {
         title: "Festive Collection",
-        href: "/festive-collection",
+        href: "#",
       },
       {
         title: "Unstitched Suits",
-        href: "/unstitched-suits",
+        href: "#",
       },
       {
         title: "Flash Sale",
-        href: "/flash-sale",
+        href: "#",
       },
     ],
   },
@@ -44,7 +44,7 @@ export const FOOTER_LINKS = [
     links: [
       {
         title: "Track My Order",
-        href: "/track-order",
+        href: "#",
       },
       {
         title: "Refund Policy",
@@ -52,7 +52,7 @@ export const FOOTER_LINKS = [
       },
       {
         title: "Size Guide",
-        href: "/size-guide",
+        href: "#",
       },
       {
         title: "Bulk Orders",
@@ -90,7 +90,7 @@ export const FOOTER_LINKS = [
       },
       {
         title: "Sitemap",
-        href: "/sitemap",
+        href: "#",
       },
     ],
   },
