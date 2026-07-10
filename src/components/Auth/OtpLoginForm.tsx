@@ -3,6 +3,8 @@ import { useEffect, useRef, useState } from "react";
 import { ArrowRight, Check, AlertCircle, Loader2 } from "lucide-react";
 import Link from "next/link";
 import { FcGoogle } from "react-icons/fc";
+import { sendOtp, verifyOtp, resendOtp } from "@/services/authService";
+import { useAuth } from "@/context/AuthContext";
 
 type Step = "email" | "otp" | "success";
 
@@ -16,6 +18,7 @@ type Props = {
 };
 
 export default function OtpLoginForm({ compact = false, onSuccess }: Props) {
+  const { login } = useAuth();
   const [step, setStep] = useState<Step>("email");
   const [email, setEmail] = useState("");
   const [otp, setOtp] = useState<string[]>(Array(OTP_LENGTH).fill(""));
@@ -40,23 +43,33 @@ export default function OtpLoginForm({ compact = false, onSuccess }: Props) {
     }
     setError(null);
     setSending(true);
-    await new Promise((r) => setTimeout(r, 700));
-    setSending(false);
-    setOtp(Array(OTP_LENGTH).fill(""));
-    setResendIn(RESEND_SECONDS);
-    setStep("otp");
-    setTimeout(() => otpRefs.current[0]?.focus(), 50);
+    try {
+      await sendOtp(email.trim());
+      setOtp(Array(OTP_LENGTH).fill(""));
+      setResendIn(RESEND_SECONDS);
+      setStep("otp");
+      setTimeout(() => otpRefs.current[0]?.focus(), 50);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to send OTP");
+    } finally {
+      setSending(false);
+    }
   };
 
   const handleResend = async () => {
     if (resendIn > 0) return;
     setError(null);
     setSending(true);
-    await new Promise((r) => setTimeout(r, 500));
-    setSending(false);
-    setResendIn(RESEND_SECONDS);
-    setOtp(Array(OTP_LENGTH).fill(""));
-    otpRefs.current[0]?.focus();
+    try {
+      await resendOtp(email.trim());
+      setResendIn(RESEND_SECONDS);
+      setOtp(Array(OTP_LENGTH).fill(""));
+      otpRefs.current[0]?.focus();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to resend OTP");
+    } finally {
+      setSending(false);
+    }
   };
 
   const updateOtpDigit = (index: number, value: string) => {
@@ -103,23 +116,26 @@ export default function OtpLoginForm({ compact = false, onSuccess }: Props) {
     }
     setError(null);
     setVerifying(true);
-    await new Promise((r) => setTimeout(r, 700));
-    setVerifying(false);
-    setStep("success");
-    setTimeout(() => onSuccess?.(), 1200);
+    try {
+      const res = await verifyOtp(email.trim(), code);
+      login(res.data.customer, res.data.access_token);
+      setStep("success");
+      setTimeout(() => onSuccess?.(), 1200);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Invalid OTP");
+    } finally {
+      setVerifying(false);
+    }
   };
 
   const handleGoogleLogin = async () => {
     setError(null);
     setGoogleLoading(true);
     try {
-      // Simulate Google authentication
       await new Promise((r) => setTimeout(r, 1000));
-      // In production, you would redirect to Google OAuth or use NextAuth.js
-      // window.location.href = "/api/auth/google";
       setStep("success");
       setTimeout(() => onSuccess?.(), 1200);
-    } catch (err) {
+    } catch {
       setError("Google login failed. Please try again.");
     } finally {
       setGoogleLoading(false);
@@ -179,13 +195,12 @@ export default function OtpLoginForm({ compact = false, onSuccess }: Props) {
               <Loader2 size={16} className="animate-spin" />
             ) : (
               <>
-                Send OTP
+                <>Send OTP</>
                 <ArrowRight size={15} />
               </>
             )}
           </button>
 
-          {/* Divider */}
           <div className="relative">
             <div className="absolute inset-0 flex items-center">
               <div className="w-full border-t border-gray-200"></div>
@@ -197,7 +212,6 @@ export default function OtpLoginForm({ compact = false, onSuccess }: Props) {
             </div>
           </div>
 
-          {/* Google Login Button */}
           <button
             type="button"
             onClick={handleGoogleLogin}
@@ -217,16 +231,15 @@ export default function OtpLoginForm({ compact = false, onSuccess }: Props) {
           <p className="font-sans text-[13px] text-gray-400 leading-relaxed text-center">
             By continuing, you agree to Kasibunkari&apos;s{" "}
             <Link
-              href="/terms-and-conditions"
+              href="/terms-and-conditions" target="_blank"
               className="text-maroon hover:underline"
             >
               Terms of Service
             </Link>{" "}
             and{" "}
             <Link
-              href="/privacy-policy"
-              className="text-maroon hover:underline"
-            >
+              href="/privacy-policy" target="_blank"
+              className="text-maroon hover:underline">
               Privacy Policy
             </Link>
             .
@@ -280,7 +293,7 @@ export default function OtpLoginForm({ compact = false, onSuccess }: Props) {
               <Loader2 size={16} className="animate-spin" />
             ) : (
               <>
-                Verify &amp; Login
+                <>Verify &amp; Login</>
                 <ArrowRight size={15} />
               </>
             )}

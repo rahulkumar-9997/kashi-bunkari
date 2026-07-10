@@ -1,8 +1,6 @@
 "use client";
-import Image from "next/image";
 import Link from "next/link";
 import OtpLoginForm from "@/components/Auth/OtpLoginForm";
-import Heading from "@/components/Heading/Heading";
 
 export default function LoginPage() {
   return (

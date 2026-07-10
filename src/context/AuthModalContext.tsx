@@ -29,8 +29,7 @@ export function AuthModalProvider({ children }: { children: ReactNode }) {
 
 export function useAuthModal() {
   const ctx = useContext(AuthModalContext);
-  if (!ctx) {
+  if (!ctx)
     throw new Error("useAuthModal must be used within an AuthModalProvider");
-  }
   return ctx;
 }

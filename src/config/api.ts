@@ -8,3 +8,9 @@ export const API_ENDPOINTS = {
   testimonials: `${API_BASE_URL}/api/testimonials`,
   faqs: `${API_BASE_URL}/api/faq`,
 };
+
+export const AUTH_ENDPOINTS = {
+  login: `${API_BASE_URL}/api/customer/login`,
+  verifyOtp: `${API_BASE_URL}/api/customer/verify-otp`,
+  resendOtp: `${API_BASE_URL}/api/customer/resend-otp`,
+};

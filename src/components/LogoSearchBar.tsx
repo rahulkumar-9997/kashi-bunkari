@@ -1,7 +1,7 @@
 "use client";
 import { useState, useEffect, useRef } from "react";
 import { useCart } from "./CartContext";
-import { useAuthModal } from "@/components/Auth/AuthModalContext";
+import { useAuthModal } from "@/context/AuthModalContext";
 import Image from "next/image";
 import Link from "next/link";
 
