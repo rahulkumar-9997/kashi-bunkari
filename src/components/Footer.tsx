@@ -399,8 +399,8 @@ function FooterLinkColumn({
           }
           space-y-3 sm:space-y-3.5`}
       >
-        {links.map((item) => (
-          <li key={item.href}>
+        {links.map((item, index) => (
+          <li key={`${heading}-${item.title}-${index}`}>
             <Link
               href={item.href}
               className="group flex items-center gap-1.5 font-sans text-[15px] text-gray-400 transition-colors duration-200 hover:text-pink"

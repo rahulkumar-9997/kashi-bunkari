@@ -5,5 +5,6 @@ export const API_ENDPOINTS = {
   homeBlogs: `${API_BASE_URL}/api/home/blog`,
   blogList: `${API_BASE_URL}/api/blog`,
   blogDetail: (slug: string) => `${API_BASE_URL}/api/blog/${slug}`,
-  testimonials: `${API_BASE_URL}/api/testimonials`
+  testimonials: `${API_BASE_URL}/api/testimonials`,
+  faqs: `${API_BASE_URL}/api/faq`,
 };
