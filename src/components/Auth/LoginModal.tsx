@@ -4,9 +4,18 @@ import Image from "next/image";
 import { X } from "lucide-react";
 import { useAuthModal } from "@/context/AuthModalContext";
 import OtpLoginForm from "./OtpLoginForm";
+import { usePathname } from "next/navigation";
 
 export default function LoginModal() {
   const { isLoginOpen, closeLogin } = useAuthModal();
+  const pathname = usePathname();
+
+  // Agar login page par hain to modal band rakho
+  useEffect(() => {
+    if (pathname === "/account/login" && isLoginOpen) {
+      closeLogin();
+    }
+  }, [pathname, isLoginOpen, closeLogin]);
 
   useEffect(() => {
     document.body.style.overflow = isLoginOpen ? "hidden" : "";
@@ -14,7 +23,7 @@ export default function LoginModal() {
       document.body.style.overflow = "";
     };
   }, [isLoginOpen]);
-
+  if (pathname === "/account/login") return null;
   if (!isLoginOpen) return null;
 
   return (
@@ -24,7 +33,10 @@ export default function LoginModal() {
       aria-modal="true"
       aria-label="Login"
     >
-      <div className="absolute inset-0 bg-black/45 backdrop-blur-[2px]" onClick={closeLogin} />
+      <div
+        className="absolute inset-0 bg-black/45 backdrop-blur-[2px]"
+        onClick={closeLogin}
+      />
 
       <div className="relative">
         <button
@@ -44,7 +56,9 @@ export default function LoginModal() {
               height={44}
               className="object-contain h-8 w-auto mb-4"
             />
-            <h2 className="font-serif text-[21px] font-bold text-maroon">Welcome Back</h2>
+            <h2 className="font-serif text-[21px] font-bold text-maroon">
+              Welcome Back
+            </h2>
             <p className="font-sans text-[12.5px] text-gray-500 mt-1">
               Login with OTP to continue
             </p>
