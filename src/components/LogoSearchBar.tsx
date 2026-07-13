@@ -84,7 +84,7 @@ export default function LogoSearchBar({
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
-  
+
   useEffect(() => {
     return () => {
       if (hoverTimeout.current) clearTimeout(hoverTimeout.current);
@@ -357,7 +357,7 @@ export default function LogoSearchBar({
                   {/* Menu Items */}
                   <div className="py-1">
                     <Link
-                      href="/account"
+                      href="/account/dashboard"
                       className="flex items-center gap-3 px-4 py-2.5 font-sans text-sm text-gray-700 hover:bg-gray-50 transition-colors group"
                       onClick={handleMenuNavigation}
                     >

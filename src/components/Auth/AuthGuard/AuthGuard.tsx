@@ -1,21 +1,18 @@
 "use client";
 import { useEffect, type ReactNode } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
-import { useAuthModal } from "@/context/AuthModalContext";
 
 export default function AuthGuard({ children }: { children: ReactNode }) {
   const { isAuthenticated, isLoading } = useAuth();
-  const { openLogin } = useAuthModal();
   const router = useRouter();
+  const pathname = usePathname();
 
   useEffect(() => {
     if (!isLoading && !isAuthenticated) {
-      router.push("/");
-      openLogin();
+      router.push(`/account/login?redirect=${encodeURIComponent(pathname)}`);
     }
-  }, [isLoading, isAuthenticated, router, openLogin]);
-
+  }, [isLoading, isAuthenticated, router, pathname]);
   if (isLoading || !isAuthenticated) {
     return (
       <div className="w-full min-h-[60vh] flex items-center justify-center">
