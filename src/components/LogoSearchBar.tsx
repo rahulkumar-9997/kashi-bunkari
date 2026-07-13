@@ -347,7 +347,7 @@ export default function LogoSearchBar({
                         <p className="font-sans text-sm font-semibold text-gray-800">
                           {customer?.name || "User"}
                         </p>
-                        <p className="font-sans text-xs text-gray-500 truncate max-w-[180px]">
+                        <p className="font-sans text-xs text-gray-500 truncate max-w-45">
                           {getUserEmail() || "user@email.com"}
                         </p>
                       </div>
@@ -369,7 +369,7 @@ export default function LogoSearchBar({
                     </Link>
 
                     <Link
-                      href="/orders"
+                      href="/account/orders"
                       className="flex items-center gap-3 px-4 py-2.5 font-sans text-sm text-gray-700 hover:bg-gray-50 transition-colors group"
                       onClick={handleMenuNavigation}
                     >
@@ -381,7 +381,7 @@ export default function LogoSearchBar({
                     </Link>
 
                     <Link
-                      href="/wishlist"
+                      href="/account/wishlist"
                       className="flex items-center gap-3 px-4 py-2.5 font-sans text-sm text-gray-700 hover:bg-gray-50 transition-colors group"
                       onClick={handleMenuNavigation}
                     >
