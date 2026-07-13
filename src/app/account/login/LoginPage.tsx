@@ -9,7 +9,7 @@ export default function LoginPage() {
   const { isAuthenticated, isLoading } = useAuth();
   const router = useRouter();
   const searchParams = useSearchParams();
-  const redirectTo = searchParams.get("redirect") || "/account";
+  const redirectTo = searchParams.get("redirect") || "/account/dashboard";
   useEffect(() => {
     if (!isLoading && isAuthenticated) {
       router.replace(redirectTo);
