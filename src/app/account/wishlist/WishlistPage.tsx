@@ -32,7 +32,7 @@ const SAMPLE_WISHLIST: WishlistItem[] = [
     id: "1",
     name: "Banarasi Katan Silk Saree - Red",
     image: "/images/products/1.webp",
-    price: "$145.00",
+    price: "Rs.145.00",
     originalPrice: "$180.00",
     rating: 4.8,
     reviews: 124,
@@ -44,7 +44,7 @@ const SAMPLE_WISHLIST: WishlistItem[] = [
     id: "2",
     name: "Tissue Silk Saree - Gold",
     image: "/images/products/2.webp",
-    price: "$100.00",
+    price: "Rs.100.00",
     originalPrice: "$130.00",
     rating: 4.6,
     reviews: 89,
@@ -56,7 +56,7 @@ const SAMPLE_WISHLIST: WishlistItem[] = [
     id: "3",
     name: "Ayodhya Temple Tour Package",
     image: "/images/products/3.webp",
-    price: "$89.50",
+    price: "Rs.89.50",
     originalPrice: "$110.00",
     rating: 4.9,
     reviews: 56,
@@ -68,7 +68,7 @@ const SAMPLE_WISHLIST: WishlistItem[] = [
     id: "4",
     name: "Prayagraj Kumbh Package",
     image: "/images/products/4.webp",
-    price: "$120.00",
+    price: "Rs.120.00",
     originalPrice: "$150.00",
     rating: 4.7,
     reviews: 78,
@@ -80,7 +80,7 @@ const SAMPLE_WISHLIST: WishlistItem[] = [
     id: "5",
     name: "Varanasi Special Package",
     image: "/images/products/5.webp",
-    price: "$245.00",
+    price: "Rs.245.00",
     originalPrice: "$300.00",
     rating: 4.9,
     reviews: 203,
@@ -92,7 +92,7 @@ const SAMPLE_WISHLIST: WishlistItem[] = [
     id: "6",
     name: "Lucknow Heritage Walk",
     image: "/images/products/6.webp",
-    price: "$62.00",
+    price: "Rs.62.00",
     originalPrice: "$75.00",
     rating: 4.5,
     reviews: 45,
@@ -159,11 +159,6 @@ export default function WishlistPage() {
       </div>
     );
   }
-
-  const totalItems = wishlistItems.length;
-  const inStockItems = wishlistItems.filter((item) => item.inStock).length;
-  const outOfStockItems = wishlistItems.filter((item) => !item.inStock).length;
-
   const handleRemoveItem = (id: string) => {
     setWishlistItems(wishlistItems.filter((item) => item.id !== id));
   };
@@ -253,14 +248,14 @@ export default function WishlistPage() {
                 <div className="p-4">
                   <div className="flex items-start justify-between gap-2">
                     <Link href={`/products/${item.id}`} className="flex-1">
-                      <h3 className="font-medium text-gray-800 text-sm hover:text-maroon transition-colors line-clamp-2">
+                      <h3 className="font-medium text-gray-800 text-[18px] hover:text-maroon transition-colors line-clamp-2">
                         {item.name}
                       </h3>
                     </Link>
                   </div>
 
                   <div className="mt-1 flex items-center gap-2">
-                    <span className="text-xs text-gray-400">
+                    <span className="text-[14px] text-gray-400">
                       {item.category}
                     </span>
                   </div>
@@ -313,10 +308,6 @@ export default function WishlistPage() {
                         className="text-gray-400 hover:text-maroon"
                       />
                     </Link>
-                  </div>
-
-                  <div className="mt-2 text-xs text-gray-400">
-                    Added: {item.addedDate}
                   </div>
                 </div>
               </div>
