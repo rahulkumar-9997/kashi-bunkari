@@ -5,7 +5,14 @@ import { useAuth } from "@/context/AuthContext";
 import { useAuthModal } from "@/context/AuthModalContext";
 import Image from "next/image";
 import Link from "next/link";
-import { ChevronDown, User, ShoppingBag, Heart, LogOut, Settings, HelpCircle, Gift, Star } from "lucide-react";
+import {
+  ChevronDown,
+  User,
+  ShoppingBag,
+  Heart,
+  LogOut,
+  HelpCircle,
+} from "lucide-react";
 
 export default function LogoSearchBar({
   onMenuOpen,
@@ -14,7 +21,7 @@ export default function LogoSearchBar({
 }) {
   const { cartCount, openCart } = useCart();
   const { openLogin } = useAuthModal();
-  const { isAuthenticated, customer, logout} = useAuth();
+  const { isAuthenticated, customer, logout } = useAuth();
   const [scrolled, setScrolled] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchValue, setSearchValue] = useState("");
@@ -59,47 +66,46 @@ export default function LogoSearchBar({
   // Close dropdown on escape key
   useEffect(() => {
     const handleEscape = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') {
+      if (event.key === "Escape") {
         setShowAccountMenu(false);
       }
     };
-    document.addEventListener('keydown', handleEscape);
-    return () => document.removeEventListener('keydown', handleEscape);
+    document.addEventListener("keydown", handleEscape);
+    return () => document.removeEventListener("keydown", handleEscape);
   }, []);
 
-  // Handle account button click (for mobile)
-  const handleAccountClick = () => {
-    if (isAuthenticated) {
-      setShowAccountMenu(!showAccountMenu);
-    } else {
-      openLogin();
-    }
-  };
-
-  // Handle logout
+  // Close dropdown when clicking anywhere outside it
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+        setShowAccountMenu(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+  
+  useEffect(() => {
+    return () => {
+      if (hoverTimeout.current) clearTimeout(hoverTimeout.current);
+    };
+  }, []);
   const handleLogout = () => {
     logout();
     setShowAccountMenu(false);
   };
-
-  // Close menu when navigating
   const handleMenuNavigation = () => {
     setShowAccountMenu(false);
   };
-
-  // Get user's display name
   const getDisplayName = () => {
-    if (!isAuthenticated || !customer) return 'Account';
-    return customer.name?.split(' ')[0] || customer.name || 'Account';
+    if (!isAuthenticated || !customer) return "Account";
+    return customer.name?.split(" ")[0] || customer.name || "Account";
   };
-
-  // Get user's email
   const getUserEmail = () => {
-    if (!customer) return '';
-    return customer.email || '';
+    if (!customer) return "";
+    return customer.email || "";
   };
 
-  // Hover handlers for desktop
   const handleMouseEnter = () => {
     if (hoverTimeout.current) {
       clearTimeout(hoverTimeout.current);
@@ -114,7 +120,7 @@ export default function LogoSearchBar({
     hoverTimeout.current = setTimeout(() => {
       setShowAccountMenu(false);
       hoverTimeout.current = null;
-    }, 200); // 200ms delay before closing
+    }, 200); // small delay so moving from button -> dropdown doesn't flicker-close
   };
 
   const handleMenuItemMouseEnter = () => {
@@ -131,11 +137,10 @@ export default function LogoSearchBar({
     }, 200);
   };
 
-
   const showAnimatedPlaceholder = !isSearchFocused && !searchValue;
 
   return (
-    <>      
+    <>
       <div
         className="w-full bg-white border-b border-gray-100 sticky top-0 z-[300] transition-shadow"
         style={{
@@ -159,30 +164,32 @@ export default function LogoSearchBar({
 
             {/* Menu + Search */}
             <div className="flex items-center gap-1 shrink-0">
-                <button
-                    onClick={() => setSearchOpen(!searchOpen)}
-                    className="flex items-center justify-center w-10 h-10 text-maroon hover:text-pink transition-colors"
-                    aria-label="Search">
-                    <svg
-                    width="21"
-                    height="21"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                    strokeWidth="1.8"
-                    >
-                    <circle cx="11" cy="11" r="8" />
-                    <path d="M21 21l-4.35-4.35" strokeLinecap="round" />
-                    </svg>
-                </button>
-                <button
-                    onClick={onMenuOpen}
-                    aria-label="Open menu"
-                    className="w-10 h-10 flex flex-col items-center justify-center gap-1.25 text-maroon hover:text-pink transition-colors shrink-0">
-                    <span className="w-6 h-[1.5px] bg-current" />
-                    <span className="w-6 h-[1.5px] bg-current" />
-                    <span className="w-6 h-[1.5px] bg-current" />
-                </button>             
+              <button
+                onClick={() => setSearchOpen(!searchOpen)}
+                className="flex items-center justify-center w-10 h-10 text-maroon hover:text-pink transition-colors"
+                aria-label="Search"
+              >
+                <svg
+                  width="21"
+                  height="21"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                  strokeWidth="1.8"
+                >
+                  <circle cx="11" cy="11" r="8" />
+                  <path d="M21 21l-4.35-4.35" strokeLinecap="round" />
+                </svg>
+              </button>
+              <button
+                onClick={onMenuOpen}
+                aria-label="Open menu"
+                className="w-10 h-10 flex flex-col items-center justify-center gap-1.25 text-maroon hover:text-pink transition-colors shrink-0"
+              >
+                <span className="w-6 h-[1.5px] bg-current" />
+                <span className="w-6 h-[1.5px] bg-current" />
+                <span className="w-6 h-[1.5px] bg-current" />
+              </button>
             </div>
           </div>
           {/* ══ DESKTOP HEADER LAYOUT ══ */}
@@ -280,9 +287,18 @@ export default function LogoSearchBar({
             </button>
 
             {/* Desktop — Account with Dropdown */}
-            <div className="relative" ref={menuRef}>
+            <div
+              className="relative"
+              ref={menuRef}
+              onMouseEnter={handleMouseEnter}
+              onMouseLeave={handleMouseLeave}
+            >
               <button
-                onClick={isAuthenticated ? () => setShowAccountMenu(!showAccountMenu) : openLogin}
+                onClick={
+                  isAuthenticated
+                    ? () => setShowAccountMenu((v) => !v)
+                    : openLogin
+                }
                 className="hidden md:flex flex-col items-center gap-0.5 px-3 py-1.5 text-maroon hover:text-pink transition-colors cursor-pointer group"
                 aria-expanded={showAccountMenu}
                 aria-haspopup="true"
@@ -299,25 +315,26 @@ export default function LogoSearchBar({
                   <path d="M4 20c0-4 3.6-7 8-7s8 3 8 7" strokeLinecap="round" />
                 </svg>
                 <span className="font-sans text-[10px] font-medium flex items-center gap-1">
-                  {isAuthenticated ? getDisplayName() : 'Account'}
+                  {isAuthenticated ? getDisplayName() : "Account"}
                   {isAuthenticated && (
-                  <ChevronDown 
-                    size={12} 
-                    className={`transition-transform duration-200 ${showAccountMenu ? 'rotate-180' : ''}`}
-                  />
+                    <ChevronDown
+                      size={12}
+                      className={`transition-transform duration-200 ${showAccountMenu ? "rotate-180" : ""}`}
+                    />
                   )}
                 </span>
               </button>
 
               {/* Dropdown Menu - Only show when authenticated */}
               {isAuthenticated && showAccountMenu && (
-                <div 
+                <div
                   className="absolute right-0 mt-2 w-64 bg-white rounded-lg shadow-xl border border-gray-100 py-2 z-50"
                   onMouseEnter={handleMenuItemMouseEnter}
                   onMouseLeave={handleMenuItemMouseLeave}
                   style={{
-                    animation: 'slideIn 0.25s cubic-bezier(0.4, 0, 0.2, 1) forwards',
-                    transformOrigin: 'top center'
+                    animation:
+                      "slideIn 0.25s cubic-bezier(0.4, 0, 0.2, 1) forwards",
+                    transformOrigin: "top center",
                   }}
                 >
                   {/* User Info Section */}
@@ -328,10 +345,10 @@ export default function LogoSearchBar({
                       </div>
                       <div>
                         <p className="font-sans text-sm font-semibold text-gray-800">
-                          {customer?.name || 'User'}
+                          {customer?.name || "User"}
                         </p>
                         <p className="font-sans text-xs text-gray-500 truncate max-w-[180px]">
-                          {getUserEmail() || 'user@email.com'}
+                          {getUserEmail() || "user@email.com"}
                         </p>
                       </div>
                     </div>
@@ -344,44 +361,35 @@ export default function LogoSearchBar({
                       className="flex items-center gap-3 px-4 py-2.5 font-sans text-sm text-gray-700 hover:bg-gray-50 transition-colors group"
                       onClick={handleMenuNavigation}
                     >
-                      <User size={16} className="text-gray-400 group-hover:text-maroon transition-colors" />
+                      <User
+                        size={16}
+                        className="text-gray-400 group-hover:text-maroon transition-colors"
+                      />
                       <span>My Account</span>
                     </Link>
-                    
+
                     <Link
                       href="/orders"
                       className="flex items-center gap-3 px-4 py-2.5 font-sans text-sm text-gray-700 hover:bg-gray-50 transition-colors group"
                       onClick={handleMenuNavigation}
                     >
-                      <ShoppingBag size={16} className="text-gray-400 group-hover:text-maroon transition-colors" />
+                      <ShoppingBag
+                        size={16}
+                        className="text-gray-400 group-hover:text-maroon transition-colors"
+                      />
                       <span>My Orders</span>
                     </Link>
-                    
+
                     <Link
                       href="/wishlist"
                       className="flex items-center gap-3 px-4 py-2.5 font-sans text-sm text-gray-700 hover:bg-gray-50 transition-colors group"
                       onClick={handleMenuNavigation}
                     >
-                      <Heart size={16} className="text-gray-400 group-hover:text-maroon transition-colors" />
+                      <Heart
+                        size={16}
+                        className="text-gray-400 group-hover:text-maroon transition-colors"
+                      />
                       <span>Wishlist</span>
-                    </Link>
-
-                    <Link
-                      href="/rewards"
-                      className="flex items-center gap-3 px-4 py-2.5 font-sans text-sm text-gray-700 hover:bg-gray-50 transition-colors group"
-                      onClick={handleMenuNavigation}
-                    >
-                      <Star size={16} className="text-gray-400 group-hover:text-maroon transition-colors" />
-                      <span>Rewards & Coupons</span>
-                    </Link>
-
-                    <Link
-                      href="/settings"
-                      className="flex items-center gap-3 px-4 py-2.5 font-sans text-sm text-gray-700 hover:bg-gray-50 transition-colors group"
-                      onClick={handleMenuNavigation}
-                    >
-                      <Settings size={16} className="text-gray-400 group-hover:text-maroon transition-colors" />
-                      <span>Settings</span>
                     </Link>
                   </div>
 
@@ -391,52 +399,31 @@ export default function LogoSearchBar({
                   {/* Bottom Section */}
                   <div className="py-1">
                     <Link
-                      href="/help"
+                      href="/contact-us"
                       className="flex items-center gap-3 px-4 py-2.5 font-sans text-sm text-gray-700 hover:bg-gray-50 transition-colors group"
                       onClick={handleMenuNavigation}
                     >
-                      <HelpCircle size={16} className="text-gray-400 group-hover:text-maroon transition-colors" />
+                      <HelpCircle
+                        size={16}
+                        className="text-gray-400 group-hover:text-maroon transition-colors"
+                      />
                       <span>Help & Support</span>
                     </Link>
-                    
+
                     <button
                       onClick={handleLogout}
-                      className="flex items-center gap-3 w-full text-left px-4 py-2.5 font-sans text-sm text-red-600 hover:bg-red-50 transition-colors group"
+                      className="flex items-center gap-3 w-full text-left px-4 py-2.5 font-sans text-sm text-red-600 hover:bg-red-50 transition-colors group cursor-pointer"
                     >
-                      <LogOut size={16} className="text-red-400 group-hover:text-red-600 transition-colors" />
+                      <LogOut
+                        size={16}
+                        className="text-red-400 group-hover:text-red-600 transition-colors"
+                      />
                       <span>Logout</span>
                     </button>
-                  </div>
-
-                  {/* Coupon/Offer Section */}
-                  <div className="mx-3 mt-2 p-3 bg-gradient-to-r from-pink-50 to-maroon/5 rounded-lg border border-maroon/10">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <p className="font-sans text-xs font-semibold text-maroon">Exclusive Coupon</p>
-                        <p className="font-sans text-[10px] text-gray-500">Up to ₹100 off</p>
-                      </div>
-                      <Gift size={16} className="text-maroon" />
-                    </div>
                   </div>
                 </div>
               )}
             </div>
-            {/* <button
-             onClick={openLogin}
-             className="hidden md:flex flex-col items-center gap-0.5 px-3 py-1.5 text-maroon hover:text-pink transition-colors cursor-pointer">
-              <svg
-                width="22"
-                height="22"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-                strokeWidth="1.6"
-              >
-                <circle cx="12" cy="8" r="4" />
-                <path d="M4 20c0-4 3.6-7 8-7s8 3 8 7" strokeLinecap="round" />
-              </svg>
-              <span className="font-sans text-[10px] font-medium">Account</span>
-            </button> */}
 
             {/* Desktop — Cart */}
             <button
@@ -560,10 +547,13 @@ export default function LogoSearchBar({
             </span>
           </button>
 
-          {/* Account */}
+          {/* Account — opens login modal if signed out, otherwise toggles the menu */}
           <button
-           onClick={openLogin}
-           className="flex-1 min-w-0 flex flex-col items-center justify-center gap-0.5 py-2.5 text-maroon hover:text-pink transition-colors cursor-pointer">
+            onClick={
+              isAuthenticated ? () => setShowAccountMenu((v) => !v) : openLogin
+            }
+            className="flex-1 min-w-0 flex flex-col items-center justify-center gap-0.5 py-2.5 text-maroon hover:text-pink transition-colors cursor-pointer"
+          >
             <svg
               width="21"
               height="21"
@@ -577,7 +567,7 @@ export default function LogoSearchBar({
               <path d="M4 20c0-4 3.6-7 8-7s8 3 8 7" strokeLinecap="round" />
             </svg>
             <span className="font-sans text-[12px] font-medium leading-none whitespace-nowrap">
-              Account
+              {isAuthenticated ? getDisplayName() : "Account"}
             </span>
           </button>
 
@@ -615,12 +605,6 @@ export default function LogoSearchBar({
           </button>
         </div>
       </div>
-
-      {/* Spacer so page content doesn't hide behind bottom nav (incl. safe-area for notch devices) */}
-      {/* <div
-        className="md:hidden"
-        style={{ height: "calc(3.5rem + env(safe-area-inset-bottom, 0px))" }}
-      /> */}
     </>
   );
 }

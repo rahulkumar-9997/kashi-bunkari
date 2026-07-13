@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import LoginPage from "./LoginPage";
 
 export const metadata: Metadata = {
-  title: "Login | Kasibunkari",
+  title: "Login",
   description: "Login to your Kasibunkari account with OTP.",
 };
 
