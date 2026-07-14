@@ -9,7 +9,7 @@ import Footer from "@/components/Footer";
 import { AuthModalProvider } from "@/context/AuthModalContext";
 import LoginModal from "@/components/Auth/LoginModal";
 import { AuthProvider } from "@/context/AuthContext";
-
+import { Toaster } from "sonner";
 export default function LayoutWrapper({
   children,
 }: {
@@ -29,6 +29,7 @@ export default function LayoutWrapper({
           />
           <CartDrawer />
           <main>{children}</main>
+          <Toaster position="top-right" richColors/>
           <Footer />
         </CartProvider>
         <LoginModal />

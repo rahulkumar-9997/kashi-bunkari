@@ -73,7 +73,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               {children}
             </QueryProvider>
           </LayoutWrapper>
-        </LenisProvider>
+        </LenisProvider>        
       </body>
     </html>
   );

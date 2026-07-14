@@ -43,8 +43,31 @@ export function resendOtp(contact: string): Promise<ResendOtpResponse> {
   return postJson<ResendOtpResponse>(AUTH_ENDPOINTS.resendOtp, { contact });
 }
 
+/**
+ * Fetches the logged-in customer's latest profile data from the server.
+ * Used on app load to validate the cached token and refresh customer data
+ * (in case it changed elsewhere, e.g. from the admin panel).
+ */
+export async function fetchProfile(token: string): Promise<Customer> {
+  const res = await fetch(AUTH_ENDPOINTS.profile, {
+    method: "GET",
+    headers: {
+      Accept: "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+  });
 
-export async function logoutApi(token: string): Promise<{ success: boolean; message: string }> {
+  const json = await res.json();
+  if (!res.ok || !json?.success) {
+    throw new Error(json?.message || "Failed to fetch profile");
+  }
+
+  return json.data;
+}
+
+export async function logoutApi(
+  token: string,
+): Promise<{ success: boolean; message: string }> {
   const res = await fetch(AUTH_ENDPOINTS.logout, {
     method: "POST",
     headers: {
@@ -52,20 +75,37 @@ export async function logoutApi(token: string): Promise<{ success: boolean; mess
       Authorization: `Bearer ${token}`,
     },
   });
- 
+
   const json = await res.json();
- 
+
   if (!res.ok || !json?.success) {
     throw new Error(json?.message || "Logout failed");
   }
- 
+
   return json;
 }
 
-/** Updates the logged-in customer's profile fields (name, gender, DOB, bio). */
+/** Thrown on a 422 validation response — carries Laravel's per-field
+ *  errors object (e.g. { email: ["The email has already been taken."] })
+ *  so the UI can show the message next to the right field. */
+export class ValidationError extends Error {
+  errors: Record<string, string[]>;
+  constructor(message: string, errors: Record<string, string[]>) {
+    super(message);
+    this.name = "ValidationError";
+    this.errors = errors;
+  }
+}
+
+/** Updates the logged-in customer's profile fields. */
 export async function updateProfile(
   token: string,
-  data: Partial<Pick<Customer, "name" | "gender" | "date_of_birth" | "bio">>,
+  data: Partial<
+    Pick<
+      Customer,
+      "name" | "email" | "phone_number" | "gender" | "date_of_birth" | "bio"
+    >
+  >,
 ): Promise<{ success: boolean; message: string; data: Customer }> {
   const res = await fetch(AUTH_ENDPOINTS.updateProfile, {
     method: "POST",
@@ -76,12 +116,12 @@ export async function updateProfile(
     },
     body: JSON.stringify(data),
   });
- 
   const json = await res.json();
- 
+  if (res.status === 422 && json?.errors) {
+    throw new ValidationError(json.message || "Validation Error", json.errors);
+  }
   if (!res.ok || !json?.success) {
     throw new Error(json?.message || "Failed to update profile");
   }
- 
   return json;
 }
