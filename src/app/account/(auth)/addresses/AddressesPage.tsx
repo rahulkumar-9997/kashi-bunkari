@@ -314,7 +314,7 @@ export default function AddressesPage() {
                 <div className="flex flex-col gap-1.5 shrink-0">
                   <button
                     onClick={() => setEditingAddressId(defaultAddress.id)}
-                    className="inline-flex items-center gap-1 px-3 py-1.5 text-[10px] font-medium text-maroon border border-maroon/30 rounded-lg hover:bg-maroon hover:text-white transition-all cursor-pointer"
+                    className="inline-flex items-center gap-1 px-3 py-1.5 text-[10px] font-medium text-maroon border border-maroon/30 rounded hover:bg-maroon hover:text-white transition-all cursor-pointer"
                   >
                     <Edit size={12} />
                     Edit
@@ -323,7 +323,7 @@ export default function AddressesPage() {
                     onClick={() => {
                       // Handle delete
                     }}
-                    className="inline-flex items-center gap-1 px-3 py-1.5 text-[10px] font-medium text-red-600 border border-red-200 rounded-lg hover:bg-red-50 transition-all cursor-pointer"
+                    className="inline-flex items-center gap-1 px-3 py-1.5 text-[10px] font-medium text-red-600 border border-red-200 rounded hover:bg-red-50 transition-all cursor-pointer"
                   >
                     <Trash2 size={12} />
                     Remove
@@ -396,7 +396,7 @@ export default function AddressesPage() {
                       <div className="flex flex-col gap-1.5 shrink-0">
                         <button
                           onClick={() => setEditingAddressId(address.id)}
-                          className="inline-flex items-center gap-1 px-3 py-1.5 text-[10px] font-medium text-maroon border border-maroon/30 rounded-lg hover:bg-maroon hover:text-white transition-all cursor-pointer"
+                          className="inline-flex items-center gap-1 px-3 py-1.5 text-[10px] font-medium text-maroon border border-maroon/30 rounded hover:bg-maroon hover:text-white transition-all cursor-pointer"
                         >
                           <Edit size={12} />
                           Edit
@@ -405,7 +405,7 @@ export default function AddressesPage() {
                           onClick={() => {
                             // Handle delete
                           }}
-                          className="inline-flex items-center gap-1 px-3 py-1.5 text-[10px] font-medium text-red-600 border border-red-200 rounded-lg hover:bg-red-50 transition-all cursor-pointer"
+                          className="inline-flex items-center gap-1 px-3 py-1.5 text-[10px] font-medium text-red-600 border border-red-200 rounded hover:bg-red-50 transition-all cursor-pointer"
                         >
                           <Trash2 size={12} />
                           Remove
