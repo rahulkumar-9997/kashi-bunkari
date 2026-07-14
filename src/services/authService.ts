@@ -3,6 +3,7 @@ import type {
   SendOtpResponse,
   ResendOtpResponse,
   VerifyOtpResponse,
+  Customer,
 } from "@/types/auth";
 
 async function postJson<T>(
@@ -56,6 +57,30 @@ export async function logoutApi(token: string): Promise<{ success: boolean; mess
  
   if (!res.ok || !json?.success) {
     throw new Error(json?.message || "Logout failed");
+  }
+ 
+  return json;
+}
+
+/** Updates the logged-in customer's profile fields (name, gender, DOB, bio). */
+export async function updateProfile(
+  token: string,
+  data: Partial<Pick<Customer, "name" | "gender" | "date_of_birth" | "bio">>,
+): Promise<{ success: boolean; message: string; data: Customer }> {
+  const res = await fetch(AUTH_ENDPOINTS.updateProfile, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Accept: "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify(data),
+  });
+ 
+  const json = await res.json();
+ 
+  if (!res.ok || !json?.success) {
+    throw new Error(json?.message || "Failed to update profile");
   }
  
   return json;

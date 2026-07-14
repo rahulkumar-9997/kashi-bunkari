@@ -22,6 +22,8 @@ type AuthContextType = {
   isLoading: boolean;
   login: (customer: Customer, token: string) => void;
   logout: () => Promise<void>;
+  /*updates both React state and localStorage. */
+  updateCustomer: (updates: Partial<Customer>) => void;
 };
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export function AuthProvider({ children }: { children: ReactNode }) {
@@ -54,6 +56,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   };
 
+  const updateCustomer = (updates: Partial<Customer>) => {
+    setCustomer((prev) => {
+      if (!prev) return prev;
+      const next = { ...prev, ...updates };
+      if (token) saveSession(next, token);
+      return next;
+    });
+  };
   return (
     <AuthContext.Provider
       value={{
@@ -63,6 +73,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         isLoading,
         login,
         logout,
+        updateCustomer,
       }}
     >
       {children}

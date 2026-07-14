@@ -14,4 +14,6 @@ export const AUTH_ENDPOINTS = {
   verifyOtp: `${API_BASE_URL}/api/customer/verify-otp`,
   resendOtp: `${API_BASE_URL}/api/customer/resend-otp`,
   logout: `${API_BASE_URL}/api/customer/logout`,
+  profile: `${API_BASE_URL}/api/customer/profile`,
+  updateProfile: `${API_BASE_URL}/api/customer/update-profile`,
 };

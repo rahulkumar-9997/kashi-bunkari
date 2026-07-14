@@ -20,8 +20,7 @@ import {
 import { useAuth } from "@/context/AuthContext";
 import { useState } from "react";
 
-const NAV_ITEMS = [
-  { href: "/account", icon: LayoutGrid, label: "Dashboard" },
+const NAV_ITEMS = [  
   { href: "/account/orders", icon: ShoppingBag, label: "My Orders" },
   { href: "/account/wishlist", icon: Heart, label: "Wishlist" },
   { href: "/account/addresses", icon: MapPin, label: "Addresses" },
@@ -92,11 +91,9 @@ export default function AccountSidebar() {
                 </div>
             </div>
             <div className="mt-5 pt-5 border-t border-[#E4D9C4]">
-                <Link
-                    href="/account/edit"
-                    className="w-full flex items-center justify-center gap-2 text-sm font-medium text-white bg-maroon hover:bg-maroon/90 py-2.5 rounded-lg transition-colors shadow-md shadow-maroon/20">
+                <Link href="/account/profile" className="w-full flex items-center justify-center gap-2 text-sm font-medium text-white bg-maroon hover:bg-maroon/90 py-2.5 rounded-lg transition-colors shadow-md shadow-maroon/20">
                 <User size={16} />
-                Edit Profile
+                Profile Information
                 </Link>            
             </div>
             <nav className="mt-5 space-y-0.5">
@@ -130,9 +127,9 @@ export default function AccountSidebar() {
             <button
               onClick={handleLogout}
               disabled={isLoggingOut}
-              className="w-full flex items-center justify-around gap-2 text-sm font-medium text-red-600 hover:bg-red-50 py-2.5 rounded-lg transition-colors mt-2 cursor-pointer disabled:opacity-50"
+              className="w-full flex items-center justify-center gap-2 text-sm font-medium text-red-600 hover:bg-red-50 py-2.5 rounded-lg transition-all duration-200 mt-3 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed border border-transparent hover:border-red-200"
             >
-              <LogOut size={16} />
+              <LogOut size={16} strokeWidth={1.5} />
               {isLoggingOut ? "Logging out..." : "Logout"}
             </button>          
         </div>
