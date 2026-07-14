@@ -41,3 +41,22 @@ export function verifyOtp(
 export function resendOtp(contact: string): Promise<ResendOtpResponse> {
   return postJson<ResendOtpResponse>(AUTH_ENDPOINTS.resendOtp, { contact });
 }
+
+
+export async function logoutApi(token: string): Promise<{ success: boolean; message: string }> {
+  const res = await fetch(AUTH_ENDPOINTS.logout, {
+    method: "POST",
+    headers: {
+      Accept: "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+  });
+ 
+  const json = await res.json();
+ 
+  if (!res.ok || !json?.success) {
+    throw new Error(json?.message || "Logout failed");
+  }
+ 
+  return json;
+}

@@ -172,12 +172,11 @@ export default function WishlistPage() {
     <div className="space-y-8">
       {/* Header */}
       <div>
-        <div className="flex items-center gap-3 mb-2">
-          
+        <div className="flex items-center gap-3 mb-2">          
           <div>
             <Heading
               level={1}
-              text="My Orders"
+              text="Wishlist"
               className="text-maroon text-[24px]"
               decorator="underline-pink"
               allowHTML
