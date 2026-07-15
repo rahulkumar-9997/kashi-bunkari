@@ -10,6 +10,7 @@ import { AuthModalProvider } from "@/context/AuthModalContext";
 import LoginModal from "@/components/Auth/LoginModal";
 import { AuthProvider } from "@/context/AuthContext";
 import { Toaster } from "sonner";
+
 export default function LayoutWrapper({
   children,
 }: {
@@ -23,13 +24,10 @@ export default function LayoutWrapper({
         <CartProvider>
           <TopBar />
           <Navbar onMenuOpen={() => setMenuOpen(true)} />
-          <MobileCanvas
-            isOpen={menuOpen}
-            onClose={() => setMenuOpen(false)}
-          />
+          <MobileCanvas isOpen={menuOpen} onClose={() => setMenuOpen(false)} />
           <CartDrawer />
           <main>{children}</main>
-          <Toaster position="top-right" richColors/>
+          <Toaster position="top-right" richColors />
           <Footer />
         </CartProvider>
         <LoginModal />

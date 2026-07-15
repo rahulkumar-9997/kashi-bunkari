@@ -2,9 +2,13 @@ import type { Metadata } from "next";
 import { Cormorant_Garamond, DM_Sans, Geist } from "next/font/google";
 import "./globals.css";
 import { cn } from "@/lib/utils";
+import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
+import { getQueryClient } from "@/lib/getQueryClient";
+import { fetchMenu } from "@/services/menuService";
 import LenisProvider from "@/components/LenisProvider";
 import LayoutWrapper from "@/components/LayoutWrapper";
 import QueryProvider from "@/providers/QueryProvider";
+
 const cormorant = Cormorant_Garamond({
   subsets: ["latin"],
   weight: ["300", "400", "600", "700"],
@@ -12,8 +16,9 @@ const cormorant = Cormorant_Garamond({
   variable: "--font-serif",
 });
 
-const geist = Geist({subsets:['latin'],variable:'--font-sans'});
+const geist = Geist({ subsets: ["latin"], variable: "--font-sans" });
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL!;
+
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
@@ -57,9 +62,22 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default async function RootLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  const queryClient = getQueryClient();
+  await queryClient.prefetchQuery({
+    queryKey: ["menu"],
+    queryFn: fetchMenu,
+  });
+
   return (
-    <html lang="en" className={cn(cormorant.variable, "font-sans", geist.variable)}>
+    <html
+      lang="en"
+      className={cn(cormorant.variable, "font-sans", geist.variable)}
+    >
       <head>
         <link rel="icon" href="/images/fav.webp" />
         <link rel="apple-touch-icon" href="/images/fav.webp" />
@@ -67,13 +85,13 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <meta name="theme-color" content="#8b0b13"></meta>
       </head>
       <body>
-        <LenisProvider>
-          <LayoutWrapper>
-            <QueryProvider>
-              {children}
-            </QueryProvider>
-          </LayoutWrapper>
-        </LenisProvider>        
+        <QueryProvider>
+          <HydrationBoundary state={dehydrate(queryClient)}>
+            <LenisProvider>
+              <LayoutWrapper>{children}</LayoutWrapper>
+            </LenisProvider>
+          </HydrationBoundary>
+        </QueryProvider>
       </body>
     </html>
   );
