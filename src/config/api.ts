@@ -7,6 +7,7 @@ export const API_ENDPOINTS = {
   blogDetail: (slug: string) => `${API_BASE_URL}/api/blog/${slug}`,
   testimonials: `${API_BASE_URL}/api/testimonials`,
   faqs: `${API_BASE_URL}/api/faq`,
+  menu: `${API_BASE_URL}/api/menu`,
 };
 
 export const AUTH_ENDPOINTS = {

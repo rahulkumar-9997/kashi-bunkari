@@ -489,11 +489,9 @@ export default function LogoSearchBar({
           Home · Wishlist · Account · Cart
       ══════════════════════════════════════ */}
       <div
-        className="md:hidden fixed bottom-0 left-0 right-0 z-[300] bg-white border-t border-gray-100 shadow-[0_-4px_16px_rgba(0,0,0,0.06)]"
-        style={{ paddingBottom: "env(safe-area-inset-bottom, 0px)" }}
-      >
+        className="md:hidden fixed bottom-0 left-0 right-0 z-300 bg-white border-t border-gray-100 shadow-[0_-4px_16px_rgba(0,0,0,0.06)]"
+        style={{ paddingBottom: "env(safe-area-inset-bottom, 0px)" }}>
         <div className="flex items-stretch divide-x divide-gray-100 max-w-7xl mx-auto">
-          {/* Home */}
           <a
             href="/"
             className="flex-1 min-w-0 flex flex-col items-center justify-center gap-0.5 py-2.5 text-maroon hover:text-pink transition-colors"
