@@ -1,27 +1,45 @@
 "use client";
-import { useState } from "react";
+import { useState, type ReactNode } from "react";
+import Link from "next/link";
+import { ChevronRight, ChevronLeft } from "lucide-react";
+import { useMenu } from "@/hooks/useMenu";
 
 type Props = { isOpen: boolean; onClose: () => void };
 
-export default function MobileCanvas({ isOpen, onClose }: Props) {
-  const [expanded, setExpanded] = useState<string | null>(null);
+type Submenu = { title: string; content: ReactNode };
 
-  const toggle = (id: string) => setExpanded(expanded === id ? null : id);
+const WEDDING_COLLECTION_ITEMS = ["Bridal Lehenga", "Bridal Sarees", "Anarkali"];
+const STATIC_LINKS = ["Suit Sets", "Gowns", "Ready To Ship"];
+
+export default function MobileCanvas({ isOpen, onClose }: Props) {
+  const { data } = useMenu();
+  const categories = data?.categories ?? [];
+  const [submenu, setSubmenu] = useState<Submenu | null>(null);
+
+  const openSubmenu = (title: string, content: ReactNode) => setSubmenu({ title, content });
+  const closeSubmenu = () => setSubmenu(null);
+
+  const handleClose = () => {
+    onClose();
+    // Reset back to the root panel next time it opens, after the close
+    // animation would have finished.
+    setTimeout(closeSubmenu, 300);
+  };
 
   return (
     <>
       {/* Overlay */}
       <div
         className={`drawer-overlay fixed inset-0 z-[400] bg-black/50 ${isOpen ? "open" : ""}`}
-        onClick={onClose}
+        onClick={handleClose}
       />
 
       {/* Panel */}
       <aside
-        className={`canvas-panel fixed top-0 left-0 bottom-0 z-[500] flex flex-col bg-white w-[min(300px,88vw)] shadow-xl overflow-y-auto ${isOpen ? "open" : ""}`}
+        className={`canvas-panel fixed top-0 left-0 bottom-0 z-[500] flex flex-col bg-white w-[min(300px,88vw)] shadow-xl overflow-hidden ${isOpen ? "open" : ""}`}
       >
         {/* Header */}
-        <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100 bg-pink-pale">
+        <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100 bg-pink-pale shrink-0">
           <div className="flex items-center gap-2.5">
             <div className="w-8 h-8 bg-pink rounded-full flex items-center justify-center text-white font-bold text-[11px]">
               KB
@@ -29,7 +47,7 @@ export default function MobileCanvas({ isOpen, onClose }: Props) {
             <span className="font-serif text-[16px] font-bold text-gray-900">Kasibunkari</span>
           </div>
           <button
-            onClick={onClose}
+            onClick={handleClose}
             className="text-gray-400 hover:text-pink w-8 h-8 flex items-center justify-center rounded-full hover:bg-pink-light/50"
           >
             <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2">
@@ -39,7 +57,7 @@ export default function MobileCanvas({ isOpen, onClose }: Props) {
         </div>
 
         {/* Search */}
-        <div className="px-4 py-3 border-b border-gray-100">
+        <div className="px-4 py-3 border-b border-gray-100 shrink-0">
           <input
             type="search"
             placeholder="Search products…"
@@ -47,51 +65,100 @@ export default function MobileCanvas({ isOpen, onClose }: Props) {
           />
         </div>
 
-        {/* Nav */}
-        <nav className="flex-1 py-1">
-          <a href="#" className="flex items-center px-5 py-3 font-inter text-[12.5px] font-semibold text-white bg-pink border-b border-pink-dark/20">
-            New Arrivals
-          </a>
-
-          <AccRow
-            id="macc1"
-            label="Sarees"
-            expanded={expanded === "macc1"}
-            onToggle={() => toggle("macc1")}
+        {/* ══ SLIDING TWO-PANEL NAV ══ */}
+        <div className="flex-1 overflow-y-auto overflow-x-hidden">
+          <div
+            className="flex w-[200%] transition-transform duration-300 ease-out"
+            style={{ transform: submenu ? "translateX(-50%)" : "translateX(0%)" }}
           >
-            {["Silk Sarees", "Katan Kadwa", "Tissue Silk", "Mushroo Silk"].map((item) => (
-              <a key={item} href="#" className="block px-8 py-2.5 font-inter text-[12px] text-gray-600 hover:text-pink transition-colors">
-                {item}
+            {/* ── PANEL 1: root menu ── */}
+            <div className="w-1/2 shrink-0 py-1">
+              <a
+                href="#"
+                className="flex items-center px-5 py-3 font-inter text-[12.5px] font-semibold text-white bg-pink border-b border-pink-dark/20"
+              >
+                New Arrivals
               </a>
-            ))}
-          </AccRow>
 
-          <a href="#" className="flex items-center px-5 py-3 font-inter text-[12.5px] font-medium text-gray-700 border-b border-gray-100 hover:bg-pink-pale hover:text-pink transition-all">
-            Lehengas
-          </a>
+              {/* Live categories from /api/menu (Sarees, Suits, ...) */}
+              {categories.map((category) => (
+                <button
+                  key={category.category_slug}
+                  onClick={() =>
+                    category.attributes.length > 0
+                      ? openSubmenu(
+                          category.title,
+                          <CategoryDetail category={category} onNavigate={handleClose} />,
+                        )
+                      : undefined
+                  }
+                  className="w-full flex items-center justify-between px-5 py-3 font-inter text-[12.5px] font-medium text-gray-700 border-b border-gray-100 hover:bg-pink-pale hover:text-pink transition-all text-left cursor-pointer"
+                >
+                  {category.title}
+                  {category.attributes.length > 0 && (
+                    <ChevronRight size={15} className="text-gray-300" />
+                  )}
+                </button>
+              ))}
 
-          <AccRow
-            id="macc2"
-            label="Wedding Collection"
-            expanded={expanded === "macc2"}
-            onToggle={() => toggle("macc2")}
-          >
-            {["Bridal Lehenga", "Bridal Sarees", "Anarkali"].map((item) => (
-              <a key={item} href="#" className="block px-8 py-2.5 font-inter text-[12px] text-gray-600 hover:text-pink transition-colors">
-                {item}
+              <a
+                href="#"
+                className="flex items-center px-5 py-3 font-inter text-[12.5px] font-medium text-gray-700 border-b border-gray-100 hover:bg-pink-pale hover:text-pink transition-all"
+              >
+                Lehengas
               </a>
-            ))}
-          </AccRow>
 
-          {["Suit Sets", "Gowns", "Ready To Ship"].map((item) => (
-            <a key={item} href="#" className="flex items-center px-5 py-3 font-inter text-[12.5px] font-medium text-gray-700 border-b border-gray-100 hover:bg-pink-pale hover:text-pink transition-all">
-              {item}
-            </a>
-          ))}
-        </nav>
+              <button
+                onClick={() =>
+                  openSubmenu(
+                    "Wedding Collection",
+                    <div className="py-2">
+                      {WEDDING_COLLECTION_ITEMS.map((item) => (
+                        <a
+                          key={item}
+                          href="#"
+                          onClick={handleClose}
+                          className="block px-5 py-3 font-inter text-[13px] text-gray-700 hover:bg-pink-pale hover:text-pink transition-colors"
+                        >
+                          {item}
+                        </a>
+                      ))}
+                    </div>,
+                  )
+                }
+                className="w-full flex items-center justify-between px-5 py-3 font-inter text-[12.5px] font-medium text-gray-700 border-b border-gray-100 hover:bg-pink-pale hover:text-pink transition-all text-left cursor-pointer"
+              >
+                Wedding Collection
+                <ChevronRight size={15} className="text-gray-300" />
+              </button>
+
+              {STATIC_LINKS.map((item) => (
+                <a
+                  key={item}
+                  href="#"
+                  className="flex items-center px-5 py-3 font-inter text-[12.5px] font-medium text-gray-700 border-b border-gray-100 hover:bg-pink-pale hover:text-pink transition-all"
+                >
+                  {item}
+                </a>
+              ))}
+            </div>
+
+            {/* ── PANEL 2: category / submenu detail ── */}
+            <div className="w-1/2 shrink-0">
+              <button
+                onClick={closeSubmenu}
+                className="w-full flex items-center gap-2 px-5 py-3 border-b border-gray-100 bg-gray-50 font-inter text-[12.5px] font-semibold text-gray-700 hover:text-pink transition-colors cursor-pointer"
+              >
+                <ChevronLeft size={16} />
+                {submenu?.title || "Back"}
+              </button>
+              {submenu?.content}
+            </div>
+          </div>
+        </div>
 
         {/* Footer */}
-        <div className="px-5 py-4 border-t border-gray-100 bg-pink-pale/50 space-y-1.5">
+        <div className="px-5 py-4 border-t border-gray-100 bg-pink-pale/50 space-y-1.5 shrink-0">
           <p className="font-inter text-[12px] text-gray-500">
             📞{" "}
             <a href="tel:+919270588878" className="text-pink font-medium">
@@ -110,39 +177,43 @@ export default function MobileCanvas({ isOpen, onClose }: Props) {
   );
 }
 
-function AccRow({
-  id,
-  label,
-  expanded,
-  onToggle,
-  children,
+function CategoryDetail({
+  category,
+  onNavigate,
 }: {
-  id: string;
-  label: string;
-  expanded: boolean;
-  onToggle: () => void;
-  children: React.ReactNode;
+  category: { title: string; category_slug: string; attributes: { title: string; slug: string; values: { name: string; slug: string }[] }[] };
+  onNavigate: () => void;
 }) {
   return (
-    <div className={`acc-row border-b border-gray-100 ${expanded ? "expanded" : ""}`} id={id}>
-      <button
-        onClick={onToggle}
-        className="w-full flex items-center justify-between px-5 py-3 font-inter text-[12.5px] font-medium text-gray-700 hover:bg-pink-pale hover:text-pink transition-all"
+    <div className="py-2">
+      <Link
+        href={`/category/${category.category_slug}`}
+        onClick={onNavigate}
+        className="block px-5 py-3 font-inter text-[13px] font-bold text-pink border-b border-gray-100"
       >
-        {label}
-        <svg
-          className="acc-chev w-4 h-4 text-gray-400"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-          strokeWidth="1.8"
-        >
-          <path d="M6 9l6 6 6-6" strokeLinecap="round" />
-        </svg>
-      </button>
-      <div className={`acc-body bg-gray-50/50 ${expanded ? "open" : ""}`}>
-        {children}
-      </div>
+        Shop All {category.title} →
+      </Link>
+      {category.attributes.map((attr) => (
+        <div key={attr.slug} className="px-5 py-3 border-b border-gray-100">
+          <p className="font-inter text-[10px] font-bold uppercase tracking-wider text-gray-400 mb-2.5">
+            {attr.title}
+          </p>
+          <ul className="space-y-0.5">
+            {attr.values.map((value) => (
+              <li key={value.slug}>
+                <Link
+                  href={`/category/${category.category_slug}?${attr.slug}=${value.slug}`}
+                  onClick={onNavigate}
+                  className="flex items-center gap-2 font-inter text-[12px] text-gray-600 py-1.5 hover:text-pink transition-colors"
+                >
+                  <span className="w-1 h-1 rounded-full bg-gray-300 shrink-0" />
+                  {value.name}
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </div>
+      ))}
     </div>
   );
 }

@@ -2,6 +2,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useMenu } from "@/hooks/useMenu";
+import type { MenuAttributeValue } from "@/types/menu";
 
 const companyLinks = [
   { label: "Our Story", href: "/about-us" },
@@ -15,24 +16,32 @@ const companyLinks = [
 ];
 
 const VALUES_PER_COLUMN = 10;
+function chunk<T>(items: T[], size: number): T[][] {
+  const result: T[][] = [];
+  for (let i = 0; i < items.length; i += size) {
+    result.push(items.slice(i, i + size));
+  }
+  return result;
+}
 
 export default function NavBarComponents() {
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
-  const { data: categories = [] } = useMenu();
+  const { data } = useMenu();
+  const categories = data?.categories ?? [];
+  const occasionSection = data?.sections?.find(s => s.slug === "shop-by-occasion");
+  const occasionItems = occasionSection?.items ?? []; 
 
   return (
     <>
-      <nav
-        className="hidden lg:block w-full bg-white border-b border-gray-100 relative z-[200]"
-        style={{ boxShadow: "0 2px 12px rgba(0,0,0,0.06)" }}
-      >
+      <nav className="hidden lg:block w-full bg-white border-b border-gray-100 relative z-200"
+        style={{ boxShadow: "0 2px 12px rgba(0,0,0,0.06)" }}>
         <div className="mx-auto max-w-7xl">
           <ul className="flex items-stretch list-none m-0 p-0">
             {/* ── New Arrivals ── */}
             <li className="group">
               <a
-                href="#"
-                className="relative flex items-center gap-2 px-4 h-11 font-sans text-[15px] font-medium text-gray-600 hover:text-pink transition-colors duration-200 whitespace-nowrap"
+                href="/shop/new-arrival"
+                className="relative flex items-center gap-2 px-4 h-11 font-sans text-[15px] font-medium text-gray-600 hover:text-maroon transition-colors duration-200 whitespace-nowrap"
               >
                 New Arrivals
                 <span className="badge" style={{ background: "#10b981" }}>
@@ -41,257 +50,160 @@ export default function NavBarComponents() {
                 <span className="nav-underline" />
               </a>
             </li>
+            {categories.map((category) => {
+              const isOpen = activeDropdown === category.category_slug;
+              const totalColumns = category.attributes.reduce(
+                (sum, attr) =>
+                  sum +
+                  Math.max(
+                    1,
+                    Math.ceil(attr.values.length / VALUES_PER_COLUMN),
+                  ),
+                0,
+              );
+              const panelWidth = Math.min(920, 220 + totalColumns * 170);
 
-            {/* ── Collections MEGA (static, not from API) ── */}
-            <li
-              className="nav-dd relative group"
-              onMouseEnter={() => setActiveDropdown("collections")}
-              onMouseLeave={() => setActiveDropdown(null)}
-            >
-              <button className="text-gray-600 relative flex items-center gap-1.5 px-4 h-11 font-sans text-[15px] font-medium whitespace-nowrap transition-colors duration-200 cursor-pointer">
-                Collections
-                <svg
-                  className={`w-2.5 h-2.5 opacity-50 shrink-0 transition-transform duration-300 ${activeDropdown === "collections" ? "rotate-180" : ""}`}
-                  viewBox="0 0 10 6"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
+              return (
+                <li
+                  key={category.category_slug}
+                  className="nav-dd relative group"
+                  onMouseEnter={() => setActiveDropdown(category.category_slug)}
+                  onMouseLeave={() => setActiveDropdown(null)}
                 >
-                  <path d="M1 1l4 4 4-4" />
-                </svg>
-                <span
-                  className={`nav-underline ${activeDropdown === "collections" ? "active" : ""}`}
-                />
-              </button>
-
-              <div
-                className={`mega-panel ${activeDropdown === "collections" ? "open" : "closed"} absolute top-full left-0 z-[9999] bg-white border border-gray-100 rounded-2xl min-w-[780px] p-6`}
-                style={{ boxShadow: "0 16px 48px rgba(0,0,0,.12)" }}
-              >
-                <div className="flex gap-5">
-                  <div
-                    className="relative overflow-hidden rounded-xl shrink-0 w-[180px] h-[270px] flex flex-col justify-between p-5 text-center"
-                    style={{
-                      background:
-                        "linear-gradient(145deg, #7c3aed, #a855f7 60%, #6d28d9)",
-                    }}
+                  <Link
+                    href={`/shop/${category.category_slug}`}
+                    className="text-gray-600 relative flex items-center gap-1.5 px-4 h-11 font-sans text-[15px] font-medium whitespace-nowrap transition-colors duration-200 cursor-pointer"
                   >
-                    <p
-                      className="relative z-10 text-[9px] tracking-[0.22em] uppercase font-semibold"
-                      style={{ color: "#e9d5ff" }}
-                    >
-                      Curated Styles
-                    </p>
-                    <div className="relative z-10">
-                      <p className="text-[21px] font-bold text-white leading-tight">
-                        Ready-to-wear
-                        <br />
-                        <span className="text-purple-200">Collections</span>
-                      </p>
-                    </div>
-                    <a
-                      href="#"
-                      className="relative z-10 self-center flex items-center gap-1.5 border border-white/30 hover:border-white text-white text-[11px] font-medium px-4 py-1.5 rounded-full transition-all duration-300 hover:bg-white hover:text-purple-900"
-                    >
-                      Browse All
-                    </a>
-                  </div>
-                  <div className="flex gap-6 flex-1">
-                    <div className="flex-1">
-                      <p className="col-head">By Silhouette</p>
-                      <a href="#" className="mega-link">
-                        <span className="mega-dot" />
-                        Salwar Kameez
-                      </a>
-                      <a href="#" className="mega-link">
-                        <span className="mega-dot" />
-                        Anarkali Suits
-                      </a>
-                      <a href="#" className="mega-link">
-                        <span className="mega-dot" />
-                        Palazzo Sets
-                      </a>
-                      <a href="#" className="mega-link">
-                        <span className="mega-dot" />
-                        Patiala Sets
-                      </a>
-                    </div>
-                    <div className="flex-1">
-                      <p className="col-head">By Occasion</p>
-                      <a href="#" className="mega-link">
-                        <span className="mega-dot" />
-                        Bridal Wear
-                      </a>
-                      <a href="#" className="mega-link">
-                        <span className="mega-dot" />
-                        Wedding Guest
-                      </a>
-                      <a href="#" className="mega-link">
-                        <span className="mega-dot" />
-                        Festive Season
-                      </a>
-                      <a href="#" className="mega-link">
-                        <span className="mega-dot" />
-                        Party Wear
-                      </a>
-                    </div>
+                    {category.title}
+                    {category.attributes.length > 0 && (
+                      <svg
+                        className={`w-2.5 h-2.5 opacity-50 shrink-0 transition-transform duration-300 ${isOpen ? "rotate-180" : ""}`}
+                        viewBox="0 0 10 6"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                      >
+                        <path d="M1 1l4 4 4-4" />
+                      </svg>
+                    )}
+                    <span
+                      className={`nav-underline ${isOpen ? "active" : ""}`}
+                    />
+                  </Link>
+
+                  {category.attributes.length > 0 && (
                     <div
-                      className="rounded-xl p-4 flex-1 flex flex-col justify-between min-w-[140px]"
+                      className={`mega-panel ${isOpen ? "open" : "closed"} absolute top-full left-0 z-9999 bg-white border border-gray-100 rounded-2xl p-7 overflow-hidden`}
                       style={{
-                        background: "linear-gradient(135deg, #fff1f2, #fce7f3)",
+                        boxShadow: "0 24px 64px rgba(107,22,38,0.18)",
+                        width: `${panelWidth}px`,
                       }}
                     >
-                      <span
-                        className="inline-block text-[9px] font-bold uppercase tracking-widest text-pink px-2 py-0.5 rounded-full w-fit"
-                        style={{ background: "rgba(236,72,153,0.1)" }}
-                      >
-                        Limited Time
-                      </span>
-                      <div>
-                        <p className="text-[15px] font-bold text-gray-800 mt-3 leading-snug">
-                          Flat 30% Off Festive Edit
-                        </p>
-                        <p className="text-[12px] text-gray-500 mt-1">
-                          Handpicked styles for every celebration
-                        </p>
-                      </div>
-                      <a
-                        href="#"
-                        className="mt-3 inline-flex items-center gap-1 text-[12px] font-semibold text-pink hover:gap-2 transition-all duration-200"
-                      >
-                        Explore
-                      </a>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </li>
 
-            {/* ── Live categories from /api/menu (Sarees, Suits, ...) ── */}
-            {categories.map((category) => (
-              <li
-                key={category.category_slug}
-                className="nav-dd relative group"
-                onMouseEnter={() => setActiveDropdown(category.category_slug)}
-                onMouseLeave={() => setActiveDropdown(null)}
-              >
-                <Link
-                  href={`/category/${category.category_slug}`}
-                  className="text-gray-600 relative flex items-center gap-1.5 px-4 h-11 font-sans text-[15px] font-medium whitespace-nowrap transition-colors duration-200 cursor-pointer"
-                >
-                  {category.title}
-                  {category.attributes.length > 0 && (
-                    <svg
-                      className={`w-2.5 h-2.5 opacity-50 shrink-0 transition-transform duration-300 ${activeDropdown === category.category_slug ? "rotate-180" : ""}`}
-                      viewBox="0 0 10 6"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                    >
-                      <path d="M1 1l4 4 4-4" />
-                    </svg>
-                  )}
-                  <span
-                    className={`nav-underline ${activeDropdown === category.category_slug ? "active" : ""}`}
-                  />
-                </Link>
-
-                {category.attributes.length > 0 && (
-                  <div
-                    className={`mega-panel ${activeDropdown === category.category_slug ? "open" : "closed"} absolute top-full left-0 z-[9999] bg-white border border-gray-100 rounded-2xl min-w-[820px] p-6`}
-                    style={{ boxShadow: "0 16px 48px rgba(0,0,0,.12)" }}
-                  >
-                    <div className="flex gap-5">
-                      {/* Category image (real photo from the API) */}
-                      <Link
-                        href={`/category/${category.category_slug}`}
-                        className="relative overflow-hidden rounded-xl shrink-0 w-[190px] h-[280px] flex flex-col justify-between p-5 text-center group/img"
-                        style={{
-                          backgroundImage: `linear-gradient(to top, rgba(20,8,10,0.85), rgba(20,8,10,0.15)), url(${category.category_image})`,
-                          backgroundSize: "cover",
-                          backgroundPosition: "center",
-                        }}
-                      >
-                        <p
-                          className="relative z-10 text-[9px] tracking-[0.22em] uppercase font-semibold"
-                          style={{ color: "#fcd34d" }}
+                      <div className="flex items-center gap-3 mb-5">
+                        <p className="font-serif text-[18px] font-bold text-maroon whitespace-nowrap">
+                          Explore {category.title}
+                        </p>
+                        <span
+                          className="h-px flex-1"
+                          style={{
+                            background:
+                              "linear-gradient(90deg, rgb(147 39 20), transparent)",
+                          }}
+                        />
+                        <Link
+                          href={`/shop/${category.category_slug}`}
+                          className="font-serif text-[16px] font-bold uppercase tracking-[0.08em] whitespace-nowrap text-magenta"
                         >
-                          Heritage Weaves
-                        </p>
-                        <div className="relative z-10">
-                          <p className="text-[21px] font-bold text-white leading-tight">
-                            {category.title}
-                          </p>
-                        </div>
-                        <span className="relative z-10 self-center flex items-center gap-1.5 border border-white/30 group-hover/img:border-white text-white text-[11px] font-medium px-4 py-1.5 rounded-full transition-all duration-300 group-hover/img:bg-white group-hover/img:text-amber-900">
-                          View All
-                        </span>
-                      </Link>
-
-                      {/* Attribute columns — one per API attribute (Fabric, Weaving Technique, Work, ...) */}
-                      <div className="flex gap-6 flex-1">
-                        {category.attributes.map((attr) => {
-                          const shown = attr.values.slice(0, VALUES_PER_COLUMN);
-                          const extra = attr.values.length - shown.length;
+                          Shop All →
+                        </Link>
+                      </div>
+                      <div className="flex gap-8">
+                        {category.attributes.map((attr, i) => {
+                          const columns = chunk(attr.values, VALUES_PER_COLUMN);
                           return (
-                            <div key={attr.slug} className="flex-1">
-                              <p className="col-head">{attr.title}</p>
-                              {shown.map((value) => (
-                                <Link
-                                  key={value.slug}
-                                  href={`/category/${category.category_slug}?${attr.slug}=${value.slug}`}
-                                  className="mega-link"
-                                >
-                                  <span className="mega-dot" />
-                                  {value.name}
-                                </Link>
-                              ))}
-                              {extra > 0 && (
-                                <Link
-                                  href={`/category/${category.category_slug}`}
-                                  className="mega-link highlight"
-                                >
-                                  <span className="mega-dot" />+{extra} more →
-                                </Link>
-                              )}
+                            <div
+                              key={attr.slug}
+                              className={
+                                i > 0 ? "pl-8 border-l border-[#EEE6D6]" : ""
+                              }
+                            >
+                              <div className="mb-3">
+                                <p className="font-sans text-[12px] font-bold uppercase tracking-[0.16em] text-maroon">
+                                  {attr.title}
+                                </p>
+                                <span className="block h-0.5 w-6 mt-1.5 rounded-full"
+                                  style={{
+                                    background:
+                                      "linear-gradient(90deg,#AD8A3B,#E91E8C)",
+                                  }}
+                                />
+                              </div>
+
+                              <div className="flex gap-6">
+                                {columns.map((columnValues, ci) => (
+                                  <ColumnList
+                                    key={ci}
+                                    values={columnValues}
+                                    categorySlug={category.category_slug}
+                                    attrSlug={attr.slug}
+                                  />
+                                ))}
+                              </div>
                             </div>
                           );
                         })}
-                      </div>
+                      </div>                      
                     </div>
+                  )}
+                </li>
+              );
+            })}
+            {occasionItems.length > 0 && (
+              <li
+                className="nav-dd relative group"
+                onMouseEnter={() => setActiveDropdown("occasion")}
+                onMouseLeave={() => setActiveDropdown(null)}
+              >
+                <button className="text-gray-600 relative flex items-center gap-1.5 px-4 h-11 font-sans text-[15px] font-medium whitespace-nowrap transition-colors duration-200 cursor-pointer">
+                  Shop By Occasion
+                  <svg
+                    className={`w-2.5 h-2.5 opacity-50 shrink-0 transition-transform duration-300 ${activeDropdown === "occasion" ? "rotate-180" : ""}`}
+                    viewBox="0 0 10 6"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                  >
+                    <path d="M1 1l4 4 4-4" />
+                  </svg>
+                  <span className={`nav-underline ${activeDropdown === "occasion" ? "active" : ""}`} />
+                </button>
 
-                    {/* Quick links strip */}
-                    <div className="mt-4 pt-4 border-t border-gray-100 flex items-center gap-3">
-                      <span className="text-[10px] text-gray-400 font-medium uppercase tracking-widest shrink-0">
-                        Quick links:
-                      </span>
-                      {[
-                        "Bestsellers",
-                        "New This Week",
-                        "Under ₹999",
-                        "Gift Sets",
-                      ].map((t) => (
-                        <a
-                          key={t}
-                          href="#"
-                          className="text-[12px] text-gray-500 hover:text-pink border border-gray-200 hover:border-pink/40 px-3 py-1 rounded-full transition-all duration-200 hover:bg-pink/5"
-                        >
-                          {t}
-                        </a>
-                      ))}
-                    </div>
-                  </div>
-                )}
+                <div
+                  className="absolute top-[calc(100%+1px)] left-0 z-9999 bg-white border border-gray-100 min-w-50 py-2 p-5 rounded-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 ease-out translate-y-1 group-hover:translate-y-0"
+                  style={{ boxShadow: "0 8px 32px rgba(107,22,38,0.12)" }}
+                >
+                  {occasionItems.map((item) => (
+                    <Link
+                      key={item.slug}
+                      href={`/shop/${item.slug}`}
+                      className="group/val flex items-center gap-2 py-2 font-sans text-[14px] leading-snug text-gray-600 hover:text-maroon transition-colors duration-150"
+                    >
+                      <span className="w-1 h-1 rounded-full bg-gray-300 group-hover/val:bg-[#AD8A3B] transition-colors shrink-0" />
+                      <span>{item.title}</span>
+                    </Link>
+                  ))}
+                </div>
               </li>
-            ))}
+            )}
 
             {/* ── Bestsellers ── */}
             <li className="group">
               <a
                 href="#"
-                className="relative flex items-center px-4 h-11 font-sans text-[15px] font-medium text-gray-600 hover:text-pink transition-colors duration-200 whitespace-nowrap"
+                className="relative flex items-center px-4 h-11 font-sans text-[15px] font-medium text-gray-600 hover:text-maroon transition-colors duration-200 whitespace-nowrap"
               >
                 Bestsellers
                 <span className="nav-underline" />
@@ -342,7 +254,7 @@ export default function NavBarComponents() {
               </button>
               <div
                 className="absolute top-[calc(100%+1px)] right-0 z-9999 bg-white border border-gray-100 min-w-50 py-2 rounded-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 ease-out translate-y-1 group-hover:translate-y-0"
-                style={{ boxShadow: "0 8px 32px rgba(0,0,0,.10)" }}
+                style={{ boxShadow: "0 8px 32px rgba(107,22,38,0.12)" }}
               >
                 {companyLinks.map(({ label, href, badge, badgeColor }) => (
                   <Link
@@ -370,5 +282,30 @@ export default function NavBarComponents() {
         </div>
       </nav>
     </>
+  );
+}
+
+function ColumnList({
+  values,
+  categorySlug,
+  attrSlug,
+}: {
+  values: MenuAttributeValue[];
+  categorySlug: string;
+  attrSlug: string;
+}) {
+  return (
+    <div className="min-w-38">
+      {values.map((value) => (
+        <Link
+          key={value.slug}
+          href={`/shop/${categorySlug}/${attrSlug}/${value.slug}`}
+          className="group/val flex items-center gap-2 py-2 font-sans text-[14px] leading-snug text-gray-600 hover:text-maroon transition-colors duration-150"
+        >
+          <span className="w-1 h-1 rounded-full bg-gray-300 group-hover/val:bg-[#AD8A3B] transition-colors shrink-0" />
+          <span>{value.name}</span>
+        </Link>
+      ))}
+    </div>
   );
 }

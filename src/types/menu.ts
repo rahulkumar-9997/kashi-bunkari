@@ -16,8 +16,25 @@ export type MenuCategory = {
   attributes: MenuAttribute[];
 };
 
+export type MenuSectionItem = {
+  title: string;
+  slug: string;
+  image: string;
+};
+
+export type MenuSection = {
+  title: string;
+  slug: string;
+  items: MenuSectionItem[];
+};
+
+export type MenuData = {
+  categories: MenuCategory[];
+  sections: MenuSection[];
+};
+
 export type MenuApiResponse = {
   status: boolean;
   message: string;
-  data: MenuCategory[];
+  data: MenuData;
 };

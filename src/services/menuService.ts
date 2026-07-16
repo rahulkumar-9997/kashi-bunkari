@@ -1,10 +1,8 @@
 import { API_ENDPOINTS } from "@/config/api";
-import type { MenuCategory, MenuApiResponse } from "@/types/menu";
+import type { MenuData, MenuApiResponse } from "@/types/menu";
 
-export async function fetchMenu(): Promise<MenuCategory[]> {
+export async function fetchMenu(): Promise<MenuData> {
   const res = await fetch(API_ENDPOINTS.menu, {
-    // Cached on the server, revalidated at most once an hour.
-    // Use `cache: "no-store"` if you need it fresh on every single request.
     next: { revalidate: 3600 },
   });
 
@@ -13,9 +11,13 @@ export async function fetchMenu(): Promise<MenuCategory[]> {
   }
 
   const json: MenuApiResponse = await res.json();
-  if (!json?.status || !Array.isArray(json.data)) {
+
+  if (!json?.status || !json.data || !Array.isArray(json.data.categories)) {
     throw new Error("Menu API returned an unexpected response");
   }
 
-  return json.data;
+  return {
+    categories: json.data.categories,
+    sections: Array.isArray(json.data.sections) ? json.data.sections : [],
+  };
 }

@@ -285,7 +285,7 @@ function FilterSection({
   );
 }
 
-export default function CategoryPage({ slug }: Props) {
+export default function ShopPage({ slug }: Props) {
   const [selected, setSelected] = useState<Record<string, string[]>>({});
   const [sort, setSort] = useState("newest");
   const [sortOpen, setSortOpen] = useState(false);
