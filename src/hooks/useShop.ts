@@ -20,6 +20,8 @@ export function useShop(
       lastPage.pagination.has_next_page
         ? lastPage.pagination.current_page + 1
         : undefined,
-    staleTime: 60 * 1000,
+    staleTime: 0,
+    refetchOnMount: true,
+    refetchOnWindowFocus: true,
   });
 }

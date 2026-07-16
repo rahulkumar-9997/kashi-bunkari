@@ -35,21 +35,27 @@ function FilterSection({
   filter,
   selectedValues,
   onToggle,
+  defaultOpen = false,
 }: {
   filter: ShopFilter;
   selectedValues: string[];
   onToggle: (value: string) => void;
+  defaultOpen?: boolean;
 }) {
-  const [open, setOpen] = useState(true);
-
+  const [open, setOpen] = useState(defaultOpen);
   return (
     <div className="border-b first:border-t border-gray-200 pt-4 pb-4 last:border-0">
       <button
         onClick={() => setOpen((v) => !v)}
         className="w-full flex items-center justify-between group cursor-pointer"
       >
-        <span className="font-sans text-[16px] text-maroon font-semibold group-hover:text-gray-900 transition-colors">
+        <span className="font-sans text-[16px] text-maroon font-semibold group-hover:text-gray-900 transition-colors flex items-center gap-2">
           {filter.title}
+          {selectedValues.length > 0 && (
+            <span className="inline-flex items-center justify-center w-4.5 h-4.5 rounded-full bg-pink text-white text-[9px] font-bold">
+              {selectedValues.length}
+            </span>
+          )}
         </span>
         <ChevronDown
           size={14}
@@ -58,7 +64,10 @@ function FilterSection({
       </button>
 
       {open && (
-        <div className="space-y-2.5 mt-3">
+        <div
+          className={`space-y-2.5 mt-3 ${filter.values.length > 10 ? "max-h-52 overflow-y-auto pr-2" : ""}`}
+          data-lenis-prevent
+        >
           {filter.values.map((opt) => {
             const checked = selectedValues.includes(opt.slug);
             return (
@@ -100,9 +109,6 @@ export default function ShopPage({ slug }: Props) {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
-
-  // ── Read filters/sort from the URL on mount (so a page reload or a
-  // shared link restores the exact same filtered view). ──
   const [selected, setSelected] = useState<Record<string, string[]>>(() => {
     const initial: Record<string, string[]> = {};
     searchParams.forEach((value, key) => {
@@ -114,8 +120,6 @@ export default function ShopPage({ slug }: Props) {
   const [sort, setSort] = useState(searchParams.get("sort") || "new-arrivals");
   const [sortOpen, setSortOpen] = useState(false);
   const [drawerOpen, setDrawerOpen] = useState(false);
-
-  // ── Build the query params sent to the API (and mirrored into the URL). ──
   const filterParams = useMemo(() => {
     const params: Record<string, string> = {};
     const hasActiveFilters = Object.values(selected).some((v) => v.length > 0);
@@ -128,13 +132,9 @@ export default function ShopPage({ slug }: Props) {
     if (sort && sort !== "new-arrivals") params.sort = sort;
     return params;
   }, [selected, sort]);
-
-  // Keep the URL in sync (shallow — no full navigation/reload) whenever
-  // filters or sort change.
   useEffect(() => {
     const qs = new URLSearchParams(filterParams).toString();
     router.replace(qs ? `${pathname}?${qs}` : pathname, { scroll: false });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filterParams]);
 
   const {
@@ -173,9 +173,6 @@ export default function ShopPage({ slug }: Props) {
     (sum, arr) => sum + arr.length,
     0,
   );
-
-  // ── Infinite scroll — a sentinel div at the bottom of the grid
-  // triggers fetchNextPage() as it enters the viewport. ──
   const loadMoreRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
     const el = loadMoreRef.current;
@@ -194,12 +191,13 @@ export default function ShopPage({ slug }: Props) {
 
   const FilterPanel = () => (
     <div>
-      {filters.map((group) => (
+      {filters.map((group, i) => (
         <FilterSection
           key={group.slug}
           filter={group}
           selectedValues={selected[group.slug] ?? []}
           onToggle={(value) => toggleOption(group.slug, value)}
+          defaultOpen={i === 0}
         />
       ))}
       {activeCount > 0 && (
@@ -215,20 +213,15 @@ export default function ShopPage({ slug }: Props) {
 
   return (
     <div className="w-full min-h-screen">
-      <Breadcrumb
-        items={[
-          { label: "Home", href: "/" },
-          { label: heading },
-        ]}
-      />
+      <Breadcrumb items={[{ label: "Home", href: "/" }, { label: heading }]} />
 
       <section className="w-full lg:px-12 md:px-10 px-4">
         <div className="mx-auto w-full max-w-7xl relative lg:py-10 md:py-10 sm:py-10 py-8">
           <div className="flex gap-5">
             {/* ── DESKTOP SIDEBAR ── */}
             <aside className="hidden lg:block w-70 shrink-0">
-              <div className="sticky top-24 bg-white rounded-xl border-slate-100 p-3 shadow-[0_8px_10px_rgb(0,0,0,0.08)]">
-                <div className="flex items-center justify-between mb-5">
+              <div className="sticky top-24 bg-white rounded-xl border-slate-100 p-3 shadow-[0_8px_10px_rgb(0,0,0,0.08)] flex flex-col max-h-[calc(100vh-7rem)]">
+                <div className="flex items-center justify-between mb-5 shrink-0">
                   <div className="flex items-center gap-2">
                     <SlidersHorizontal size={15} className="text-maroon" />
                     <p className="font-sans text-[16px] font-bold uppercase text-maroon">
@@ -249,7 +242,15 @@ export default function ShopPage({ slug }: Props) {
                     </button>
                   )}
                 </div>
-                <FilterPanel />
+                {/* The panel itself scrolls internally — the sidebar
+                    never grows taller than the viewport, and stays
+                    sticky while the page scrolls. */}
+                <div
+                  className="flex-1 min-h-0 overflow-y-auto pr-1"
+                  data-lenis-prevent
+                >
+                  <FilterPanel />
+                </div>
               </div>
             </aside>
 
