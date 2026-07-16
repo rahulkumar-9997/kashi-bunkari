@@ -30,7 +30,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     const label =
       slugStr.replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase()) || "Collection";
     return {
-      title: `${label} | Kasibunkari`,
+      title: `${label}`,
       description: `Explore our collection of ${slugStr.replace(/-/g, " ") || "ethnic wear"} at Kasibunkari.`,
       alternates: { canonical },
     };
