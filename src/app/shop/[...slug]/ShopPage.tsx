@@ -1,233 +1,42 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 import Heading from "@/components/Heading/Heading";
 import Breadcrumb from "@/components/Breadcrumb/Breadcrumb";
 import {
-  ChevronRight,
   SlidersHorizontal,
   X,
   ChevronDown,
   Eye,
+  Loader2,
+  ImageOff,
 } from "lucide-react";
+import { useShop } from "@/hooks/useShop";
+import type { ShopFilter } from "@/types/shop";
 
-type Product = {
-  id: number;
-  name: string;
-  brand: string;
-  category: string;
-  image: string;
-  price: number;
-  mrp: number | null;
-  discount: number | null;
-  isNew: boolean;
-  slug: string;
-};
-type Props = { slug: string };
-
-const MOCK_PRODUCTS: Product[] = [
-  {
-    id: 1,
-    name: "Katan Silk Zari Saree",
-    brand: "Kasibunkari",
-    category: "Banarasi",
-    image: "/images/products/1.webp",
-    price: 4500,
-    mrp: 6000,
-    discount: 25,
-    isNew: true,
-    slug: "/products/katan-silk-zari",
-  },
-  {
-    id: 2,
-    name: "Georgette Festive Saree - Red",
-    brand: "Heritage Silk",
-    category: "Georgette",
-    image: "/images/products/2.webp",
-    price: 1531,
-    mrp: null,
-    discount: null,
-    isNew: false,
-    slug: "/products/georgette-festive-red",
-  },
-  {
-    id: 3,
-    name: "Pure Tussar Silk - Natural",
-    brand: "Silk Route",
-    category: "Tussar",
-    image: "/images/products/3.webp",
-    price: 3800,
-    mrp: null,
-    discount: null,
-    isNew: true,
-    slug: "/products/tussar-natural",
-  },
-  {
-    id: 4,
-    name: "Banarasi Soft Silk Saree",
-    brand: "Kasibunkari",
-    category: "Banarasi",
-    image: "/images/products/4.webp",
-    price: 1860,
-    mrp: 2500,
-    discount: 26,
-    isNew: false,
-    slug: "/products/banarasi-soft-silk",
-  },
-  {
-    id: 5,
-    name: "Chinon Silk Party Wear",
-    brand: "Designer Edit",
-    category: "Party",
-    image: "/images/products/5.webp",
-    price: 1914,
-    mrp: 2860,
-    discount: 33,
-    isNew: true,
-    slug: "/products/chinon-silk-party",
-  },
-  {
-    id: 6,
-    name: "Bridal Velvet Lehenga",
-    brand: "Kasibunkari",
-    category: "Lehenga",
-    image: "/images/products/6.webp",
-    price: 12500,
-    mrp: 15000,
-    discount: 17,
-    isNew: false,
-    slug: "/products/bridal-velvet-lehenga",
-  },
-  {
-    id: 7,
-    name: "Vishtha Silk Full Border",
-    brand: "Heritage Silk",
-    category: "Tissue",
-    image: "/images/products/7.webp",
-    price: 4368,
-    mrp: 5200,
-    discount: 16,
-    isNew: false,
-    slug: "/products/vishtha-silk-border",
-  },
-  {
-    id: 8,
-    name: "Pure Cotton Anarkali Suit",
-    brand: "Kasibunkari",
-    category: "Suit",
-    image: "/images/products/8.webp",
-    price: 3100,
-    mrp: null,
-    discount: null,
-    isNew: true,
-    slug: "/products/cotton-anarkali",
-  },
-  {
-    id: 9,
-    name: "Kanjivaram Silk Saree",
-    brand: "Royal Weaves",
-    category: "Silk",
-    image: "/images/products/9.webp",
-    price: 8500,
-    mrp: null,
-    discount: null,
-    isNew: false,
-    slug: "/products/kanjivaram-silk",
-  },
-  {
-    id: 10,
-    name: "Embroidered Sharara Set",
-    brand: "Kasibunkari",
-    category: "Sharara",
-    image: "/images/products/4.webp",
-    price: 4200,
-    mrp: 5500,
-    discount: 24,
-    isNew: true,
-    slug: "/products/embroidered-sharara",
-  },
-  {
-    id: 11,
-    name: "Mushroo Silk Saree - Ivory",
-    brand: "Silk Route",
-    category: "Mushroo",
-    image: "/images/products/6.webp",
-    price: 2900,
-    mrp: 3500,
-    discount: 17,
-    isNew: false,
-    slug: "/products/mushroo-silk-ivory",
-  },
-  {
-    id: 12,
-    name: "Tissue Silk Festive Saree",
-    brand: "Heritage Silk",
-    category: "Tissue",
-    image: "/images/products/5.webp",
-    price: 5600,
-    mrp: 7000,
-    discount: 20,
-    isNew: true,
-    slug: "/products/tissue-silk-festive",
-  },
-];
-
-export const filters = [
-  {
-    id: "price",
-    title: "Price Range",
-    type: "checkbox",
-    options: [
-      { label: "Under ₹2,000", value: "0-2000" },
-      { label: "₹2,000 – ₹5,000", value: "2000-5000" },
-      { label: "₹5,000 – ₹10,000", value: "5000-10000" },
-      { label: "Above ₹10,000", value: "10000+" },
-    ],
-  },
-  {
-    id: "category",
-    title: "Category",
-    type: "checkbox",
-    options: [
-      { label: "Banarasi", value: "banarasi" },
-      { label: "Georgette", value: "georgette" },
-      { label: "Tussar", value: "tussar" },
-      { label: "Party", value: "party" },
-      { label: "Lehenga", value: "lehenga" },
-      { label: "Tissue", value: "tissue" },
-      { label: "Suit", value: "suit" },
-      { label: "Silk", value: "silk" },
-      { label: "Sharara", value: "sharara" },
-      { label: "Mushroo", value: "mushroo" },
-    ],
-  },
-  {
-    id: "availability",
-    title: "Availability",
-    type: "checkbox",
-    options: [
-      { label: "New Arrivals", value: "new" },
-      { label: "On Sale", value: "sale" },
-    ],
-  },
-];
+type Props = { slug: string[] };
 
 const SORT_OPTIONS = [
-  { label: "Newest First", value: "newest" },
-  { label: "Price: Low to High", value: "price-asc" },
-  { label: "Price: High to Low", value: "price-desc" },
-  { label: "Biggest Discount", value: "discount" },
+  { label: "Newest First", value: "new-arrivals" },
+  { label: "Price: Low to High", value: "price-low-to-high" },
+  { label: "Price: High to Low", value: "price-high-to-low" },
+  { label: "A to Z", value: "a-to-z-order" },
 ];
 
+const RESERVED_PARAMS = new Set(["filter", "sort", "page"]);
+
+function formatPrice(value: number) {
+  return `₹${value.toLocaleString("en-IN")}`;
+}
+
 function FilterSection({
-  title,
-  options,
+  filter,
   selectedValues,
   onToggle,
 }: {
-  title: string;
-  options: { label: string; value: string }[];
+  filter: ShopFilter;
   selectedValues: string[];
   onToggle: (value: string) => void;
 }) {
@@ -235,9 +44,12 @@ function FilterSection({
 
   return (
     <div className="border-b first:border-t border-gray-200 pt-4 pb-4 last:border-0">
-      <button onClick={() => setOpen((v) => !v)} className="w-full flex items-center justify-between group cursor-pointer">
+      <button
+        onClick={() => setOpen((v) => !v)}
+        className="w-full flex items-center justify-between group cursor-pointer"
+      >
         <span className="font-sans text-[16px] text-maroon font-semibold group-hover:text-gray-900 transition-colors">
-          {title}
+          {filter.title}
         </span>
         <ChevronDown
           size={14}
@@ -245,16 +57,15 @@ function FilterSection({
         />
       </button>
 
-      {/* Checkbox options */}
       {open && (
         <div className="space-y-2.5 mt-3">
-          {options.map((opt) => {
-            const checked = selectedValues.includes(opt.value);
+          {filter.values.map((opt) => {
+            const checked = selectedValues.includes(opt.slug);
             return (
               <label
-                key={opt.value}
+                key={opt.slug}
                 className="flex items-center gap-2.5 cursor-pointer group"
-                onClick={() => onToggle(opt.value)}
+                onClick={() => onToggle(opt.slug)}
               >
                 <div
                   className={`w-4 h-4 rounded border-2 flex items-center justify-center shrink-0 transition-all duration-150 ${checked ? "border-pink bg-pink" : "border-gray-300 group-hover:border-pink"}`}
@@ -274,7 +85,7 @@ function FilterSection({
                 <span
                   className={`font-sans text-[14px] select-none transition-colors ${checked ? "text-pink font-semibold" : "text-gray-500 group-hover:text-gray-800"}`}
                 >
-                  {opt.label}
+                  {opt.name}
                 </span>
               </label>
             );
@@ -286,10 +97,65 @@ function FilterSection({
 }
 
 export default function ShopPage({ slug }: Props) {
-  const [selected, setSelected] = useState<Record<string, string[]>>({});
-  const [sort, setSort] = useState("newest");
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+
+  // ── Read filters/sort from the URL on mount (so a page reload or a
+  // shared link restores the exact same filtered view). ──
+  const [selected, setSelected] = useState<Record<string, string[]>>(() => {
+    const initial: Record<string, string[]> = {};
+    searchParams.forEach((value, key) => {
+      if (RESERVED_PARAMS.has(key)) return;
+      initial[key] = value.split(",").filter(Boolean);
+    });
+    return initial;
+  });
+  const [sort, setSort] = useState(searchParams.get("sort") || "new-arrivals");
   const [sortOpen, setSortOpen] = useState(false);
   const [drawerOpen, setDrawerOpen] = useState(false);
+
+  // ── Build the query params sent to the API (and mirrored into the URL). ──
+  const filterParams = useMemo(() => {
+    const params: Record<string, string> = {};
+    const hasActiveFilters = Object.values(selected).some((v) => v.length > 0);
+    if (hasActiveFilters) {
+      params.filter = "1";
+      for (const [key, values] of Object.entries(selected)) {
+        if (values.length > 0) params[key] = values.join(",");
+      }
+    }
+    if (sort && sort !== "new-arrivals") params.sort = sort;
+    return params;
+  }, [selected, sort]);
+
+  // Keep the URL in sync (shallow — no full navigation/reload) whenever
+  // filters or sort change.
+  useEffect(() => {
+    const qs = new URLSearchParams(filterParams).toString();
+    router.replace(qs ? `${pathname}?${qs}` : pathname, { scroll: false });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [filterParams]);
+
+  const {
+    data,
+    isLoading,
+    isError,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+  } = useShop(slug, filterParams);
+
+  const pages = data?.pages ?? [];
+  const firstPage = pages[0];
+  const products = useMemo(() => pages.flatMap((p) => p.products), [pages]);
+  const totalProducts = firstPage?.pagination.total_products ?? 0;
+  const filters = firstPage?.product_filters ?? [];
+
+  const heading =
+    firstPage?.attribute_value && firstPage?.category
+      ? `${firstPage.attribute_value.name} ${firstPage.category.title}`
+      : firstPage?.category?.title || firstPage?.tag?.title || "Collection";
 
   const toggleOption = (filterId: string, value: string) => {
     setSelected((prev) => {
@@ -307,50 +173,39 @@ export default function ShopPage({ slug }: Props) {
     (sum, arr) => sum + arr.length,
     0,
   );
-  let products = [...MOCK_PRODUCTS];
 
-  const priceSel = selected.price ?? [];
-  if (priceSel.length > 0) {
-    products = products.filter((p) =>
-      priceSel.some((range) => {
-        if (range === "10000+") return p.price >= 10000;
-        const [min, max] = range.split("-").map(Number);
-        return p.price >= min && p.price <= max;
-      }),
+  // ── Infinite scroll — a sentinel div at the bottom of the grid
+  // triggers fetchNextPage() as it enters the viewport. ──
+  const loadMoreRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    const el = loadMoreRef.current;
+    if (!el) return;
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && hasNextPage && !isFetchingNextPage) {
+          fetchNextPage();
+        }
+      },
+      { rootMargin: "500px" },
     );
-  }
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [hasNextPage, isFetchingNextPage, fetchNextPage]);
 
-  const categorySel = selected.category ?? [];
-  if (categorySel.length > 0) {
-    products = products.filter((p) =>
-      categorySel.includes(p.category.toLowerCase()),
-    );
-  }
-
-  const availSel = selected.availability ?? [];
-  if (availSel.includes("new")) products = products.filter((p) => p.isNew);
-  if (availSel.includes("sale"))
-    products = products.filter((p) => p.discount !== null);
-
-  if (sort === "price-asc") products.sort((a, b) => a.price - b.price);
-  if (sort === "price-desc") products.sort((a, b) => b.price - a.price);
-  if (sort === "discount")
-    products.sort((a, b) => (b.discount ?? 0) - (a.discount ?? 0));
   const FilterPanel = () => (
-    <div className="">
+    <div>
       {filters.map((group) => (
         <FilterSection
-          key={group.id}
-          title={group.title}
-          options={group.options}
-          selectedValues={selected[group.id] ?? []}
-          onToggle={(value) => toggleOption(group.id, value)}
+          key={group.slug}
+          filter={group}
+          selectedValues={selected[group.slug] ?? []}
+          onToggle={(value) => toggleOption(group.slug, value)}
         />
       ))}
       {activeCount > 0 && (
         <button
           onClick={clearAll}
-          className="w-full font-sans text-[11px] font-bold uppercase tracking-[0.16em] text-pink hover:text-maroon transition-colors text-left"
+          className="w-full font-sans text-[11px] font-bold uppercase tracking-[0.16em] text-pink hover:text-maroon transition-colors text-left mt-2"
         >
           Clear All Filters
         </button>
@@ -363,11 +218,10 @@ export default function ShopPage({ slug }: Props) {
       <Breadcrumb
         items={[
           { label: "Home", href: "/" },
-          { label: "Collections", href: "/collections" },
-          { label: "Category Name" },
+          { label: heading },
         ]}
       />
-      
+
       <section className="w-full lg:px-12 md:px-10 px-4">
         <div className="mx-auto w-full max-w-7xl relative lg:py-10 md:py-10 sm:py-10 py-8">
           <div className="flex gap-5">
@@ -398,6 +252,7 @@ export default function ShopPage({ slug }: Props) {
                 <FilterPanel />
               </div>
             </aside>
+
             {/* ── PRODUCTS AREA ── */}
             <div className="flex-1 min-w-0">
               <div className="sticky top-18 z-40 hidden lg:block bg-white/90 backdrop-blur-md">
@@ -440,11 +295,12 @@ export default function ShopPage({ slug }: Props) {
                   </div>
                 </div>
               </div>
+
               <div className="flex items-center justify-between gap-3 mb-5 flex-wrap">
                 <div>
                   <Heading
                     level={1}
-                    text="Category Name"
+                    text={heading}
                     className="font-serif text-[25px] font-semibold leading-none tracking-tight text-maroon"
                     decorator="none"
                   />
@@ -452,25 +308,26 @@ export default function ShopPage({ slug }: Props) {
                 <div>
                   <p className="font-sans text-[16px] text-gray-500">
                     <span className="font-bold text-gray-800">
-                      {products.length}
+                      {totalProducts}
                     </span>{" "}
                     products
                   </p>
                 </div>
               </div>
+
               {/* Active chips */}
               {activeCount > 0 && (
                 <div className="flex flex-wrap gap-2 mb-5">
                   {filters.map((group) =>
-                    (selected[group.id] ?? []).map((val) => {
-                      const opt = group.options.find((o) => o.value === val);
+                    (selected[group.slug] ?? []).map((val) => {
+                      const opt = group.values.find((o) => o.slug === val);
                       return (
                         <span
-                          key={`${group.id}-${val}`}
+                          key={`${group.slug}-${val}`}
                           className="inline-flex items-center gap-1.5 font-sans text-[11px] font-semibold text-pink bg-pink/8 border border-pink/20 px-3 py-1 rounded-full"
                         >
-                          {opt?.label}
-                          <button onClick={() => toggleOption(group.id, val)}>
+                          {opt?.name}
+                          <button onClick={() => toggleOption(group.slug, val)}>
                             <X size={10} />
                           </button>
                         </span>
@@ -485,72 +342,127 @@ export default function ShopPage({ slug }: Props) {
                   </button>
                 </div>
               )}
-              {/* ── Product Grid ── */}
-              {products.length > 0 ? (
+
+              {/* ── Loading / Error / Empty / Grid ── */}
+              {isLoading ? (
                 <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-4 gap-x-2 md:gap-x-3 gap-y-5 md:gap-y-8">
-                  {products.map((product) => (
-                    <Link
-                      key={product.id}
-                      href="/products/slug1/slug2"
-                      className="prod-card group block outline-none select-none w-full border border-gray-200 rounded-xl bg-white transition-all duration-300 ease-in-out hover:border-maroon/30 cursor-pointer hover:shadow-md overflow-hidden"
+                  {Array.from({ length: 8 }).map((_, i) => (
+                    <div
+                      key={i}
+                      className="rounded-xl border border-gray-200 overflow-hidden"
                     >
                       <div
-                        className="relative overflow-hidden rounded-t-xl bg-gray-100"
+                        className="bg-gray-100 animate-pulse"
                         style={{ aspectRatio: "3/4" }}
-                      >
-                        <Image
-                          src={product.image}
-                          alt={product.name}
-                          fill
-                          className="object-cover object-top transition-transform duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-105"
-                          sizes="(max-width:640px) 50vw,(max-width:1024px) 33vw,25vw"
-                          onError={(e) => {
-                            e.currentTarget.style.display = "none";
-                          }}
-                        />
-                        {product.isNew && (
-                          <span className="absolute top-2.5 left-2.5 z-20 font-sans text-[8px] font-bold uppercase tracking-wider bg-maroon text-white px-2 py-0.5 rounded-sm leading-none">
-                            New
-                          </span>
-                        )}
-                        {product.discount && (
-                          <span className="absolute top-2.5 right-2.5 z-20 font-sans text-[10px] font-bold text-white bg-green-600 px-2 py-1 rounded-sm leading-none shadow-sm">
-                            {product.discount}% OFF
-                          </span>
-                        )}
-                        <div className="absolute bottom-4 left-0 right-0 z-20 flex justify-center opacity-0 translate-y-2 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300">
-                          <span className="inline-flex items-center gap-1.5 font-sans text-[9.5px] font-bold uppercase tracking-[0.18em] text-white bg-black/60 backdrop-blur-sm px-4 py-2 rounded-full">
-                            <Eye size={11} />
-                            Quick View
-                          </span>
-                        </div>
+                      />
+                      <div className="p-3 space-y-2">
+                        <div className="h-3 w-16 bg-gray-100 rounded animate-pulse" />
+                        <div className="h-4 w-full bg-gray-100 rounded animate-pulse" />
+                        <div className="h-4 w-1/2 bg-gray-100 rounded animate-pulse" />
                       </div>
-                      <div className="px-3 py-3">
-                        <span className="text-[11px] px-1.5 py-0.5 border border-maroon/30 bg-maroon/10 rounded-full w-max text-maroon inline-block mb-2 font-sans font-medium">
-                          {product.category}
-                        </span>
-                        <p className="font-sans text-[13px] md:text-[13.5px] font-semibold text-gray-800 leading-snug line-clamp-2 mb-2">
-                          {product.name}
-                        </p>
-                        <div className="flex items-baseline gap-1.5 flex-wrap">
-                          <span className="font-sans text-[14px] font-bold text-gray-900">
-                            ₹{product.price.toLocaleString("en-IN")}
-                          </span>
-                          {product.mrp && (
-                            <span className="font-sans text-[11.5px] text-gray-400 line-through">
-                              ₹{product.mrp.toLocaleString("en-IN")}
-                            </span>
-                          )}
-                          {product.discount && (
-                            <span className="font-sans text-[10.5px] font-bold text-pink">
-                              {product.discount}% off
-                            </span>
-                          )}
-                        </div>
-                      </div>
-                    </Link>
+                    </div>
                   ))}
                 </div>
+              ) : isError ? (
+                <div className="flex flex-col items-center justify-center py-20 text-center">
+                  <p className="font-serif text-[18px] font-bold text-gray-800 mb-2">
+                    Couldn&apos;t load products
+                  </p>
+                  <p className="font-sans text-[13px] text-gray-400">
+                    Please try again in a moment.
+                  </p>
+                </div>
+              ) : products.length > 0 ? (
+                <>
+                  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-4 gap-x-2 md:gap-x-3 gap-y-5 md:gap-y-8">
+                    {products.map((product) => {
+                      const price = product.offer_price ?? product.mrp;
+                      const hasDiscount =
+                        product.offer_price != null &&
+                        product.mrp != null &&
+                        product.mrp > product.offer_price;
+                      const discountPct = hasDiscount
+                        ? Math.round(
+                            (1 - product.offer_price! / product.mrp!) * 100,
+                          )
+                        : null;
+
+                      return (
+                        <Link
+                          key={product.id}
+                          href={`/products/${slug[0]}/${product.slug}`}
+                          className="prod-card group block outline-none select-none w-full border border-gray-200 rounded-xl bg-white transition-all duration-300 ease-in-out hover:border-maroon/30 cursor-pointer hover:shadow-md overflow-hidden"
+                        >
+                          <div
+                            className="relative overflow-hidden rounded-t-xl bg-gray-100"
+                            style={{ aspectRatio: "3/4" }}
+                          >
+                            {product.image ? (
+                              <Image
+                                src={product.image}
+                                alt={product.title}
+                                fill
+                                className="object-cover object-top transition-transform duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-105"
+                                sizes="(max-width:640px) 50vw,(max-width:1024px) 33vw,25vw"
+                                onError={(e) => {
+                                  e.currentTarget.style.display = "none";
+                                }}
+                              />
+                            ) : (
+                              <div className="w-full h-full flex items-center justify-center">
+                                <ImageOff size={22} className="text-gray-300" />
+                              </div>
+                            )}
+                            {discountPct !== null && (
+                              <span className="absolute top-2.5 right-2.5 z-20 font-sans text-[10px] font-bold text-white bg-green-600 px-2 py-1 rounded-sm leading-none shadow-sm">
+                                {discountPct}% OFF
+                              </span>
+                            )}
+                            <div className="absolute bottom-4 left-0 right-0 z-20 flex justify-center opacity-0 translate-y-2 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300">
+                              <span className="inline-flex items-center gap-1.5 font-sans text-[9.5px] font-bold uppercase tracking-[0.18em] text-white bg-black/60 backdrop-blur-sm px-4 py-2 rounded-full">
+                                <Eye size={11} />
+                                Quick View
+                              </span>
+                            </div>
+                          </div>
+                          <div className="px-3 py-3">
+                            <p className="font-sans text-[13px] md:text-[13.5px] font-semibold text-gray-800 leading-snug line-clamp-2 mb-2">
+                              {product.title}
+                            </p>
+                            <div className="flex items-baseline gap-1.5 flex-wrap">
+                              {price != null ? (
+                                <>
+                                  <span className="font-sans text-[14px] font-bold text-gray-900">
+                                    {formatPrice(price)}
+                                  </span>
+                                  {hasDiscount && (
+                                    <span className="font-sans text-[11.5px] text-gray-400 line-through">
+                                      {formatPrice(product.mrp!)}
+                                    </span>
+                                  )}
+                                </>
+                              ) : (
+                                <span className="font-sans text-[12px] text-gray-400">
+                                  Price on request
+                                </span>
+                              )}
+                            </div>
+                          </div>
+                        </Link>
+                      );
+                    })}
+                  </div>
+
+                  {/* Infinite-scroll sentinel */}
+                  <div
+                    ref={loadMoreRef}
+                    className="flex items-center justify-center py-10"
+                  >
+                    {isFetchingNextPage && (
+                      <Loader2 size={22} className="text-maroon animate-spin" />
+                    )}
+                  </div>
+                </>
               ) : (
                 <div className="flex flex-col items-center justify-center py-20 text-center">
                   <div className="w-14 h-14 rounded-2xl bg-pink/8 border border-pink/15 flex items-center justify-center mb-4">
@@ -562,12 +474,14 @@ export default function ShopPage({ slug }: Props) {
                   <p className="font-sans text-[13px] text-gray-400 mb-5">
                     Try adjusting or clearing your filters
                   </p>
-                  <button
-                    onClick={clearAll}
-                    className="font-sans text-[11px] font-bold uppercase tracking-[0.16em] text-white bg-pink px-6 py-2.5 rounded-xl hover:opacity-90 transition-opacity"
-                  >
-                    Clear Filters
-                  </button>
+                  {activeCount > 0 && (
+                    <button
+                      onClick={clearAll}
+                      className="font-sans text-[11px] font-bold uppercase tracking-[0.16em] text-white bg-pink px-6 py-2.5 rounded-xl hover:opacity-90 transition-opacity"
+                    >
+                      Clear Filters
+                    </button>
+                  )}
                 </div>
               )}
             </div>
@@ -577,7 +491,6 @@ export default function ShopPage({ slug }: Props) {
 
       {/* ══ MOBILE FLOATING FILTER + SORT PILLS ══ */}
       <div className="lg:hidden fixed left-0 right-0 z-290 flex items-center justify-center gap-2.5 px-4 pointer-events-none bottom-[calc(3.5rem+12px+env(safe-area-inset-bottom))]">
-        {/* Filters pill */}
         <button
           onClick={() => setDrawerOpen(true)}
           className="pointer-events-auto flex items-center gap-1.5 bg-gray-900/92 backdrop-blur-md text-white pl-3.5 pr-4 py-2.5 rounded-full shadow-lg font-sans text-[11.5px] font-bold uppercase tracking-widest active:scale-95 transition-transform cursor-pointer"
@@ -590,7 +503,6 @@ export default function ShopPage({ slug }: Props) {
             </span>
           )}
         </button>
-        {/* Sort pill */}
         <div className="pointer-events-auto relative">
           <button
             onClick={() => setSortOpen((v) => !v)}
@@ -624,10 +536,14 @@ export default function ShopPage({ slug }: Props) {
           )}
         </div>
       </div>
+
       {/* ══ MOBILE FILTER DRAWER ══ */}
       {drawerOpen && (
         <div className="fixed inset-0 z-310 lg:hidden">
-          <div className="absolute inset-0 bg-black/45 backdrop-blur-sm" onClick={() => setDrawerOpen(false)}/>
+          <div
+            className="absolute inset-0 bg-black/45 backdrop-blur-sm"
+            onClick={() => setDrawerOpen(false)}
+          />
           <div className="absolute bottom-0 left-0 right-0 bg-white rounded-t-2xl shadow-2xl flex flex-col max-h-[88vh]">
             <div className="flex items-center justify-between px-5 pt-5 pb-4 border-b border-gray-100 shrink-0">
               <div className="flex items-center gap-2.5">
@@ -648,7 +564,10 @@ export default function ShopPage({ slug }: Props) {
                 <X size={18} />
               </button>
             </div>
-            <div className="flex-1 min-h-0 overflow-y-auto overscroll-contain px-5 py-5 custom-scrollbar" data-lenis-prevent>
+            <div
+              className="flex-1 min-h-0 overflow-y-auto overscroll-contain px-5 py-5"
+              data-lenis-prevent
+            >
               <FilterPanel />
             </div>
             <div className="px-5 pb-6 pt-4 border-t border-gray-100 flex gap-3 shrink-0">
