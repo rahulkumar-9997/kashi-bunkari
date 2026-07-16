@@ -325,7 +325,7 @@ export default function ShopPage({ slug }: Props) {
                       return (
                         <span
                           key={`${group.slug}-${val}`}
-                          className="inline-flex items-center gap-1.5 font-sans text-[11px] font-semibold text-pink bg-pink/8 border border-pink/20 px-3 py-1 rounded-full"
+                          className="inline-flex items-center gap-1.5 font-sans text-[14px] font-semibold text-pink bg-pink/8 border border-gray-300 px-3 py-1 rounded-full cursor-pointer"
                         >
                           {opt?.name}
                           <button onClick={() => toggleOption(group.slug, val)}>
@@ -337,8 +337,7 @@ export default function ShopPage({ slug }: Props) {
                   )}
                   <button
                     onClick={clearAll}
-                    className="font-sans text-[11px] text-gray-400 hover:text-pink transition-colors"
-                  >
+                    className="font-sans text-[16px] text-gray-400 hover:text-pink transition-colors cursor-pointer">
                     Clear all
                   </button>
                 </div>
