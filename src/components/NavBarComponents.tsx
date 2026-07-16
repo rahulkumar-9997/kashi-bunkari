@@ -39,7 +39,7 @@ export default function NavBarComponents() {
           <ul className="flex items-stretch list-none m-0 p-0">
             {/* ── New Arrivals ── */}
             <li className="group">
-              <a
+              <Link
                 href="/shop/new-arrival"
                 className="relative flex items-center gap-2 px-4 h-11 font-sans text-[15px] font-medium text-gray-600 hover:text-maroon transition-colors duration-200 whitespace-nowrap"
               >
@@ -48,7 +48,7 @@ export default function NavBarComponents() {
                   Fresh
                 </span>
                 <span className="nav-underline" />
-              </a>
+              </Link>
             </li>
             {categories.map((category) => {
               const isOpen = activeDropdown === category.category_slug;
@@ -201,18 +201,18 @@ export default function NavBarComponents() {
 
             {/* ── Bestsellers ── */}
             <li className="group">
-              <a
+              <Link
                 href="#"
                 className="relative flex items-center px-4 h-11 font-sans text-[15px] font-medium text-gray-600 hover:text-maroon transition-colors duration-200 whitespace-nowrap"
               >
                 Bestsellers
                 <span className="nav-underline" />
-              </a>
+              </Link>
             </li>
 
             {/* ── Under ₹2,500 ── */}
             <li className="group">
-              <a
+              <Link
                 href="#"
                 className="relative flex items-center gap-1.5 px-4 h-11 font-sans text-[15px] font-medium whitespace-nowrap transition-colors duration-200 text-gray-600"
               >
@@ -227,7 +227,7 @@ export default function NavBarComponents() {
                   className="nav-underline"
                   style={{ background: "#d97706" }}
                 />
-              </a>
+              </Link>
             </li>
 
             {/* ── About ── */}
