@@ -8,6 +8,7 @@ export type ShopProduct = {
   stock_quantity: number | null;
   image: string | null;
   attributes_value_slug: string | null;
+  category: string | null;
 };
 
 export type ShopFilterValue = { id: number; name: string; slug: string };

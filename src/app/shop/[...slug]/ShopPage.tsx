@@ -390,7 +390,7 @@ export default function ShopPage({ slug }: Props) {
                       return (
                         <Link
                           key={product.id}
-                          href={`/products/${slug[0]}/${product.slug}`}
+                          href={`/product/${product.slug}/${product.attributes_value_slug}`}
                           className="prod-card group block outline-none select-none w-full border border-gray-200 rounded-xl bg-white transition-all duration-300 ease-in-out hover:border-maroon/30 cursor-pointer hover:shadow-md overflow-hidden"
                         >
                           <div
@@ -426,6 +426,7 @@ export default function ShopPage({ slug }: Props) {
                             </div>
                           </div>
                           <div className="px-3 py-3">
+                            <span className="text-[11px] px-1.5 py-0.5 border border-maroon/30 bg-maroon/20 rounded-full w-max text-primary-500 inline-block text-maroon mb-2"> {product.category}</span>
                             <p className="font-sans text-[13px] md:text-[13.5px] font-semibold text-gray-800 leading-snug line-clamp-2 mb-2">
                               {product.title}
                             </p>
