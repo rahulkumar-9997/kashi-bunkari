@@ -12,6 +12,7 @@ import {
   Eye,
   Loader2,
   ImageOff,
+  SearchX,
 } from "lucide-react";
 import { useShop } from "@/hooks/useShop";
 import type { ShopFilter } from "@/types/shop";
@@ -157,6 +158,16 @@ export default function ShopPage({ slug }: Props) {
       ? `${firstPage.attribute_value.name} ${firstPage.category.title}`
       : firstPage?.category?.title || firstPage?.tag?.title || "Collection";
 
+  // Every product on this page belongs to the same category (or tag) —
+  // the API doesn't send a category field per product.
+  const groupLabel =
+    firstPage?.category?.title ?? firstPage?.tag?.title ?? null;
+
+  // Confirmed empty: not loading, no error, and genuinely zero products.
+  // In this case there's no point showing the Filters sidebar or Sort
+  // dropdown — nothing to filter or sort.
+  const isConfirmedEmpty = !isLoading && !isError && products.length === 0;
+
   const toggleOption = (filterId: string, value: string) => {
     setSelected((prev) => {
       const current = prev[filterId] ?? [];
@@ -217,329 +228,374 @@ export default function ShopPage({ slug }: Props) {
 
       <section className="w-full lg:px-12 md:px-10 px-4">
         <div className="mx-auto w-full max-w-7xl relative lg:py-10 md:py-10 sm:py-10 py-8">
-          <div className="flex gap-5">
-            {/* ── DESKTOP SIDEBAR ── */}
-            <aside className="hidden lg:block w-70 shrink-0">
-              <div className="sticky top-24 bg-white rounded-xl border-slate-100 p-3 shadow-[0_8px_10px_rgb(0,0,0,0.08)] flex flex-col max-h-[calc(100vh-7rem)]">
-                <div className="flex items-center justify-between mb-5 shrink-0">
-                  <div className="flex items-center gap-2">
-                    <SlidersHorizontal size={15} className="text-maroon" />
-                    <p className="font-sans text-[16px] font-bold uppercase text-maroon">
-                      Filters
-                    </p>
+          {isConfirmedEmpty ? (
+            /* ── CONFIRMED EMPTY: clean full-width message, no sidebar,
+                no sort dropdown — there's genuinely nothing to filter
+                or sort. ── */
+            <div className="flex flex-col items-center justify-center py-24 text-center">
+              <div className="w-16 h-16 rounded-2xl bg-pink/8 border border-pink/15 flex items-center justify-center mb-5">
+                <SearchX size={26} className="text-pink" />
+              </div>
+              <Heading
+                level={1}
+                text={heading}
+                className="font-serif text-[22px] font-semibold text-maroon mb-2"
+                decorator="none"
+              />
+              <h3 className="font-sans text-[15px] text-gray-500 mb-1">
+                No products found
+              </h3>
+              <p className="font-sans text-[13px] text-gray-400 mb-6 max-w-sm">
+                {activeCount > 0
+                  ? "Try adjusting or clearing your filters."
+                  : "There are no products in this collection yet — please check back soon."}
+              </p>
+              {activeCount > 0 && (
+                <button
+                  onClick={clearAll}
+                  className="font-sans text-[11px] font-bold uppercase tracking-[0.16em] text-white bg-pink px-6 py-2.5 rounded-xl hover:opacity-90 transition-opacity"
+                >
+                  Clear Filters
+                </button>
+              )}
+              <Link
+                href="/"
+                className="mt-4 font-sans text-[12.5px] text-gray-400 hover:text-maroon transition-colors underline"
+              >
+                Back to Home
+              </Link>
+            </div>
+          ) : (
+            <div className="flex gap-5">
+              {/* ── DESKTOP SIDEBAR ── */}
+              <aside className="hidden lg:block w-70 shrink-0">
+                <div className="sticky top-24 bg-white rounded-xl border-slate-100 p-3 shadow-[0_8px_10px_rgb(0,0,0,0.08)] flex flex-col max-h-[calc(100vh-7rem)]">
+                  <div className="flex items-center justify-between mb-5 shrink-0">
+                    <div className="flex items-center gap-2">
+                      <SlidersHorizontal size={15} className="text-maroon" />
+                      <p className="font-sans text-[16px] font-bold uppercase text-maroon">
+                        Filters
+                      </p>
+                      {activeCount > 0 && (
+                        <span className="w-4.5 h-4.5 rounded-full bg-pink text-white text-[9px] flex items-center justify-center font-bold leading-none px-1">
+                          {activeCount}
+                        </span>
+                      )}
+                    </div>
                     {activeCount > 0 && (
-                      <span className="w-4.5 h-4.5 rounded-full bg-pink text-white text-[9px] flex items-center justify-center font-bold leading-none px-1">
-                        {activeCount}
-                      </span>
+                      <button
+                        onClick={clearAll}
+                        className="font-sans text-[10px] font-bold uppercase tracking-wide text-pink hover:text-maroon transition-colors cursor-pointer"
+                      >
+                        Clear
+                      </button>
                     )}
                   </div>
-                  {activeCount > 0 && (
+                  <div
+                    className="flex-1 min-h-0 overflow-y-auto pr-1"
+                    data-lenis-prevent
+                  >
+                    <FilterPanel />
+                  </div>
+                </div>
+              </aside>
+
+              {/* ── PRODUCTS AREA ── */}
+              <div className="flex-1 min-w-0">
+                <div className="sticky top-18 z-40 hidden lg:block bg-white/90 backdrop-blur-md">
+                  <div className="flex items-center justify-end gap-3 py-2.5">
+                    <div className="relative">
+                      <button
+                        onClick={() => setSortOpen((v) => !v)}
+                        className="flex items-center gap-2 rounded border border-gray-200 bg-white px-3.5 py-2.5 font-sans text-[13px] font-semibold text-gray-600 transition-all duration-200 hover:border-pink hover:text-pink"
+                      >
+                        {SORT_OPTIONS.find((s) => s.value === sort)?.label}
+                        <ChevronDown
+                          size={12}
+                          className={`transition-transform duration-200 ${sortOpen ? "rotate-180" : ""}`}
+                        />
+                      </button>
+
+                      {sortOpen && (
+                        <div className="absolute right-0 top-full z-50 mt-2 w-52 overflow-hidden rounded-xl border border-gray-100 bg-white shadow-xl">
+                          {SORT_OPTIONS.map((opt) => (
+                            <button
+                              key={opt.value}
+                              onClick={() => {
+                                setSort(opt.value);
+                                setSortOpen(false);
+                              }}
+                              className={`w-full px-4 py-2.5 text-left font-sans text-[12.5px] transition-colors ${
+                                sort === opt.value
+                                  ? "bg-pink/5 font-semibold text-pink"
+                                  : "text-gray-600 hover:bg-gray-50"
+                              }`}
+                            >
+                              {opt.label}
+                              {sort === opt.value && (
+                                <span className="float-right">✓</span>
+                              )}
+                            </button>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+
+                <div className="flex items-center justify-between gap-3 mb-5 flex-wrap">
+                  <div>
+                    <Heading
+                      level={1}
+                      text={heading}
+                      className="font-serif text-[25px] font-semibold leading-none tracking-tight text-maroon"
+                      decorator="none"
+                    />
+                  </div>
+                  <div>
+                    <p className="font-sans text-[16px] text-gray-500">
+                      <span className="font-bold text-gray-800">
+                        {totalProducts}
+                      </span>{" "}
+                      products
+                    </p>
+                  </div>
+                </div>
+
+                {/* Active chips */}
+                {activeCount > 0 && (
+                  <div className="flex flex-wrap gap-2 mb-5">
+                    {filters.map((group) =>
+                      (selected[group.slug] ?? []).map((val) => {
+                        const opt = group.values.find((o) => o.slug === val);
+                        return (
+                          <span
+                            key={`${group.slug}-${val}`}
+                            className="inline-flex items-center gap-1.5 font-sans text-[14px] font-semibold text-pink bg-pink/8 border border-gray-300 px-3 py-1 rounded-full cursor-pointer"
+                          >
+                            {opt?.name}
+                            <button
+                              onClick={() => toggleOption(group.slug, val)}
+                            >
+                              <X size={10} />
+                            </button>
+                          </span>
+                        );
+                      }),
+                    )}
                     <button
                       onClick={clearAll}
-                      className="font-sans text-[10px] font-bold uppercase tracking-wide text-pink hover:text-maroon transition-colors cursor-pointer"
+                      className="font-sans text-[16px] text-gray-400 hover:text-pink transition-colors cursor-pointer"
                     >
-                      Clear
+                      Clear all
                     </button>
-                  )}
-                </div>
-                {/* The panel itself scrolls internally — the sidebar
-                    never grows taller than the viewport, and stays
-                    sticky while the page scrolls. */}
-                <div
-                  className="flex-1 min-h-0 overflow-y-auto pr-1"
-                  data-lenis-prevent
-                >
-                  <FilterPanel />
-                </div>
-              </div>
-            </aside>
-
-            {/* ── PRODUCTS AREA ── */}
-            <div className="flex-1 min-w-0">
-              <div className="sticky top-18 z-40 hidden lg:block bg-white/90 backdrop-blur-md">
-                <div className="flex items-center justify-end gap-3 py-2.5">
-                  <div className="relative">
-                    <button
-                      onClick={() => setSortOpen((v) => !v)}
-                      className="flex items-center gap-2 rounded border border-gray-200 bg-white px-3.5 py-2.5 font-sans text-[13px] font-semibold text-gray-600 transition-all duration-200 hover:border-pink hover:text-pink"
-                    >
-                      {SORT_OPTIONS.find((s) => s.value === sort)?.label}
-                      <ChevronDown
-                        size={12}
-                        className={`transition-transform duration-200 ${sortOpen ? "rotate-180" : ""}`}
-                      />
-                    </button>
-
-                    {sortOpen && (
-                      <div className="absolute right-0 top-full z-50 mt-2 w-52 overflow-hidden rounded-xl border border-gray-100 bg-white shadow-xl">
-                        {SORT_OPTIONS.map((opt) => (
-                          <button
-                            key={opt.value}
-                            onClick={() => {
-                              setSort(opt.value);
-                              setSortOpen(false);
-                            }}
-                            className={`w-full px-4 py-2.5 text-left font-sans text-[12.5px] transition-colors ${
-                              sort === opt.value
-                                ? "bg-pink/5 font-semibold text-pink"
-                                : "text-gray-600 hover:bg-gray-50"
-                            }`}
-                          >
-                            {opt.label}
-                            {sort === opt.value && (
-                              <span className="float-right">✓</span>
-                            )}
-                          </button>
-                        ))}
-                      </div>
-                    )}
                   </div>
-                </div>
-              </div>
+                )}
 
-              <div className="flex items-center justify-between gap-3 mb-5 flex-wrap">
-                <div>
-                  <Heading
-                    level={1}
-                    text={heading}
-                    className="font-serif text-[25px] font-semibold leading-none tracking-tight text-maroon"
-                    decorator="none"
-                  />
-                </div>
-                <div>
-                  <p className="font-sans text-[16px] text-gray-500">
-                    <span className="font-bold text-gray-800">
-                      {totalProducts}
-                    </span>{" "}
-                    products
-                  </p>
-                </div>
-              </div>
-
-              {/* Active chips */}
-              {activeCount > 0 && (
-                <div className="flex flex-wrap gap-2 mb-5">
-                  {filters.map((group) =>
-                    (selected[group.slug] ?? []).map((val) => {
-                      const opt = group.values.find((o) => o.slug === val);
-                      return (
-                        <span
-                          key={`${group.slug}-${val}`}
-                          className="inline-flex items-center gap-1.5 font-sans text-[14px] font-semibold text-pink bg-pink/8 border border-gray-300 px-3 py-1 rounded-full cursor-pointer"
-                        >
-                          {opt?.name}
-                          <button onClick={() => toggleOption(group.slug, val)}>
-                            <X size={10} />
-                          </button>
-                        </span>
-                      );
-                    }),
-                  )}
-                  <button
-                    onClick={clearAll}
-                    className="font-sans text-[16px] text-gray-400 hover:text-pink transition-colors cursor-pointer">
-                    Clear all
-                  </button>
-                </div>
-              )}
-
-              {/* ── Loading / Error / Empty / Grid ── */}
-              {isLoading ? (
-                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-4 gap-x-2 md:gap-x-3 gap-y-5 md:gap-y-8">
-                  {Array.from({ length: 8 }).map((_, i) => (
-                    <div
-                      key={i}
-                      className="rounded-xl border border-gray-200 overflow-hidden"
-                    >
-                      <div
-                        className="bg-gray-100 animate-pulse"
-                        style={{ aspectRatio: "3/4" }}
-                      />
-                      <div className="p-3 space-y-2">
-                        <div className="h-3 w-16 bg-gray-100 rounded animate-pulse" />
-                        <div className="h-4 w-full bg-gray-100 rounded animate-pulse" />
-                        <div className="h-4 w-1/2 bg-gray-100 rounded animate-pulse" />
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              ) : isError ? (
-                <div className="flex flex-col items-center justify-center py-20 text-center">
-                  <p className="font-serif text-[18px] font-bold text-gray-800 mb-2">
-                    Couldn&apos;t load products
-                  </p>
-                  <p className="font-sans text-[13px] text-gray-400">
-                    Please try again in a moment.
-                  </p>
-                </div>
-              ) : products.length > 0 ? (
-                <>
+                {/* ── Loading / Error / Grid ── */}
+                {isLoading ? (
                   <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-4 gap-x-2 md:gap-x-3 gap-y-5 md:gap-y-8">
-                    {products.map((product) => {
-                      const price = product.offer_price ?? product.mrp;
-                      const hasDiscount =
-                        product.offer_price != null &&
-                        product.mrp != null &&
-                        product.mrp > product.offer_price;
-                      const discountPct = hasDiscount
-                        ? Math.round(
-                            (1 - product.offer_price! / product.mrp!) * 100,
-                          )
-                        : null;
+                    {Array.from({ length: 8 }).map((_, i) => (
+                      <div
+                        key={i}
+                        className="rounded-xl border border-gray-200 overflow-hidden"
+                      >
+                        <div
+                          className="bg-gray-100 animate-pulse"
+                          style={{ aspectRatio: "3/4" }}
+                        />
+                        <div className="p-3 space-y-2">
+                          <div className="h-3 w-16 bg-gray-100 rounded animate-pulse" />
+                          <div className="h-4 w-full bg-gray-100 rounded animate-pulse" />
+                          <div className="h-4 w-1/2 bg-gray-100 rounded animate-pulse" />
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                ) : isError ? (
+                  <div className="flex flex-col items-center justify-center py-20 text-center">
+                    <p className="font-serif text-[18px] font-bold text-gray-800 mb-2">
+                      Couldn&apos;t load products
+                    </p>
+                    <p className="font-sans text-[13px] text-gray-400">
+                      Please try again in a moment.
+                    </p>
+                  </div>
+                ) : (
+                  <>
+                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-4 gap-x-2 md:gap-x-3 gap-y-5 md:gap-y-8">
+                      {products.map((product) => {
+                        const price = product.offer_price ?? product.mrp;
+                        const hasDiscount =
+                          product.offer_price != null &&
+                          product.mrp != null &&
+                          product.mrp > product.offer_price;
+                        const discountPct = hasDiscount
+                          ? Math.round(
+                              (1 - product.offer_price! / product.mrp!) * 100,
+                            )
+                          : null;
+                        const productHref = product.attributes_value_slug
+                          ? `/product/${product.slug}/${product.attributes_value_slug}`
+                          : `/product/${product.slug}`;
 
-                      return (
-                        <Link
-                          key={product.id}
-                          href={`/product/${product.slug}/${product.attributes_value_slug}`}
-                          className="prod-card group block outline-none select-none w-full border border-gray-200 rounded-xl bg-white transition-all duration-300 ease-in-out hover:border-maroon/30 cursor-pointer hover:shadow-md overflow-hidden"
-                        >
-                          <div
-                            className="relative overflow-hidden rounded-t-xl bg-gray-100"
-                            style={{ aspectRatio: "3/4" }}
+                        return (
+                          <Link
+                            key={product.id}
+                            href={productHref}
+                            className="prod-card group block outline-none select-none w-full border border-gray-200 rounded-xl bg-white transition-all duration-300 ease-in-out hover:border-maroon/30 cursor-pointer hover:shadow-md overflow-hidden"
                           >
-                            {product.image ? (
-                              <Image
-                                src={product.image}
-                                alt={product.title}
-                                fill
-                                className="object-cover object-top transition-transform duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-105"
-                                sizes="(max-width:640px) 50vw,(max-width:1024px) 33vw,25vw"
-                                onError={(e) => {
-                                  e.currentTarget.style.display = "none";
-                                }}
-                              />
-                            ) : (
-                              <div className="w-full h-full flex items-center justify-center">
-                                <ImageOff size={22} className="text-gray-300" />
-                              </div>
-                            )}
-                            {discountPct !== null && (
-                              <span className="absolute top-2.5 right-2.5 z-20 font-sans text-[10px] font-bold text-white bg-green-600 px-2 py-1 rounded-sm leading-none shadow-sm">
-                                {discountPct}% OFF
-                              </span>
-                            )}
-                            <div className="absolute bottom-4 left-0 right-0 z-20 flex justify-center opacity-0 translate-y-2 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300">
-                              <span className="inline-flex items-center gap-1.5 font-sans text-[9.5px] font-bold uppercase tracking-[0.18em] text-white bg-black/60 backdrop-blur-sm px-4 py-2 rounded-full">
-                                <Eye size={11} />
-                                Quick View
-                              </span>
-                            </div>
-                          </div>
-                          <div className="px-3 py-3">
-                            <span className="text-[11px] px-1.5 py-0.5 border border-maroon/30 bg-maroon/20 rounded-full w-max text-primary-500 inline-block text-maroon mb-2"> {product.category}</span>
-                            <p className="font-sans text-[13px] md:text-[13.5px] font-semibold text-gray-800 leading-snug line-clamp-2 mb-2">
-                              {product.title}
-                            </p>
-                            <div className="flex items-baseline gap-1.5 flex-wrap">
-                              {price != null ? (
-                                <>
-                                  <span className="font-sans text-[14px] font-bold text-gray-900">
-                                    {formatPrice(price)}
-                                  </span>
-                                  {hasDiscount && (
-                                    <span className="font-sans text-[11.5px] text-gray-400 line-through">
-                                      {formatPrice(product.mrp!)}
-                                    </span>
-                                  )}
-                                </>
+                            <div
+                              className="relative overflow-hidden rounded-t-xl bg-gray-100"
+                              style={{ aspectRatio: "3/4" }}
+                            >
+                              {product.image ? (
+                                <Image
+                                  src={product.image}
+                                  alt={product.title}
+                                  fill
+                                  className="object-cover object-top transition-transform duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-105"
+                                  sizes="(max-width:640px) 50vw,(max-width:1024px) 33vw,25vw"
+                                  onError={(e) => {
+                                    e.currentTarget.style.display = "none";
+                                  }}
+                                />
                               ) : (
-                                <span className="font-sans text-[12px] text-gray-400">
-                                  Price on request
+                                <div className="w-full h-full flex items-center justify-center">
+                                  <ImageOff
+                                    size={22}
+                                    className="text-gray-300"
+                                  />
+                                </div>
+                              )}
+                              {discountPct !== null && (
+                                <span className="absolute top-2.5 right-2.5 z-20 font-sans text-[10px] font-bold text-white bg-green-600 px-2 py-1 rounded-sm leading-none shadow-sm">
+                                  {discountPct}% OFF
                                 </span>
                               )}
+                              <div className="absolute bottom-4 left-0 right-0 z-20 flex justify-center opacity-0 translate-y-2 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300">
+                                <span className="inline-flex items-center gap-1.5 font-sans text-[9.5px] font-bold uppercase tracking-[0.18em] text-white bg-black/60 backdrop-blur-sm px-4 py-2 rounded-full">
+                                  <Eye size={11} />
+                                  Quick View
+                                </span>
+                              </div>
                             </div>
-                          </div>
-                        </Link>
-                      );
-                    })}
-                  </div>
+                            <div className="px-3 py-3">
+                              <div className="flex items-center gap-1.5 flex-wrap mb-2">
+                                {groupLabel && (
+                                  <span className="text-[11px] px-1.5 py-0.5 border border-maroon/30 bg-maroon/10 rounded-full w-max inline-block text-maroon">
+                                    {groupLabel}
+                                  </span>
+                                )}
+                                {product.attributes_value_slug && (
+                                  <span className="text-[11px] px-1.5 py-0.5 border border-gray-200 bg-gray-50 rounded-full w-max inline-block text-gray-500 capitalize">
+                                    {product.attributes_value_slug.replace(
+                                      /-/g,
+                                      " ",
+                                    )}
+                                  </span>
+                                )}
+                              </div>
+                              <p className="font-sans text-[13px] md:text-[13.5px] font-semibold text-gray-800 leading-snug line-clamp-2 mb-2">
+                                {product.title}
+                              </p>
+                              <div className="flex items-baseline gap-1.5 flex-wrap">
+                                {price != null ? (
+                                  <>
+                                    <span className="font-sans text-[14px] font-bold text-gray-900">
+                                      {formatPrice(price)}
+                                    </span>
+                                    {hasDiscount && (
+                                      <span className="font-sans text-[11.5px] text-gray-400 line-through">
+                                        {formatPrice(product.mrp!)}
+                                      </span>
+                                    )}
+                                  </>
+                                ) : (
+                                  <span className="font-sans text-[12px] text-gray-400">
+                                    Price on request
+                                  </span>
+                                )}
+                              </div>
+                            </div>
+                          </Link>
+                        );
+                      })}
+                    </div>
 
-                  {/* Infinite-scroll sentinel */}
-                  <div
-                    ref={loadMoreRef}
-                    className="flex items-center justify-center py-10"
-                  >
-                    {isFetchingNextPage && (
-                      <Loader2 size={22} className="text-maroon animate-spin" />
-                    )}
-                  </div>
-                </>
-              ) : (
-                <div className="flex flex-col items-center justify-center py-20 text-center">
-                  <div className="w-14 h-14 rounded-2xl bg-pink/8 border border-pink/15 flex items-center justify-center mb-4">
-                    <SlidersHorizontal size={22} className="text-pink" />
-                  </div>
-                  <h3 className="font-serif text-[18px] font-bold text-gray-800 mb-2">
-                    No products found
-                  </h3>
-                  <p className="font-sans text-[13px] text-gray-400 mb-5">
-                    Try adjusting or clearing your filters
-                  </p>
-                  {activeCount > 0 && (
-                    <button
-                      onClick={clearAll}
-                      className="font-sans text-[11px] font-bold uppercase tracking-[0.16em] text-white bg-pink px-6 py-2.5 rounded-xl hover:opacity-90 transition-opacity"
+                    {/* Infinite-scroll sentinel */}
+                    <div
+                      ref={loadMoreRef}
+                      className="flex items-center justify-center py-10"
                     >
-                      Clear Filters
-                    </button>
-                  )}
-                </div>
-              )}
+                      {isFetchingNextPage && (
+                        <Loader2
+                          size={22}
+                          className="text-maroon animate-spin"
+                        />
+                      )}
+                    </div>
+                  </>
+                )}
+              </div>
             </div>
-          </div>
+          )}
         </div>
       </section>
 
-      {/* ══ MOBILE FLOATING FILTER + SORT PILLS ══ */}
-      <div className="lg:hidden fixed left-0 right-0 z-290 flex items-center justify-center gap-2.5 px-4 pointer-events-none bottom-[calc(3.5rem+12px+env(safe-area-inset-bottom))]">
-        <button
-          onClick={() => setDrawerOpen(true)}
-          className="pointer-events-auto flex items-center gap-1.5 bg-gray-900/92 backdrop-blur-md text-white pl-3.5 pr-4 py-2.5 rounded-full shadow-lg font-sans text-[11.5px] font-bold uppercase tracking-widest active:scale-95 transition-transform cursor-pointer"
-        >
-          <SlidersHorizontal size={13} className="shrink-0" />
-          Filters
-          {activeCount > 0 && (
-            <span className="w-4.5 h-4.5 rounded-full bg-pink text-white text-[9px] flex items-center justify-center font-bold leading-none shrink-0">
-              {activeCount}
-            </span>
-          )}
-        </button>
-        <div className="pointer-events-auto relative">
+      {/* ══ MOBILE FLOATING FILTER + SORT PILLS — hidden entirely when
+          there's genuinely nothing to filter/sort. ══ */}
+      {!isConfirmedEmpty && (
+        <div className="lg:hidden fixed left-0 right-0 z-290 flex items-center justify-center gap-2.5 px-4 pointer-events-none bottom-[calc(3.5rem+12px+env(safe-area-inset-bottom))]">
           <button
-            onClick={() => setSortOpen((v) => !v)}
-            className="flex items-center gap-1.5 bg-gray-900/92 backdrop-blur-md text-white pl-3.5 pr-3 py-2.5 rounded-full shadow-lg font-sans text-[11.5px] font-bold uppercase tracking-widest active:scale-95 transition-transform cursor-pointer"
+            onClick={() => setDrawerOpen(true)}
+            className="pointer-events-auto flex items-center gap-1.5 bg-gray-900/92 backdrop-blur-md text-white pl-3.5 pr-4 py-2.5 rounded-full shadow-lg font-sans text-[11.5px] font-bold uppercase tracking-widest active:scale-95 transition-transform cursor-pointer"
           >
-            Sort
-            <ChevronDown
-              size={13}
-              className={`transition-transform duration-200 shrink-0 ${sortOpen ? "rotate-180" : ""}`}
-            />
+            <SlidersHorizontal size={13} className="shrink-0" />
+            Filters
+            {activeCount > 0 && (
+              <span className="w-4.5 h-4.5 rounded-full bg-pink text-white text-[9px] flex items-center justify-center font-bold leading-none shrink-0">
+                {activeCount}
+              </span>
+            )}
           </button>
-          {sortOpen && (
-            <div className="absolute bottom-full right-0 mb-2 w-48 bg-white border border-gray-100 rounded-xl shadow-xl overflow-hidden">
-              {SORT_OPTIONS.map((opt) => (
-                <button
-                  key={opt.value}
-                  onClick={() => {
-                    setSort(opt.value);
-                    setSortOpen(false);
-                  }}
-                  className={`w-full flex items-center justify-between px-4 py-3 font-sans text-[12.5px] border-b border-gray-50 last:border-0 transition-colors
-                    ${sort === opt.value ? "text-pink font-semibold bg-pink/5" : "text-gray-700 hover:bg-gray-50"}`}
-                >
-                  {opt.label}
-                  {sort === opt.value && (
-                    <span className="text-pink text-base">✓</span>
-                  )}
-                </button>
-              ))}
-            </div>
-          )}
+          <div className="pointer-events-auto relative">
+            <button
+              onClick={() => setSortOpen((v) => !v)}
+              className="flex items-center gap-1.5 bg-gray-900/92 backdrop-blur-md text-white pl-3.5 pr-3 py-2.5 rounded-full shadow-lg font-sans text-[11.5px] font-bold uppercase tracking-widest active:scale-95 transition-transform cursor-pointer"
+            >
+              Sort
+              <ChevronDown
+                size={13}
+                className={`transition-transform duration-200 shrink-0 ${sortOpen ? "rotate-180" : ""}`}
+              />
+            </button>
+            {sortOpen && (
+              <div className="absolute bottom-full right-0 mb-2 w-48 bg-white border border-gray-100 rounded-xl shadow-xl overflow-hidden">
+                {SORT_OPTIONS.map((opt) => (
+                  <button
+                    key={opt.value}
+                    onClick={() => {
+                      setSort(opt.value);
+                      setSortOpen(false);
+                    }}
+                    className={`w-full flex items-center justify-between px-4 py-3 font-sans text-[12.5px] border-b border-gray-50 last:border-0 transition-colors
+                      ${sort === opt.value ? "text-pink font-semibold bg-pink/5" : "text-gray-700 hover:bg-gray-50"}`}
+                  >
+                    {opt.label}
+                    {sort === opt.value && (
+                      <span className="text-pink text-base">✓</span>
+                    )}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
         </div>
-      </div>
+      )}
 
       {/* ══ MOBILE FILTER DRAWER ══ */}
-      {drawerOpen && (
+      {drawerOpen && !isConfirmedEmpty && (
         <div className="fixed inset-0 z-310 lg:hidden">
           <div
             className="absolute inset-0 bg-black/45 backdrop-blur-sm"
@@ -596,7 +652,7 @@ export default function ShopPage({ slug }: Props) {
       )}
 
       {/* Mobile spacer */}
-      <div className="lg:hidden h-16" />
+      {!isConfirmedEmpty && <div className="lg:hidden h-16" />}
     </div>
   );
 }
