@@ -187,7 +187,7 @@ function CategoryDetail({
   return (
     <div className="py-2">
       <Link
-        href={`/category/${category.category_slug}`}
+        href={`/category/${category.title}`}
         onClick={onNavigate}
         className="block px-5 py-3 font-inter text-[13px] font-bold text-pink border-b border-gray-100"
       >

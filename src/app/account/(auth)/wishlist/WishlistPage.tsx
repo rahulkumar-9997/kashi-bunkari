@@ -220,7 +220,7 @@ export default function WishlistPage() {
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                       onError={(e) => {
                         const target = e.target as HTMLImageElement;
-                        target.src = "/images/placeholder.webp";
+                        target.src = "/images/kasibunkari_logo.webp";
                       }}
                     />
                     {!item.inStock && (

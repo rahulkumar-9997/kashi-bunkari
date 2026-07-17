@@ -248,7 +248,7 @@ export default function OrdersPage() {
                         className="w-full h-full object-contain"
                         onError={(e) => {
                           const target = e.target as HTMLImageElement;
-                          target.src = "/images/placeholder.webp";
+                          target.src = "/images/kasibunkari_logo.webp";
                         }}
                       />
 

@@ -71,7 +71,7 @@ export default function NewArrivals({ data }: Props) {
                   style={{ aspectRatio: "3/4" }}
                 >
                   <Image
-                    src={product.image ?? "/images/placeholder.webp"}
+                    src={product.image ?? "/images/kasibunkari_logo.webp"}
                     alt={product.title}
                     fill
                     className="object-cover object-top transition-transform duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-105"
