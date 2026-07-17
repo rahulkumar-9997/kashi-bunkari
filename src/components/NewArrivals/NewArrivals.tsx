@@ -63,7 +63,7 @@ export default function NewArrivals({ data }: Props) {
             return (
               <Link
                 key={product.id}
-                href={`/products/${product.category.slug}/${product.slug}`}
+                href={`/product/${product.slug}/${product.attribute_value}`}
                 className="prod-card group block outline-none select-none w-full border border-gray-200 rounded-xl bg-white transition-all duration-300 ease-in-out hover:border-maroon/30 cursor-pointer hover:shadow-md overflow-hidden"
               >
                 <div

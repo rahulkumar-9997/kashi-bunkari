@@ -85,7 +85,7 @@ export default function Popular({ data }: Props) {
                     className="pl-3 md:pl-3 basis-1/2 sm:basis-1/3 md:basis-1/4 lg:basis-1/4"
                   >
                     <Link
-                      href={`/products/${product.category.slug}/${product.slug}`}
+                      href={`/product/${product.slug}/${product.attribute_value}`}
                       className="prod-card group block outline-none select-none w-full border border-gray-200 rounded-xl bg-white transition-all duration-300 ease-in-out hover:border-maroon/30 cursor-pointer hover:shadow-md overflow-hidden"
                     >
                       <div
