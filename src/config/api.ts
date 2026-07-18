@@ -12,6 +12,8 @@ export const API_ENDPOINTS = {
   testimonials: `${API_BASE_URL}/api/testimonials`,
   faqs: `${API_BASE_URL}/api/faq`,
   menu: `${API_BASE_URL}/api/menu`,
+  productDetail: (parentSlug: string, attributeValueSlug: string) =>
+  `${API_BASE_URL}/api/products/${parentSlug}/${attributeValueSlug}`,
   
 };
 
