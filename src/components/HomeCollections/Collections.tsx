@@ -31,7 +31,7 @@ export default function Collections({ data }: Props) {
           <div>
             <Heading
               level={2}
-              text="Celebrate in <span style='background: linear-gradient(135deg, #ec4899, #f472b6); -webkit-background-clip: text; -webkit-text-fill-color: transparent;'>Style</span>"
+              text="Shop by <span style='background: linear-gradient(135deg, #ec4899, #f472b6); -webkit-background-clip: text; -webkit-text-fill-color: transparent;'>Collections</span>"
               allowHTML
               className="text-maroon"
               decorator="underline-pink"
