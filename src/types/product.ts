@@ -74,11 +74,17 @@ export type ProductDetails = {
  
 export type RelatedProduct = {
   id: number;
+  category: ProductCategory;
   title: string;
   slug: string;
   attribute_value_slug: string;
   category_title: string;
   image: string;
+  mrp: number | null;
+  offer_rate: number | null;
+  purchase_rate: number | null;
+  sku: string | null;
+  stock_quantity: number | null;
 };
  
 export type ProductDetailMeta = { title: string; description: string; keywords: string };
@@ -86,6 +92,7 @@ export type ProductDetailMeta = { title: string; description: string; keywords: 
 export type ProductDetailData = {
   meta: ProductDetailMeta;
   product_details: ProductDetails;
+  attribute: { id: number; title: string; slug: string } | null;
   attributes_value_name: { id: number; title: string; slug: string } | null;
   related_products: RelatedProduct[];
   other_related_products: Record<string, unknown>;

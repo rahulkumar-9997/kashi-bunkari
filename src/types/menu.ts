@@ -19,7 +19,6 @@ export type MenuCategory = {
 export type MenuSectionItem = {
   title: string;
   slug: string;
-  image: string;
 };
 
 export type MenuSection = {

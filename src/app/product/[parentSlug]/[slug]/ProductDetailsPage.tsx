@@ -177,12 +177,23 @@ export default function ProductDetailsPage({ product: data }: Props) {
   return (
     <div className="w-full min-h-screen bg-white">
       <Breadcrumb
-        items={[
-          { label: "Home", href: "/" },
-          { label: product.category.title, href: `/shop/${product.category.slug}` },
-          { label: product.title },
-        ]}
-      />
+      items={[
+        { label: "Home", href: "/" },
+        {
+          label: product.category.title,
+          href: `/shop/${product.category.slug}`,
+        },
+        ...(data.attribute && data.attributes_value_name
+        ? [
+            {
+              label: data.attributes_value_name.title,
+              href: `/shop/${data.product_details.category.slug}/${data.attribute.slug}/${data.attributes_value_name.slug}`,
+            },
+          ]
+        : []),
+        { label: product.title },
+      ]}
+    />
 
       <section className="w-full py-10 md:py-14">
         <div className="mx-auto max-w-7xl px-4 md:px-2 lg:px-1">
@@ -581,55 +592,84 @@ export default function ProductDetailsPage({ product: data }: Props) {
                 />
               </div>
             </div>
-
+ 
             <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 md:gap-5">
-              {data.related_products.map((item) => (
-                <Link
-                  key={item.id}
-                  href={`/product/${item.slug}/${item.attribute_value_slug}`}
-                  className="prod-card block outline-none select-none w-full border border-gray-200 rounded-xl bg-white transition-all duration-300 ease-in-out hover:border-maroon/30 cursor-pointer hover:shadow-md overflow-hidden"
-                >
-                  <div className="prod-shell relative overflow-hidden rounded-t-xl bg-gray-100" style={{ aspectRatio: "3/4" }}>
-                    {item.image ? (
-                      <div className="prod-img absolute inset-0">
-                        <Image
-                          src={item.image}
-                          alt={item.title}
-                          fill
-                          quality={100}
-                          className="object-cover object-top"
-                          sizes="(max-width:768px) 100vw, (max-width:1200px) 50vw, 33vw"
-                          onError={(e) => {
-                            e.currentTarget.style.display = "none";
-                          }}
-                        />
+              {data.related_products.map((item) => {
+                const itemPrice = item.offer_rate ?? item.mrp;
+                const itemHasDiscount =
+                  item.offer_rate != null && item.mrp != null && item.mrp > item.offer_rate;
+                const itemDiscountPct = itemHasDiscount
+                  ? Math.round((1 - item.offer_rate! / item.mrp!) * 100)
+                  : null;
+ 
+                return (
+                  <Link
+                    key={item.id}
+                    href={`/products/${item.slug}/${item.attribute_value_slug}`}
+                    className="prod-card block outline-none select-none w-full border border-gray-200 rounded-xl bg-white transition-all duration-300 ease-in-out hover:border-maroon/30 cursor-pointer hover:shadow-md overflow-hidden"
+                  >
+                    <div className="prod-shell relative overflow-hidden rounded-t-xl bg-gray-100" style={{ aspectRatio: "3/4" }}>
+                      {item.image ? (
+                        <div className="prod-img absolute inset-0">
+                          <Image
+                            src={item.image}
+                            alt={item.title}
+                            fill
+                            quality={100}
+                            className="object-cover object-top"
+                            sizes="(max-width:768px) 100vw, (max-width:1200px) 50vw, 33vw"
+                            onError={(e) => {
+                              e.currentTarget.style.display = "none";
+                            }}
+                          />
+                        </div>
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center">
+                          <ImageOff size={20} className="text-gray-300" />
+                        </div>
+                      )}
+                      {itemDiscountPct !== null && (
+                        <span className="absolute top-2.5 right-2.5 z-20 font-sans text-[10px] font-bold text-white bg-green-600 px-2 py-1 rounded-sm leading-none shadow-sm">
+                          {itemDiscountPct}% OFF
+                        </span>
+                      )}
+                      <div className="prod-quick absolute bottom-4 left-0 right-0 z-20 flex justify-center">
+                        <span className="inline-flex items-center gap-1.5 font-sans text-[9.5px] font-bold uppercase tracking-[0.18em] text-white bg-black/60 backdrop-blur-sm px-4 py-2 rounded-full">
+                          <Eye size={11} />
+                          Quick View
+                        </span>
                       </div>
-                    ) : (
-                      <div className="w-full h-full flex items-center justify-center">
-                        <ImageOff size={20} className="text-gray-300" />
-                      </div>
-                    )}
-                    <div className="prod-quick absolute bottom-4 left-0 right-0 z-20 flex justify-center">
-                      <span className="inline-flex items-center gap-1.5 font-sans text-[9.5px] font-bold uppercase tracking-[0.18em] text-white bg-black/60 backdrop-blur-sm px-4 py-2 rounded-full">
-                        <Eye size={11} />
-                        Quick View
-                      </span>
                     </div>
-                  </div>
-                  <div className="px-3 py-3">
-                    <span className="text-[11px] px-1.5 py-0.5 border border-maroon/30 bg-maroon/10 rounded-full w-max inline-block text-maroon mb-2">
-                      {item.category_title}
-                    </span>
-                    <p className="font-sans text-[14px] md:text-[13.5px] font-semibold text-gray-800 leading-snug line-clamp-2">
-                      {item.title}
-                    </p>
-                  </div>
-                </Link>
-              ))}
+                    <div className="px-3 py-3">
+                      <span className="text-[11px] px-1.5 py-0.5 border border-maroon/30 bg-maroon/10 rounded-full w-max inline-block text-maroon mb-2">
+                        {item.category_title}
+                      </span>
+                      <p className="font-sans text-[14px] md:text-[13.5px] font-semibold text-gray-800 leading-snug line-clamp-2 mb-2">
+                        {item.title}
+                      </p>
+                      {itemPrice != null ? (
+                        <div className="flex items-baseline gap-1.5 flex-wrap">
+                          <span className="font-sans text-[14px] font-bold text-gray-900">
+                            {formatPrice(itemPrice)}
+                          </span>
+                          {itemHasDiscount && (
+                            <span className="font-sans text-[11.5px] text-gray-400 line-through">
+                              {formatPrice(item.mrp!)}
+                            </span>
+                          )}
+                        </div>
+                      ) : (
+                        <span className="font-sans text-[11.5px] text-gray-400">Price on request</span>
+                      )}
+                    </div>
+                  </Link>
+                );
+              })}
             </div>
           </div>
         </section>
       )}
+ 
 
       {/* ══ Share Modal ══ */}
       {shareOpen && (

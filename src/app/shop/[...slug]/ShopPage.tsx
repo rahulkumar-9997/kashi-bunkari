@@ -226,6 +226,7 @@ export default function ShopPage({ slug }: Props) {
   );
 
   return (
+    
     <div className="w-full min-h-screen">
       <Breadcrumb items={[{ label: "Home", href: "/" }, { label: heading }]} />
 
@@ -446,6 +447,7 @@ export default function ShopPage({ slug }: Props) {
                   <>
                     <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-4 gap-x-2 md:gap-x-3 gap-y-5 md:gap-y-2">
                       {products.map((product) => {
+                        
                         const price = product.offer_price ?? product.mrp;
                         const hasDiscount =
                           product.offer_price != null &&
