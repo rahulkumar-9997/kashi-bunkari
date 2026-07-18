@@ -425,9 +425,6 @@ export default function ShopPage({ slug }: Props) {
                     </p>
                   </div>
                 ) : isConfirmedEmpty ? (
-                  /* Filters are active but yielded zero results — sidebar
-                     stays visible (handled above), only this area shows
-                     the message so the user can adjust their filters. */
                   <div className="flex flex-col items-center justify-center py-20 text-center">
                     <div className="w-14 h-14 rounded-2xl bg-pink/8 border border-pink/15 flex items-center justify-center mb-4">
                       <SearchX size={22} className="text-pink" />
@@ -447,7 +444,7 @@ export default function ShopPage({ slug }: Props) {
                   </div>
                 ) : (
                   <>
-                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-4 gap-x-2 md:gap-x-3 gap-y-5 md:gap-y-8">
+                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-4 gap-x-2 md:gap-x-3 gap-y-5 md:gap-y-2">
                       {products.map((product) => {
                         const price = product.offer_price ?? product.mrp;
                         const hasDiscount =
@@ -538,7 +535,6 @@ export default function ShopPage({ slug }: Props) {
                         );
                       })}
                     </div>
-
                     {/* Infinite-scroll sentinel */}
                     <div
                       ref={loadMoreRef}
