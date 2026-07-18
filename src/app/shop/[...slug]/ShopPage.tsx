@@ -16,20 +16,25 @@ import {
 } from "lucide-react";
 import { useShop } from "@/hooks/useShop";
 import type { ShopFilter } from "@/types/shop";
-
 type Props = { slug: string[] };
-
 const SORT_OPTIONS = [
   { label: "Newest First", value: "new-arrivals" },
   { label: "Price: Low to High", value: "price-low-to-high" },
   { label: "Price: High to Low", value: "price-high-to-low" },
   { label: "A to Z", value: "a-to-z-order" },
 ];
-
 const RESERVED_PARAMS = new Set(["filter", "sort", "page"]);
 
 function formatPrice(value: number) {
   return `₹${value.toLocaleString("en-IN")}`;
+}
+function buildQueryString(params: Record<string, string>): string {
+  return Object.entries(params)
+    .map(
+      ([key, value]) =>
+        `${encodeURIComponent(key)}=${encodeURIComponent(value).replace(/%2C/g, ",")}`,
+    )
+    .join("&");
 }
 
 function FilterSection({
@@ -134,7 +139,7 @@ export default function ShopPage({ slug }: Props) {
     return params;
   }, [selected, sort]);
   useEffect(() => {
-    const qs = new URLSearchParams(filterParams).toString();
+    const qs = buildQueryString(filterParams);
     router.replace(qs ? `${pathname}?${qs}` : pathname, { scroll: false });
   }, [filterParams]);
 
@@ -153,12 +158,11 @@ export default function ShopPage({ slug }: Props) {
   const totalProducts = firstPage?.pagination.total_products ?? 0;
   const filters = firstPage?.product_filters ?? [];
 
-  const heading =
-    firstPage?.attribute_value && firstPage?.category
+ const heading = firstPage?.attribute_value && firstPage?.category
       ? `${firstPage.attribute_value.name} ${firstPage.category.title}`
-      : firstPage?.category?.title || firstPage?.tag?.title || "Collection";
-  const groupLabel =
-    firstPage?.category?.title ?? firstPage?.tag?.title ?? null;
+      : firstPage?.category?.title || firstPage?.tag?.title || firstPage?.label?.title || "Collection";
+  
+
   const isConfirmedEmpty = !isLoading && !isError && products.length === 0;
 
   const toggleOption = (filterId: string, value: string) => {
@@ -177,6 +181,12 @@ export default function ShopPage({ slug }: Props) {
     (sum, arr) => sum + arr.length,
     0,
   );
+
+  // Full-page "nothing here" only makes sense when there's genuinely
+  // nothing to filter (no active filters). If the user applied filters
+  // and got zero results, the sidebar must stay visible so they can
+  // adjust/clear them — only the product grid area shows "No products".
+  const isEmptyWithNoFilters = isConfirmedEmpty && activeCount === 0;
   const loadMoreRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
     const el = loadMoreRef.current;
@@ -221,7 +231,10 @@ export default function ShopPage({ slug }: Props) {
 
       <section className="w-full lg:px-12 md:px-10 px-4">
         <div className="mx-auto w-full max-w-7xl relative lg:py-10 md:py-10 sm:py-10 py-8">
-          {isConfirmedEmpty ? (
+          {isEmptyWithNoFilters ? (
+            /* ── EMPTY, NO FILTERS ACTIVE: clean full-width message, no
+                sidebar, no sort dropdown — genuinely nothing to filter
+                or sort (category/tag has zero products). ── */
             <div className="flex flex-col items-center justify-center py-24 text-center">
               <div className="w-16 h-16 rounded-2xl bg-pink/8 border border-pink/15 flex items-center justify-center mb-5">
                 <SearchX size={26} className="text-pink" />
@@ -411,6 +424,27 @@ export default function ShopPage({ slug }: Props) {
                       Please try again in a moment.
                     </p>
                   </div>
+                ) : isConfirmedEmpty ? (
+                  /* Filters are active but yielded zero results — sidebar
+                     stays visible (handled above), only this area shows
+                     the message so the user can adjust their filters. */
+                  <div className="flex flex-col items-center justify-center py-20 text-center">
+                    <div className="w-14 h-14 rounded-2xl bg-pink/8 border border-pink/15 flex items-center justify-center mb-4">
+                      <SearchX size={22} className="text-pink" />
+                    </div>
+                    <h3 className="font-serif text-[18px] font-bold text-gray-800 mb-2">
+                      No products found
+                    </h3>
+                    <p className="font-sans text-[13px] text-gray-400 mb-5">
+                      Try adjusting or clearing your filters.
+                    </p>
+                    <button
+                      onClick={clearAll}
+                      className="font-sans text-[11px] font-bold uppercase tracking-[0.16em] text-white bg-pink px-6 py-2.5 rounded-xl hover:opacity-90 transition-opacity"
+                    >
+                      Clear Filters
+                    </button>
+                  </div>
                 ) : (
                   <>
                     <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-4 gap-x-2 md:gap-x-3 gap-y-5 md:gap-y-8">
@@ -472,17 +506,9 @@ export default function ShopPage({ slug }: Props) {
                             </div>
                             <div className="px-3 py-3">
                               <div className="flex items-center gap-1.5 flex-wrap mb-2">
-                                {groupLabel && (
-                                  <span className="text-[11px] px-1.5 py-0.5 border border-maroon/30 bg-maroon/10 rounded-full w-max inline-block text-maroon">
-                                    {groupLabel}
-                                  </span>
-                                )}
-                                {product.attributes_value_slug && (
-                                  <span className="text-[11px] px-1.5 py-0.5 border border-gray-200 bg-gray-50 rounded-full w-max inline-block text-gray-500 capitalize">
-                                    {product.attributes_value_slug.replace(
-                                      /-/g,
-                                      " ",
-                                    )}
+                                {product.category && (
+                                  <span className="text-[11px] px-1.5 py-0.5 border border-maroon/30 bg-maroon/20 rounded-full w-max text-primary-500 inline-block text-maroon mb-2">
+                                    {product.category}
                                   </span>
                                 )}
                               </div>
@@ -533,8 +559,9 @@ export default function ShopPage({ slug }: Props) {
         </div>
       </section>
 
-      {/*MOBILE FLOATING FILTER + SORT PILLS — hidden entirely when*/}
-      {!isConfirmedEmpty && (
+      {/* ══ MOBILE FLOATING FILTER + SORT PILLS — hidden entirely when
+          there's genuinely nothing to filter/sort. ══ */}
+      {!isEmptyWithNoFilters && (
         <div className="lg:hidden fixed left-0 right-0 z-290 flex items-center justify-center gap-2.5 px-4 pointer-events-none bottom-[calc(3.5rem+12px+env(safe-area-inset-bottom))]">
           <button
             onClick={() => setDrawerOpen(true)}
@@ -584,7 +611,7 @@ export default function ShopPage({ slug }: Props) {
       )}
 
       {/* ══ MOBILE FILTER DRAWER ══ */}
-      {drawerOpen && !isConfirmedEmpty && (
+      {drawerOpen && !isEmptyWithNoFilters && (
         <div className="fixed inset-0 z-310 lg:hidden">
           <div
             className="absolute inset-0 bg-black/45 backdrop-blur-sm"
@@ -641,7 +668,7 @@ export default function ShopPage({ slug }: Props) {
       )}
 
       {/* Mobile spacer */}
-      {!isConfirmedEmpty && <div className="lg:hidden h-16" />}
+      {!isEmptyWithNoFilters && <div className="lg:hidden h-16" />}
     </div>
   );
 }

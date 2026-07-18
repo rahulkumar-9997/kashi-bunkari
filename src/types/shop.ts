@@ -30,6 +30,7 @@ export type ShopCategory = { id: number; title: string; slug: string };
 export type ShopAttribute = { id: number; title: string; slug: string };
 export type ShopAttributeValue = { id: number; name: string; slug: string };
 export type ShopTag = { id: number; title: string; slug: string; content: string | null };
+export type ShopLabel = { id: number; title: string; slug: string; content: string | null };
 export type ShopPrimaryCategory = {
   title: string | null;
   short_content: string | null;
@@ -44,6 +45,7 @@ export type ShopResponseData = {
   attribute?: ShopAttribute;
   attribute_value?: ShopAttributeValue;
   tag?: ShopTag;
+  label?: ShopLabel;
   products: ShopProduct[];
   pagination: ShopPagination;
   product_filters: ShopFilter[];
