@@ -2,7 +2,9 @@ import { Suspense  } from "react";
 import { CartProvider } from "@/components/CartContext";
 import HeroSliderServer from "@/components/HeroSlider/HeroSliderServer";
 import HeroSliderSkeleton from "@/components/HeroSlider/HeroSliderSkeleton";
-import CategorySection from "@/components/CategorySection";
+import HomeCollectionsSkeleton from "@/components/HomeCollections/HomeCollectionsSkeleton";
+import CollectionsServer from "@/components/HomeCollections/CollectionsServer";
+
 import OccasionSectionServer from "@/components/OccasionSection/OccasionSectionServer";
 import OccasionSkeleton from "@/components/OccasionSection/OccasionSkeleton";
 import PopularServer from "@/components/PopularSection/PopularServer";
@@ -24,7 +26,9 @@ function HomeContent() {
       <Suspense fallback={<HeroSliderSkeleton />}>
         <HeroSliderServer />
       </Suspense>
-      <CategorySection />
+      <Suspense fallback={<HomeCollectionsSkeleton />}>
+        <CollectionsServer />
+      </Suspense>
       <AboutUs />
       <Suspense fallback={<OccasionSkeleton />}>
         <OccasionSectionServer />

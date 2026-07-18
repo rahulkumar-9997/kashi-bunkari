@@ -157,15 +157,8 @@ export default function ShopPage({ slug }: Props) {
     firstPage?.attribute_value && firstPage?.category
       ? `${firstPage.attribute_value.name} ${firstPage.category.title}`
       : firstPage?.category?.title || firstPage?.tag?.title || "Collection";
-
-  // Every product on this page belongs to the same category (or tag) —
-  // the API doesn't send a category field per product.
   const groupLabel =
     firstPage?.category?.title ?? firstPage?.tag?.title ?? null;
-
-  // Confirmed empty: not loading, no error, and genuinely zero products.
-  // In this case there's no point showing the Filters sidebar or Sort
-  // dropdown — nothing to filter or sort.
   const isConfirmedEmpty = !isLoading && !isError && products.length === 0;
 
   const toggleOption = (filterId: string, value: string) => {
@@ -229,9 +222,6 @@ export default function ShopPage({ slug }: Props) {
       <section className="w-full lg:px-12 md:px-10 px-4">
         <div className="mx-auto w-full max-w-7xl relative lg:py-10 md:py-10 sm:py-10 py-8">
           {isConfirmedEmpty ? (
-            /* ── CONFIRMED EMPTY: clean full-width message, no sidebar,
-                no sort dropdown — there's genuinely nothing to filter
-                or sort. ── */
             <div className="flex flex-col items-center justify-center py-24 text-center">
               <div className="w-16 h-16 rounded-2xl bg-pink/8 border border-pink/15 flex items-center justify-center mb-5">
                 <SearchX size={26} className="text-pink" />
@@ -543,8 +533,7 @@ export default function ShopPage({ slug }: Props) {
         </div>
       </section>
 
-      {/* ══ MOBILE FLOATING FILTER + SORT PILLS — hidden entirely when
-          there's genuinely nothing to filter/sort. ══ */}
+      {/*MOBILE FLOATING FILTER + SORT PILLS — hidden entirely when*/}
       {!isConfirmedEmpty && (
         <div className="lg:hidden fixed left-0 right-0 z-290 flex items-center justify-center gap-2.5 px-4 pointer-events-none bottom-[calc(3.5rem+12px+env(safe-area-inset-bottom))]">
           <button

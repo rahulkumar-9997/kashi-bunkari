@@ -2,6 +2,7 @@ export const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
 
 export const API_ENDPOINTS = {
   banners: `${API_BASE_URL}/api/home/banner`,
+  collections: `${API_BASE_URL}/api/home/collections`,
   occasion: `${API_BASE_URL}/api/home/occasion`,
   popularProducts: `${API_BASE_URL}/api/home/popular-products`,
   newArrivals: `${API_BASE_URL}/api/home/new-arrivals`,
