@@ -1,7 +1,7 @@
 "use client";
 import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
-import { useCart } from "./CartContext";
+import { useCart } from "@/components/CartContext";
 import { useAuth } from "@/context/AuthContext";
 import { useAuthModal } from "@/context/AuthModalContext";
 import Image from "next/image";
@@ -14,6 +14,9 @@ import {
   LogOut,
   HelpCircle,
 } from "lucide-react";
+import SearchSuggestionsDropdown, {
+  type SearchSuggestionsDropdownHandle,
+} from "./SearchSuggestionsDropdown";
 
 export default function LogoSearchBar({
   onMenuOpen,
@@ -27,11 +30,18 @@ export default function LogoSearchBar({
   const [scrolled, setScrolled] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchValue, setSearchValue] = useState("");
+  const [mobileSearchValue, setMobileSearchValue] = useState("");
   const [isSearchFocused, setIsSearchFocused] = useState(false);
+  const [showDesktopSuggestions, setShowDesktopSuggestions] = useState(false);
+  const [showMobileSuggestions, setShowMobileSuggestions] = useState(false);
   const [currentSuggestionIndex, setCurrentSuggestionIndex] = useState(0);
   const [animating, setAnimating] = useState(false);
   const [showAccountMenu, setShowAccountMenu] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
+  const desktopSearchWrapRef = useRef<HTMLDivElement>(null);
+  const desktopDropdownRef = useRef<SearchSuggestionsDropdownHandle>(null);
+  const mobileDropdownRef = useRef<SearchSuggestionsDropdownHandle>(null);
+  const mobileSearchWrapRef = useRef<HTMLDivElement>(null);
   const menuRef = useRef<HTMLDivElement>(null);
   const hoverTimeout = useRef<NodeJS.Timeout | null>(null);
 
@@ -65,22 +75,34 @@ export default function LogoSearchBar({
     return () => clearInterval(interval);
   }, [searchSuggestions.length]);
 
-  
   useEffect(() => {
     const handleEscape = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
         setShowAccountMenu(false);
+        setShowDesktopSuggestions(false);
+        setShowMobileSuggestions(false);
       }
     };
     document.addEventListener("keydown", handleEscape);
     return () => document.removeEventListener("keydown", handleEscape);
   }, []);
 
-  
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
         setShowAccountMenu(false);
+      }
+      if (
+        desktopSearchWrapRef.current &&
+        !desktopSearchWrapRef.current.contains(event.target as Node)
+      ) {
+        setShowDesktopSuggestions(false);
+      }
+      if (
+        mobileSearchWrapRef.current &&
+        !mobileSearchWrapRef.current.contains(event.target as Node)
+      ) {
+        setShowMobileSuggestions(false);
       }
     };
     document.addEventListener("mousedown", handleClickOutside);
@@ -130,7 +152,7 @@ export default function LogoSearchBar({
     hoverTimeout.current = setTimeout(() => {
       setShowAccountMenu(false);
       hoverTimeout.current = null;
-    }, 200); 
+    }, 200);
   };
 
   const handleMenuItemMouseEnter = () => {
@@ -227,15 +249,25 @@ export default function LogoSearchBar({
           </div>
 
           {/* Center: Desktop Search */}
-          <div className="flex-1 max-w-130 mx-auto relative hidden md:block px-4">
+          <div
+            className="flex-1 max-w-130 mx-auto relative hidden md:block px-4"
+            ref={desktopSearchWrapRef}
+          >
             <div className="relative">
               <input
                 ref={inputRef}
                 type="search"
                 value={searchValue}
-                onChange={(e) => setSearchValue(e.target.value)}
-                onFocus={() => setIsSearchFocused(true)}
+                onChange={(e) => {
+                  setSearchValue(e.target.value);
+                  setShowDesktopSuggestions(true);
+                }}
+                onFocus={() => {
+                  setIsSearchFocused(true);
+                  if (searchValue) setShowDesktopSuggestions(true);
+                }}
                 onBlur={() => setIsSearchFocused(false)}
+                onKeyDown={(e) => desktopDropdownRef.current?.handleKeyDown(e)}
                 className="w-full bg-gray-50 border border-gray-200 rounded-full pl-11 pr-5 py-2.5 font-sans text-[13px] text-gray-700 outline-none focus:border-pink focus:bg-white transition-all"
                 style={{ color: searchValue ? "#374151" : "transparent" }}
               />
@@ -269,6 +301,18 @@ export default function LogoSearchBar({
                 </svg>
               </button>
             </div>
+
+            {showDesktopSuggestions && (
+              <SearchSuggestionsDropdown
+                ref={desktopDropdownRef}
+                query={searchValue}
+                onNavigate={() => {
+                  setShowDesktopSuggestions(false);
+                  setSearchValue("");
+                }}
+                onSelectText={(text) => setSearchValue(text)}
+              />
+            )}
           </div>
 
           {/* ── Desktop Right: Icons ── */}
@@ -470,9 +514,18 @@ export default function LogoSearchBar({
       {/* Mobile search drawer */}
       {searchOpen && (
         <div className="md:hidden w-full bg-white px-4 py-3 border-b border-gray-100 sticky top-16 z-[290]">
-          <div className="relative">
+          <div className="relative" ref={mobileSearchWrapRef}>
             <input
               type="search"
+              value={mobileSearchValue}
+              onChange={(e) => {
+                setMobileSearchValue(e.target.value);
+                setShowMobileSuggestions(true);
+              }}
+              onFocus={() => {
+                if (mobileSearchValue) setShowMobileSuggestions(true);
+              }}
+              onKeyDown={(e) => mobileDropdownRef.current?.handleKeyDown(e)}
               placeholder="Search for products, brands and more"
               className="w-full bg-gray-50 border border-gray-200 rounded-full pl-5 pr-11 py-2.5 font-sans text-[13px] text-gray-700 outline-none focus:border-pink focus:bg-white transition-all placeholder:text-gray-400"
               autoFocus
@@ -490,6 +543,19 @@ export default function LogoSearchBar({
                 <path d="M21 21l-4.35-4.35" strokeLinecap="round" />
               </svg>
             </button>
+
+            {showMobileSuggestions && (
+              <SearchSuggestionsDropdown
+                ref={mobileDropdownRef}
+                query={mobileSearchValue}
+                onNavigate={() => {
+                  setShowMobileSuggestions(false);
+                  setMobileSearchValue("");
+                  setSearchOpen(false);
+                }}
+                onSelectText={(text) => setMobileSearchValue(text)}
+              />
+            )}
           </div>
         </div>
       )}
@@ -500,7 +566,8 @@ export default function LogoSearchBar({
       ══════════════════════════════════════ */}
       <div
         className="md:hidden fixed bottom-0 left-0 right-0 z-300 bg-white border-t border-gray-100 shadow-[0_-4px_16px_rgba(0,0,0,0.06)]"
-        style={{ paddingBottom: "env(safe-area-inset-bottom, 0px)" }}>
+        style={{ paddingBottom: "env(safe-area-inset-bottom, 0px)" }}
+      >
         <div className="flex items-stretch divide-x divide-gray-100 max-w-7xl mx-auto">
           <a
             href="/"

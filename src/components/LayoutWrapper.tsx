@@ -1,9 +1,9 @@
 "use client";
 import { useState } from "react";
 import { CartProvider } from "@/components/CartContext";
-import { TopBar } from "@/components/TopBar";
-import Navbar from "@/components/Navbar";
-import MobileCanvas from "@/components/MobileCanvas";
+import { TopBar } from "@/components/Navbar/TopBar";
+import Navbar from "@/components/Navbar/Navbar";
+import MobileCanvas from "@/components/Navbar/MobileCanvas";
 import CartDrawer from "@/components/CartDrawer";
 import Footer from "@/components/Footer";
 import { AuthModalProvider } from "@/context/AuthModalContext";

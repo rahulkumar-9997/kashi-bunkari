@@ -21,8 +21,6 @@ export default function MobileCanvas({ isOpen, onClose }: Props) {
 
   const handleClose = () => {
     onClose();
-    // Reset back to the root panel next time it opens, after the close
-    // animation would have finished.
     setTimeout(closeSubmenu, 300);
   };
 
@@ -186,8 +184,11 @@ function CategoryDetail({
 }) {
   return (
     <div className="py-2">
+      {/* FIX: was `/category/${category.title}` — wrong route prefix
+          (should be /shop/) AND wrong field (title has spaces, not a
+          slug). Now matches NavBarComponents' convention. */}
       <Link
-        href={`/category/${category.title}`}
+        href={`/shop/${category.category_slug}`}
         onClick={onNavigate}
         className="block px-5 py-3 font-inter text-[13px] font-bold text-pink border-b border-gray-100"
       >
@@ -202,7 +203,7 @@ function CategoryDetail({
             {attr.values.map((value) => (
               <li key={value.slug}>
                 <Link
-                  href={`/category/${category.category_slug}?${attr.slug}=${value.slug}`}
+                  href={`/shop/${category.category_slug}/${attr.slug}/${value.slug}`}
                   onClick={onNavigate}
                   className="flex items-center gap-2 font-inter text-[12px] text-gray-600 py-1.5 hover:text-pink transition-colors"
                 >
