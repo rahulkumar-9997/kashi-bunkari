@@ -1,5 +1,6 @@
 "use client";
 import { useState, useEffect, useRef } from "react";
+import { useRouter } from "next/navigation";
 import { useCart } from "./CartContext";
 import { useAuth } from "@/context/AuthContext";
 import { useAuthModal } from "@/context/AuthModalContext";
@@ -19,6 +20,7 @@ export default function LogoSearchBar({
 }: {
   onMenuOpen: () => void;
 }) {
+  const router = useRouter();
   const { cartCount, openCart } = useCart();
   const { openLogin } = useAuthModal();
   const { isAuthenticated, customer, logout } = useAuth();
@@ -63,7 +65,7 @@ export default function LogoSearchBar({
     return () => clearInterval(interval);
   }, [searchSuggestions.length]);
 
-  // Close dropdown on escape key
+  
   useEffect(() => {
     const handleEscape = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
@@ -74,7 +76,7 @@ export default function LogoSearchBar({
     return () => document.removeEventListener("keydown", handleEscape);
   }, []);
 
-  // Close dropdown when clicking anywhere outside it
+  
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
@@ -106,6 +108,14 @@ export default function LogoSearchBar({
     return customer.email || "";
   };
 
+  const handleWishlistClick = () => {
+    if (isAuthenticated) {
+      router.push("/account/wishlist");
+    } else {
+      openLogin();
+    }
+  };
+
   const handleMouseEnter = () => {
     if (hoverTimeout.current) {
       clearTimeout(hoverTimeout.current);
@@ -120,7 +130,7 @@ export default function LogoSearchBar({
     hoverTimeout.current = setTimeout(() => {
       setShowAccountMenu(false);
       hoverTimeout.current = null;
-    }, 200); // small delay so moving from button -> dropdown doesn't flicker-close
+    }, 200); 
   };
 
   const handleMenuItemMouseEnter = () => {
@@ -263,10 +273,10 @@ export default function LogoSearchBar({
 
           {/* ── Desktop Right: Icons ── */}
           <div className="hidden md:flex items-center gap-1 shrink-0">
-            {/* Desktop — Wishlist */}
+            {/* Desktop — Wishlist (auth-gated: /account/wishlist or login modal) */}
             <button
               className="flex flex-col items-center gap-0.5 px-3 py-1.5 text-maroon hover:text-pink transition-colors cursor-pointer"
-              onClick={() => console.log("Wishlist")}
+              onClick={handleWishlistClick}
             >
               <svg
                 width="22"
@@ -521,9 +531,9 @@ export default function LogoSearchBar({
             </span>
           </a>
 
-          {/* Wishlist */}
+          {/* Wishlist — auth-gated: /account/wishlist or login modal */}
           <button
-            onClick={() => console.log("Wishlist")}
+            onClick={handleWishlistClick}
             className="flex-1 min-w-0 flex flex-col items-center justify-center gap-0.5 py-2.5 text-maroon hover:text-pink transition-colors cursor-pointer"
           >
             <svg
