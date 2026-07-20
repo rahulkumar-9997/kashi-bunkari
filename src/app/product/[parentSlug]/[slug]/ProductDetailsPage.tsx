@@ -6,6 +6,7 @@ import "@fancyapps/ui/dist/fancybox/fancybox.css";
 import Heading from "@/components/Heading/Heading";
 import Breadcrumb from "@/components/Breadcrumb/Breadcrumb";
 import { useCart } from "@/components/Cart/CartContext";
+import { toast } from "sonner";
 import {
   ChevronUp,
   Heart,
@@ -66,12 +67,14 @@ function formatPrice(value: number) {
 }
 export default function ProductDetailsPage({ product: data }: Props) {
   const { addToCart } = useCart();
-  const [addingToCart, setAddingToCart] = useState(false); 
-  const product = data.product_details;  
+  const [addingToCart, setAddingToCart] = useState(false);
+  const product = data.product_details;
   const [activeThumb, setActiveThumb] = useState(0);
   const [qty, setQty] = useState(1);
   const [wished, setWished] = useState(false);
-  const [expandedAccordion, setExpandedAccordion] = useState<string | null>("description");
+  const [expandedAccordion, setExpandedAccordion] = useState<string | null>(
+    "description",
+  );
   const [shareOpen, setShareOpen] = useState(false);
   const [copied, setCopied] = useState(false);
   const [pageUrl, setPageUrl] = useState("");
@@ -86,8 +89,9 @@ export default function ProductDetailsPage({ product: data }: Props) {
     try {
       setAddingToCart(true);
       await addToCart(product.id, qty);
-    } catch (err) {
-      console.error(err);
+      //toast.success("Added to cart!");
+    } catch (err: any) {
+      toast.error(err.message || "Could not add product to cart.");
     } finally {
       setAddingToCart(false);
     }
@@ -129,15 +133,41 @@ export default function ProductDetailsPage({ product: data }: Props) {
 
   const shareTargets = product
     ? [
-        { name: "Facebook", icon: FacebookIcon, bg: "#1877F2", href: `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(pageUrl)}` },
-        { name: "Pinterest", icon: PinterestIcon, bg: "#E60023", href: `https://pinterest.com/pin/create/button/?url=${encodeURIComponent(pageUrl)}&description=${encodeURIComponent(product.title)}` },
-        { name: "Twitter", icon: TwitterIcon, bg: "#000000", href: `https://twitter.com/intent/tweet?url=${encodeURIComponent(pageUrl)}&text=${encodeURIComponent(product.title)}` },
-        { name: "WhatsApp", icon: WhatsAppIcon, bg: "#25D366", href: `https://wa.me/?text=${encodeURIComponent(product.title + " " + pageUrl)}` },
+        {
+          name: "Facebook",
+          icon: FacebookIcon,
+          bg: "#1877F2",
+          href: `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(pageUrl)}`,
+        },
+        {
+          name: "Pinterest",
+          icon: PinterestIcon,
+          bg: "#E60023",
+          href: `https://pinterest.com/pin/create/button/?url=${encodeURIComponent(pageUrl)}&description=${encodeURIComponent(product.title)}`,
+        },
+        {
+          name: "Twitter",
+          icon: TwitterIcon,
+          bg: "#000000",
+          href: `https://twitter.com/intent/tweet?url=${encodeURIComponent(pageUrl)}&text=${encodeURIComponent(product.title)}`,
+        },
+        {
+          name: "WhatsApp",
+          icon: WhatsAppIcon,
+          bg: "#25D366",
+          href: `https://wa.me/?text=${encodeURIComponent(product.title + " " + pageUrl)}`,
+        },
       ]
     : [];
 
-  const images = product.image_larges.length > 0 ? product.image_larges.map((i) => i.image_large) : [];
-  const thumbs = product.image_thumbs.length > 0 ? product.image_thumbs.map((i) => i.image_thumb) : images;
+  const images =
+    product.image_larges.length > 0
+      ? product.image_larges.map((i) => i.image_large)
+      : [];
+  const thumbs =
+    product.image_thumbs.length > 0
+      ? product.image_thumbs.map((i) => i.image_thumb)
+      : images;
 
   const displayedMain =
     images.length >= 2
@@ -146,20 +176,27 @@ export default function ProductDetailsPage({ product: data }: Props) {
 
   const selectThumb = (index: number) => {
     setActiveThumb(index);
-    (thumbRailRef.current?.children[index] as HTMLElement | undefined)?.scrollIntoView({
+    (
+      thumbRailRef.current?.children[index] as HTMLElement | undefined
+    )?.scrollIntoView({
       behavior: "smooth",
       block: "nearest",
       inline: "nearest",
     });
-    (mobileThumbRailRef.current?.children[index] as HTMLElement | undefined)?.scrollIntoView({
+    (
+      mobileThumbRailRef.current?.children[index] as HTMLElement | undefined
+    )?.scrollIntoView({
       behavior: "smooth",
       block: "nearest",
       inline: "nearest",
     });
   };
 
-  const goToPrevThumb = () => images.length && selectThumb((activeThumb - 1 + images.length) % images.length);
-  const goToNextThumb = () => images.length && selectThumb((activeThumb + 1) % images.length);
+  const goToPrevThumb = () =>
+    images.length &&
+    selectThumb((activeThumb - 1 + images.length) % images.length);
+  const goToNextThumb = () =>
+    images.length && selectThumb((activeThumb + 1) % images.length);
 
   const openZoom = (startIndex: number) => {
     if (!fancyboxRef.current || images.length === 0) return;
@@ -169,17 +206,35 @@ export default function ProductDetailsPage({ product: data }: Props) {
       Toolbar: {
         display: {
           left: ["infobar"],
-          middle: ["zoomIn", "zoomOut", "toggle1to1", "rotateCCW", "rotateCW", "flipX", "flipY"],
+          middle: [
+            "zoomIn",
+            "zoomOut",
+            "toggle1to1",
+            "rotateCCW",
+            "rotateCW",
+            "flipX",
+            "flipY",
+          ],
           right: ["slideshow", "download", "thumbs", "close"],
         },
       },
-      Images: { zoom: true, zoomOpacity: "auto", click: "close", wheel: "slide" },
+      Images: {
+        zoom: true,
+        zoomOpacity: "auto",
+        click: "close",
+        wheel: "slide",
+      },
     });
   };
 
   const price = product.offer_rate ?? product.mrp;
-  const hasDiscount = product.offer_rate != null && product.mrp != null && product.mrp > product.offer_rate;
-  const discountPct = hasDiscount ? Math.round((1 - product.offer_rate! / product.mrp!) * 100) : null;
+  const hasDiscount =
+    product.offer_rate != null &&
+    product.mrp != null &&
+    product.mrp > product.offer_rate;
+  const discountPct = hasDiscount
+    ? Math.round((1 - product.offer_rate! / product.mrp!) * 100)
+    : null;
   const inStock = product.stock_quantity == null || product.stock_quantity > 0;
   const specRows = product.attributes
     .filter((attr) => attr.values.length > 0)
@@ -191,23 +246,23 @@ export default function ProductDetailsPage({ product: data }: Props) {
   return (
     <div className="w-full min-h-screen bg-white">
       <Breadcrumb
-      items={[
-        { label: "Home", href: "/" },
-        {
-          label: product.category.title,
-          href: `/shop/${product.category.slug}`,
-        },
-        ...(data.attribute && data.attributes_value_name
-        ? [
-            {
-              label: data.attributes_value_name.title,
-              href: `/shop/${data.product_details.category.slug}/${data.attribute.slug}/${data.attributes_value_name.slug}`,
-            },
-          ]
-        : []),
-        { label: product.title },
-      ]}
-    />
+        items={[
+          { label: "Home", href: "/" },
+          {
+            label: product.category.title,
+            href: `/shop/${product.category.slug}`,
+          },
+          ...(data.attribute && data.attributes_value_name
+            ? [
+                {
+                  label: data.attributes_value_name.title,
+                  href: `/shop/${data.product_details.category.slug}/${data.attribute.slug}/${data.attributes_value_name.slug}`,
+                },
+              ]
+            : []),
+          { label: product.title },
+        ]}
+      />
 
       <section className="w-full py-10 md:py-14">
         <div className="mx-auto max-w-7xl px-4 md:px-2 lg:px-1">
@@ -272,7 +327,8 @@ export default function ProductDetailsPage({ product: data }: Props) {
                           type="button"
                           onClick={() => openZoom(realIndex)}
                           className="group relative block w-full overflow-hidden rounded-lg bg-gray-50 border border-gray-100 cursor-zoom-in"
-                          style={{ aspectRatio: "4/5" }}>
+                          style={{ aspectRatio: "4/5" }}
+                        >
                           <Image
                             src={img}
                             alt={`${product.title} view ${i + 1}`}
@@ -297,7 +353,10 @@ export default function ProductDetailsPage({ product: data }: Props) {
                       );
                     })
                   ) : (
-                    <div className="col-span-2 flex items-center justify-center bg-gray-50 rounded-lg border border-gray-100" style={{ aspectRatio: "4/5" }}>
+                    <div
+                      className="col-span-2 flex items-center justify-center bg-gray-50 rounded-lg border border-gray-100"
+                      style={{ aspectRatio: "4/5" }}
+                    >
                       <ImageOff size={32} className="text-gray-300" />
                     </div>
                   )}
@@ -358,8 +417,16 @@ export default function ProductDetailsPage({ product: data }: Props) {
                   onClick={() => setWished((v) => !v)}
                   className={`w-8 h-8 sm:w-9 sm:h-9 rounded-full flex items-center justify-center shadow-sm border transition-all duration-200 ${wished ? "bg-pink border-pink text-white" : "bg-white border-gray-200 text-gray-400"}`}
                 >
-                  <Heart size={14} className="sm:hidden" fill={wished ? "currentColor" : "none"} />
-                  <Heart size={15} className="hidden sm:block" fill={wished ? "currentColor" : "none"} />
+                  <Heart
+                    size={14}
+                    className="sm:hidden"
+                    fill={wished ? "currentColor" : "none"}
+                  />
+                  <Heart
+                    size={15}
+                    className="hidden sm:block"
+                    fill={wished ? "currentColor" : "none"}
+                  />
                 </button>
                 <button
                   onClick={() => setShareOpen(true)}
@@ -416,7 +483,9 @@ export default function ProductDetailsPage({ product: data }: Props) {
                     )}
                   </>
                 ) : (
-                  <span className="font-sans text-[16px] text-gray-500">Price on request</span>
+                  <span className="font-sans text-[16px] text-gray-500">
+                    Price on request
+                  </span>
                 )}
               </div>
 
@@ -424,7 +493,10 @@ export default function ProductDetailsPage({ product: data }: Props) {
               {specRows.length > 0 && (
                 <div className="mb-6 sm:mb-7 space-y-3 sm:space-y-3.5">
                   {specRows.map((row) => (
-                    <div key={row.label} className="flex items-baseline gap-2 flex-wrap">
+                    <div
+                      key={row.label}
+                      className="flex items-baseline gap-2 flex-wrap"
+                    >
                       <span className="font-sans text-[16px] font-semibold text-gray-700">
                         {row.label}:
                       </span>
@@ -441,8 +513,16 @@ export default function ProductDetailsPage({ product: data }: Props) {
                     onClick={() => setWished((v) => !v)}
                     className={`w-8 h-8 sm:w-9 sm:h-9 rounded-full flex items-center cursor-pointer justify-center shadow-sm border transition-all duration-200 ${wished ? "bg-pink border-pink text-white" : "bg-white border-gray-200 text-gray-400"}`}
                   >
-                    <Heart size={14} className="sm:hidden" fill={wished ? "currentColor" : "none"} />
-                    <Heart size={15} className="hidden sm:block" fill={wished ? "currentColor" : "none"} />
+                    <Heart
+                      size={14}
+                      className="sm:hidden"
+                      fill={wished ? "currentColor" : "none"}
+                    />
+                    <Heart
+                      size={15}
+                      className="hidden sm:block"
+                      fill={wished ? "currentColor" : "none"}
+                    />
                   </button>
                   <span className="absolute -bottom-8 left-1/2 -translate-x-1/2 whitespace-nowrap bg-gray-800 text-white text-[10px] font-medium px-2 py-0.5 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none">
                     Wishlist
@@ -466,13 +546,16 @@ export default function ProductDetailsPage({ product: data }: Props) {
                   </button>
                 </div>
                 <button
-                  disabled={!inStock || addingToCart} onClick={handleAddToCart}
+                  disabled={!inStock || addingToCart}
+                  onClick={handleAddToCart}
                   className="flex-1 flex items-center justify-center gap-2 sm:gap-2.5 rounded-xl font-sans text-[12px] sm:text-[13px] font-bold uppercase tracking-widest sm:tracking-[0.12em] text-white py-3 sm:py-0 transition-all duration-200 hover:opacity-90 hover:-translate-y-0.5 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-y-0"
-                  style={{ background: "linear-gradient(135deg,#8b1a34,#e91e8c)" }}
+                  style={{
+                    background: "linear-gradient(135deg,#8b1a34,#e91e8c)",
+                  }}
                 >
                   <ShoppingBag size={15} className="sm:hidden" />
                   <ShoppingBag size={17} className="hidden sm:block" />
-                   {addingToCart ? "Adding..." : "Add to Cart"}
+                  {addingToCart ? "Adding..." : "Add to Cart"}
                 </button>
               </div>
 
@@ -486,7 +569,10 @@ export default function ProductDetailsPage({ product: data }: Props) {
               {product.sku && (
                 <p className="font-sans text-[10.5px] sm:text-[11.5px] text-gray-400 flex flex-wrap gap-x-3 gap-y-1 mb-6 sm:mb-7">
                   <span>
-                    SKU: <span className="text-gray-600 font-medium">{product.sku}</span>
+                    SKU:{" "}
+                    <span className="text-gray-600 font-medium">
+                      {product.sku}
+                    </span>
                   </span>
                 </p>
               )}
@@ -510,8 +596,14 @@ export default function ProductDetailsPage({ product: data }: Props) {
                   {showShipping && (
                     <ul className="px-3.5 sm:px-4 py-3.5 sm:py-2 space-y-2 sm:space-y-2.5">
                       {SHIPPING_INFO.map((line, i) => (
-                        <li key={i} className="flex items-start gap-2 sm:gap-2.5 font-sans text-[14px] text-gray-600 leading-relaxed">
-                          <Check size={13} className="text-pink shrink-0 mt-0.5" />
+                        <li
+                          key={i}
+                          className="flex items-start gap-2 sm:gap-2.5 font-sans text-[14px] text-gray-600 leading-relaxed"
+                        >
+                          <Check
+                            size={13}
+                            className="text-pink shrink-0 mt-0.5"
+                          />
                           {line}
                         </li>
                       ))}
@@ -536,8 +628,14 @@ export default function ProductDetailsPage({ product: data }: Props) {
                   {showCare && (
                     <ul className="px-3.5 sm:px-4 py-3.5 sm:py-2 space-y-2 sm:space-y-2.5">
                       {CARE_GUIDE.map((line, i) => (
-                        <li key={i} className="flex items-start gap-2 sm:gap-2.5 font-sans text-[14px] text-gray-600 leading-relaxed">
-                          <Check size={13} className="text-pink shrink-0 mt-0.5" />
+                        <li
+                          key={i}
+                          className="flex items-start gap-2 sm:gap-2.5 font-sans text-[14px] text-gray-600 leading-relaxed"
+                        >
+                          <Check
+                            size={13}
+                            className="text-pink shrink-0 mt-0.5"
+                          />
                           {line}
                         </li>
                       ))}
@@ -551,16 +649,24 @@ export default function ProductDetailsPage({ product: data }: Props) {
       </section>
 
       {/* Description / Specification */}
-      {(product.product_description || product.product_short_description || product.product_specification) && (
+      {(product.product_description ||
+        product.product_short_description ||
+        product.product_specification) && (
         <section className="w-full pt-0 pb-10 md:pb-7">
           <div className="mx-auto max-w-7xl px-4 md:px-2 lg:px-1">
             <div className="space-y-2.5 sm:space-y-3">
               <div className="border border-gray-100 rounded-xl overflow-hidden">
                 <button
-                  onClick={() => setExpandedAccordion((v) => (v === "description" ? null : "description"))}
+                  onClick={() =>
+                    setExpandedAccordion((v) =>
+                      v === "description" ? null : "description",
+                    )
+                  }
                   className="w-full flex items-center justify-between px-3.5 sm:px-3 py-3.5 sm:py-3 bg-gray-50/60 cursor-pointer"
                 >
-                  <span className="font-serif text-[24px] font-bold text-maroon leading-6.5">Description</span>
+                  <span className="font-serif text-[24px] font-bold text-maroon leading-6.5">
+                    Description
+                  </span>
                   <ChevronDown
                     size={15}
                     className={`text-gray-400 transition-transform duration-200 ${expandedAccordion === "description" ? "rotate-180" : ""}`}
@@ -568,18 +674,24 @@ export default function ProductDetailsPage({ product: data }: Props) {
                 </button>
                 {expandedAccordion === "description" && (
                   <div className="px-3.5 sm:px-4 pt-2 pb-6 space-y-4">
-                    {(product.product_description || product.product_short_description) && (
+                    {(product.product_description ||
+                      product.product_short_description) && (
                       <div
                         className="font-sans text-[14px] text-gray-600 leading-relaxed body-content"
                         dangerouslySetInnerHTML={{
-                          __html: product.product_description || product.product_short_description || "",
+                          __html:
+                            product.product_description ||
+                            product.product_short_description ||
+                            "",
                         }}
                       />
                     )}
                     {product.product_specification && (
                       <div
                         className="font-sans text-[14px] text-gray-600 leading-relaxed"
-                        dangerouslySetInnerHTML={{ __html: product.product_specification }}
+                        dangerouslySetInnerHTML={{
+                          __html: product.product_specification,
+                        }}
                       />
                     )}
                   </div>
@@ -606,23 +718,28 @@ export default function ProductDetailsPage({ product: data }: Props) {
                 />
               </div>
             </div>
- 
+
             <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 md:gap-5">
               {data.related_products.map((item) => {
                 const itemPrice = item.offer_rate ?? item.mrp;
                 const itemHasDiscount =
-                  item.offer_rate != null && item.mrp != null && item.mrp > item.offer_rate;
+                  item.offer_rate != null &&
+                  item.mrp != null &&
+                  item.mrp > item.offer_rate;
                 const itemDiscountPct = itemHasDiscount
                   ? Math.round((1 - item.offer_rate! / item.mrp!) * 100)
                   : null;
- 
+
                 return (
                   <Link
                     key={item.id}
                     href={`/product/${item.slug}/${item.attribute_value_slug}`}
                     className="prod-card block outline-none select-none w-full border border-gray-200 rounded-xl bg-white transition-all duration-300 ease-in-out hover:border-maroon/30 cursor-pointer hover:shadow-md overflow-hidden"
                   >
-                    <div className="prod-shell relative overflow-hidden rounded-t-xl bg-gray-100" style={{ aspectRatio: "3/4" }}>
+                    <div
+                      className="prod-shell relative overflow-hidden rounded-t-xl bg-gray-100"
+                      style={{ aspectRatio: "3/4" }}
+                    >
                       {item.image ? (
                         <div className="prod-img absolute inset-0">
                           <Image
@@ -673,7 +790,9 @@ export default function ProductDetailsPage({ product: data }: Props) {
                           )}
                         </div>
                       ) : (
-                        <span className="font-sans text-[11.5px] text-gray-400">Price on request</span>
+                        <span className="font-sans text-[11.5px] text-gray-400">
+                          Price on request
+                        </span>
                       )}
                     </div>
                   </Link>
@@ -683,15 +802,24 @@ export default function ProductDetailsPage({ product: data }: Props) {
           </div>
         </section>
       )}
- 
 
       {/* ══ Share Modal ══ */}
       {shareOpen && (
-        <div className="fixed inset-0 z-100 flex items-center justify-center px-4" role="dialog" aria-modal="true" aria-label="Share this product">
-          <div className="absolute inset-0 bg-black/40 backdrop-blur-[2px]" onClick={() => setShareOpen(false)} />
+        <div
+          className="fixed inset-0 z-100 flex items-center justify-center px-4"
+          role="dialog"
+          aria-modal="true"
+          aria-label="Share this product"
+        >
+          <div
+            className="absolute inset-0 bg-black/40 backdrop-blur-[2px]"
+            onClick={() => setShareOpen(false)}
+          />
           <div className="relative w-full max-w-105 bg-white rounded-2xl shadow-2xl p-5 sm:p-6 animate-in fade-in zoom-in-95 duration-150">
             <div className="flex items-center justify-between mb-5 sm:mb-6">
-              <h3 className="font-serif text-[20px] sm:text-[22px] font-bold text-maroon">Share</h3>
+              <h3 className="font-serif text-[20px] sm:text-[22px] font-bold text-maroon">
+                Share
+              </h3>
               <button
                 onClick={() => setShareOpen(false)}
                 aria-label="Close share dialog"
@@ -700,7 +828,9 @@ export default function ProductDetailsPage({ product: data }: Props) {
                 <X size={18} />
               </button>
             </div>
-            <p className="font-sans text-[10.5px] sm:text-[11px] font-bold uppercase tracking-widest text-gray-500 mb-2">Copy Link</p>
+            <p className="font-sans text-[10.5px] sm:text-[11px] font-bold uppercase tracking-widest text-gray-500 mb-2">
+              Copy Link
+            </p>
             <div className="flex items-center gap-2 mb-6 sm:mb-7">
               <input
                 readOnly
@@ -715,7 +845,9 @@ export default function ProductDetailsPage({ product: data }: Props) {
                 {copied ? "Copied" : "Copy"}
               </button>
             </div>
-            <p className="font-sans text-[10.5px] sm:text-[11px] font-bold uppercase tracking-widest text-gray-500 mb-3">Share Now</p>
+            <p className="font-sans text-[10.5px] sm:text-[11px] font-bold uppercase tracking-widest text-gray-500 mb-3">
+              Share Now
+            </p>
             <div className="flex items-center gap-3 sm:gap-3.5">
               {shareTargets.map((target) => (
                 <a
