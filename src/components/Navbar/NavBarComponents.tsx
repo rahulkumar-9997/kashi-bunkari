@@ -71,7 +71,7 @@ export default function NavBarComponents() {
                 >
                   <Link
                     href={`/shop/${category.category_slug}`}
-                    className="text-gray-600 relative flex items-center gap-1.5 px-4 h-11 font-sans text-[15px] font-medium whitespace-nowrap transition-colors duration-200 cursor-pointer"
+                    className="text-gray-600 hover:text-maroon relative flex items-center gap-1.5 px-4 h-11 font-sans text-[15px] font-medium whitespace-nowrap transition-colors duration-200 cursor-pointer"
                   >
                     {category.title}
                     {category.attributes.length > 0 && (
@@ -155,7 +155,7 @@ export default function NavBarComponents() {
                 onMouseEnter={() => setActiveDropdown("occasion")}
                 onMouseLeave={() => setActiveDropdown(null)}
               >
-                <button className="text-gray-600 relative flex items-center gap-1.5 px-4 h-11 font-sans text-[15px] font-medium whitespace-nowrap transition-colors duration-200 cursor-pointer">
+                <button className="text-gray-600 hover:text-maroon relative flex items-center gap-1.5 px-4 h-11 font-sans text-[15px] font-medium whitespace-nowrap transition-colors duration-200 cursor-pointer">
                   Shop By Occasion
                   <svg
                     className={`w-2.5 h-2.5 opacity-50 shrink-0 transition-transform duration-300 ${activeDropdown === "occasion" ? "rotate-180" : ""}`}
@@ -194,7 +194,7 @@ export default function NavBarComponents() {
                 onMouseEnter={() => setActiveDropdown("collection")}
                 onMouseLeave={() => setActiveDropdown(null)}
               >
-                <button className="text-gray-600 relative flex items-center gap-1.5 px-4 h-11 font-sans text-[15px] font-medium whitespace-nowrap transition-colors duration-200 cursor-pointer">
+                <button className="text-gray-600 hover:text-maroon relative flex items-center gap-1.5 px-4 h-11 font-sans text-[15px] font-medium whitespace-nowrap transition-colors duration-200 cursor-pointer">
                   Shop By Collection
                   <svg
                     className={`w-2.5 h-2.5 opacity-50 shrink-0 transition-transform duration-300 ${activeDropdown === "collection" ? "rotate-180" : ""}`}

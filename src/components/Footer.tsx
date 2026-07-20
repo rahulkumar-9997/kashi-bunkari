@@ -11,32 +11,28 @@ export const FOOTER_LINKS = [
     links: [
       {
         title: "New Arrivals",
-        href: "#",
+        href: "/shop/new-arrival",
       },
       {
-        title: "Banarasi Sarees",
-        href: "#",
+        title: "Sarees",
+        href: "/shop/sarees",
       },
       {
-        title: "Designer Lehenga",
-        href: "#",
+        title: "Souit",
+        href: "/shop/suits",
       },
       {
-        title: "Party Wear Suits",
-        href: "#",
+        title: "Party Wear Saree",
+        href: "/shop/party",
       },
       {
-        title: "Festive Collection",
-        href: "#",
+        title: "Festive Saree",
+        href: "/shop/festival",
       },
       {
-        title: "Unstitched Suits",
-        href: "#",
-      },
-      {
-        title: "Flash Sale",
-        href: "#",
-      },
+        title: "Wedding Saree",
+        href: "shop/wedding",
+      },      
     ],
   },
   {
@@ -203,16 +199,6 @@ const FOOTER_BOTTOM_LINKS = [
   { title: "Terms and Conditions", href: "/terms-and-conditions" },
 ];
 export default function Footer() {
-  const [email, setEmail] = useState("");
-  const [subscribed, setSubscribed] = useState(false);
-
-  const handleSubscribe = () => {
-    if (email.trim()) {
-      setSubscribed(true);
-      setEmail("");
-    }
-  };
-
   return (
     <footer className="w-full bg-zinc-100">
       <div
@@ -251,7 +237,7 @@ export default function Footer() {
                     key={label}
                     href={href}
                     aria-label={label}
-                    className="w-9 h-9 rounded-xl border border-gray-200 flex items-center justify-center text-gray-400 hover:text-pink hover:border-pink hover:bg-pink/5 hover:-translate-y-0.5 transition-all duration-200"
+                    className="w-9 h-9 rounded-xl border border-gray-200 flex items-center justify-center text-white hover:text-pink hover:border-pink hover:bg-pink/5 hover:-translate-y-0.5 transition-all duration-200 bg-maroon"
                   >
                     {icon}
                   </a>
@@ -323,6 +309,17 @@ export default function Footer() {
             © {currentYear} Kasibunkari India Pvt. Ltd. All Rights Reserved.
             <span className="hidden sm:inline ml-1">
               · Crafted with love in Varanasi.
+            </span>
+            <span className="hidden sm:inline ml-1">
+              · Designed &amp; Developed by{" "}
+              <a
+                href="https://wizards.co.in/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="font-medium text-maroon hover:text-pink transition-colors"
+              >
+                Wizards Next.
+              </a>
             </span>
           </p>
           <div className="flex items-center gap-4">
