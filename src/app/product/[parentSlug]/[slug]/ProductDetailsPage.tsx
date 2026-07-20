@@ -561,8 +561,7 @@ export default function ProductDetailsPage({ product: data }: Props) {
 
               <button
                 disabled={!inStock}
-                className="w-full rounded-xl border-2 border-gray-900 text-gray-900 font-sans text-[12px] sm:text-[13px] font-bold uppercase tracking-widest sm:tracking-[0.12em] py-3 sm:py-3.5 mb-6 sm:mb-7 hover:bg-gray-900 hover:text-white transition-all duration-200 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
-              >
+                className="w-full rounded-xl border-2 border-gray-900 text-gray-900 font-sans text-[12px] sm:text-[13px] font-bold uppercase tracking-widest sm:tracking-[0.12em] py-3 sm:py-3.5 mb-6 sm:mb-7 hover:bg-gray-900 hover:text-white transition-all duration-200 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed">
                 Buy Now
               </button>
 
