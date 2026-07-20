@@ -1,5 +1,6 @@
 import React from "react";
-
+const message = "Hello Team, I would like to know more about your products.";
+const whatsApphref = `https://wa.me/919696588343?text=${encodeURIComponent(message)}`;
 export const TopBar = () => {
   return (
     <>
@@ -8,30 +9,26 @@ export const TopBar = () => {
           <div className="flex items-center gap-3 flex-1 min-w-0">            
             <p className="font-sans text-white text-[11.5px] sm:text-[12px] font-medium tracking-wide truncate">
               <a
-                href="https://wa.me/919270588878"
+                href={whatsApphref}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-white hover:text-pink-200 transition-colors duration-200 underline-offset-2 hover:underline font-semibold"
               >
-                WhatsApp +91-9270588878
+                WhatsApp +919696588343
               </a>
               <span className="hidden sm:inline">
-                &nbsp;|&nbsp; Free Delivery above ₹2,000 &nbsp;|&nbsp; Easy
-                7-Day Returns
+                &nbsp;|&nbsp; Free Delivery above ₹20,000 &nbsp;|&nbsp; Easy
+                7-Days Easy to Returns
               </span>
             </p>
           </div>
 
           {/* Right Section - Social Icons */}
-          <div className="flex items-center gap-1.5 sm:gap-2 flex-shrink-0">
-            {/* Free Delivery - Mobile */}
-            <span className="sm:hidden text-white/90 text-[10px] font-medium px-2 py-0.5 bg-white/10 rounded-full">
-              Free ₹2000+
-            </span>
-            {/* Social Icons */}
+          <div className="flex items-center gap-1.5 sm:gap-2 flex-shrink-0">            
             <div className="flex items-center gap-1">
               <a
-                href="#"
+                href="https://www.instagram.com/kasibunkari"
+                target="_blank"
                 className="p-1.5 rounded-full hover:bg-white/20 transition-all duration-300 hover:scale-110 group"
                 aria-label="Instagram"
               >
@@ -44,7 +41,8 @@ export const TopBar = () => {
                 </svg>
               </a>
               <a
-                href="#"
+                href="https://www.facebook.com/kasibunkaridotcom"
+                target="_blank"
                 className="p-1.5 rounded-full hover:bg-white/20 transition-all duration-300 hover:scale-110 group"
                 aria-label="Facebook"
               >
@@ -56,23 +54,12 @@ export const TopBar = () => {
                   <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
                 </svg>
               </a>
+              
               <a
-                href="#"
-                className="p-1.5 rounded-full hover:bg-white/20 transition-all duration-300 hover:scale-110 group"
-                aria-label="Twitter"
-              >
-                <svg
-                  className="w-4 h-4 text-white/80 group-hover:text-white"
-                  fill="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
-                </svg>
-              </a>
-              <a
-                href="#"
+                href="https://www.youtube.com/@kasibunkari"
                 className="p-1.5 rounded-full hover:bg-white/20 transition-all duration-300 hover:scale-110 group"
                 aria-label="YouTube"
+                target="_blank"
               >
                 <svg
                   className="w-4 h-4 text-white/80 group-hover:text-white"

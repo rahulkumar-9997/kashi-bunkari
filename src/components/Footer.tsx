@@ -92,10 +92,13 @@ export const FOOTER_LINKS = [
   },
 ];
 
+const message = "Hello Team, I would like to know more about your products.";
+const href = `https://wa.me/919696588343?text=${encodeURIComponent(message)}`;
+
 const SOCIALS = [
   {
     label: "Instagram",
-    href: "#",
+    href: "https://www.instagram.com/kasibunkari",
     icon: (
       <svg
         width="16"
@@ -115,7 +118,7 @@ const SOCIALS = [
   },
   {
     label: "Facebook",
-    href: "#",
+    href: "https://www.facebook.com/kasibunkaridotcom",
     icon: (
       <svg
         width="16"
@@ -133,7 +136,7 @@ const SOCIALS = [
   },
   {
     label: "YouTube",
-    href: "#",
+    href: "https://www.youtube.com/@kasibunkari",
     icon: (
       <svg
         width="16"
@@ -152,7 +155,7 @@ const SOCIALS = [
   },
   {
     label: "WhatsApp",
-    href: "#",
+    href: href,
     icon: (
       <svg
         width="16"
@@ -181,8 +184,8 @@ const CONTACT = [
   {
     Icon: Phone,
     label: "Call Us",
-    value: "+91-9108900000",
-    href: "tel:+919108900000",
+    value: "+91 9696588343",
+    href: "tel:919696588343",
   },
   {
     Icon: Mail,
@@ -237,6 +240,7 @@ export default function Footer() {
                     key={label}
                     href={href}
                     aria-label={label}
+                    target="_blank"
                     className="w-9 h-9 rounded-xl border border-gray-200 flex items-center justify-center text-white hover:text-pink hover:border-pink hover:bg-pink/5 hover:-translate-y-0.5 transition-all duration-200 bg-maroon"
                   >
                     {icon}

@@ -281,7 +281,7 @@ export default function LogoSearchBar({
                 }}
                 onFocus={() => {
                   setIsSearchFocused(true);
-                  if (searchValue) setShowDesktopSuggestions(true);
+                  setShowDesktopSuggestions(true);
                 }}
                 onBlur={() => setIsSearchFocused(false)}
                 onKeyDown={(e) => {
@@ -291,7 +291,10 @@ export default function LogoSearchBar({
                   }
                 }}
                 className="w-full bg-gray-50 border border-gray-200 rounded-full pl-11 pr-5 py-2.5 font-sans text-[13px] text-gray-700 outline-none focus:border-pink focus:bg-white transition-all"
-                style={{ color: searchValue ? "#374151" : "transparent" }}
+                style={{
+                  color: searchValue ? "#374151" : "transparent",
+                  caretColor: "#374151",
+                }}
               />
               {showAnimatedPlaceholder && (
                 <span
