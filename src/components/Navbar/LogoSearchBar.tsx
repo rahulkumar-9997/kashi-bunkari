@@ -138,6 +138,17 @@ export default function LogoSearchBar({
     }
   };
 
+  // Navigates to the full search-results page. Used when the user hits
+  // Enter with no suggestion highlighted, or clicks the search icon.
+  const goToSearchResults = (value: string) => {
+    const q = value.trim();
+    if (!q) return;
+    setShowDesktopSuggestions(false);
+    setShowMobileSuggestions(false);
+    setSearchOpen(false);
+    router.push(`/search?query=${encodeURIComponent(q)}`);
+  };
+
   const handleMouseEnter = () => {
     if (hoverTimeout.current) {
       clearTimeout(hoverTimeout.current);
@@ -267,7 +278,12 @@ export default function LogoSearchBar({
                   if (searchValue) setShowDesktopSuggestions(true);
                 }}
                 onBlur={() => setIsSearchFocused(false)}
-                onKeyDown={(e) => desktopDropdownRef.current?.handleKeyDown(e)}
+                onKeyDown={(e) => {
+                  desktopDropdownRef.current?.handleKeyDown(e);
+                  if (e.key === "Enter" && !e.defaultPrevented) {
+                    goToSearchResults(searchValue);
+                  }
+                }}
                 className="w-full bg-gray-50 border border-gray-200 rounded-full pl-11 pr-5 py-2.5 font-sans text-[13px] text-gray-700 outline-none focus:border-pink focus:bg-white transition-all"
                 style={{ color: searchValue ? "#374151" : "transparent" }}
               />
@@ -282,7 +298,8 @@ export default function LogoSearchBar({
                 </span>
               )}
               <button
-                type="submit"
+                type="button"
+                onClick={() => goToSearchResults(searchValue)}
                 className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-pink transition-colors"
                 aria-label="Search"
               >
@@ -308,7 +325,6 @@ export default function LogoSearchBar({
                 query={searchValue}
                 onNavigate={() => {
                   setShowDesktopSuggestions(false);
-                  setSearchValue("");
                 }}
                 onSelectText={(text) => setSearchValue(text)}
               />
@@ -525,12 +541,21 @@ export default function LogoSearchBar({
               onFocus={() => {
                 if (mobileSearchValue) setShowMobileSuggestions(true);
               }}
-              onKeyDown={(e) => mobileDropdownRef.current?.handleKeyDown(e)}
+              onKeyDown={(e) => {
+                mobileDropdownRef.current?.handleKeyDown(e);
+                if (e.key === "Enter" && !e.defaultPrevented) {
+                  goToSearchResults(mobileSearchValue);
+                }
+              }}
               placeholder="Search for products, brands and more"
               className="w-full bg-gray-50 border border-gray-200 rounded-full pl-5 pr-11 py-2.5 font-sans text-[13px] text-gray-700 outline-none focus:border-pink focus:bg-white transition-all placeholder:text-gray-400"
               autoFocus
             />
-            <button className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-pink transition-colors">
+            <button
+              type="button"
+              onClick={() => goToSearchResults(mobileSearchValue)}
+              className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-pink transition-colors"
+            >
               <svg
                 width="16"
                 height="16"
@@ -550,7 +575,6 @@ export default function LogoSearchBar({
                 query={mobileSearchValue}
                 onNavigate={() => {
                   setShowMobileSuggestions(false);
-                  setMobileSearchValue("");
                   setSearchOpen(false);
                 }}
                 onSelectText={(text) => setMobileSearchValue(text)}

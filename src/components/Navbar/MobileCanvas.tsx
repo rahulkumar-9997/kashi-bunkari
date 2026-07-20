@@ -28,13 +28,13 @@ export default function MobileCanvas({ isOpen, onClose }: Props) {
     <>
       {/* Overlay */}
       <div
-        className={`drawer-overlay fixed inset-0 z-[400] bg-black/50 ${isOpen ? "open" : ""}`}
+        className={`drawer-overlay fixed inset-0 z-400 bg-black/50 ${isOpen ? "open" : ""}`}
         onClick={handleClose}
       />
 
       {/* Panel */}
       <aside
-        className={`canvas-panel fixed top-0 left-0 bottom-0 z-[500] flex flex-col bg-white w-[min(300px,88vw)] shadow-xl overflow-hidden ${isOpen ? "open" : ""}`}
+        className={`canvas-panel fixed top-0 left-0 bottom-0 z-500 flex flex-col bg-white w-[min(300px,88vw)] shadow-xl overflow-hidden ${isOpen ? "open" : ""}`}
       >
         {/* Header */}
         <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100 bg-pink-pale shrink-0">
@@ -77,8 +77,6 @@ export default function MobileCanvas({ isOpen, onClose }: Props) {
               >
                 New Arrivals
               </a>
-
-              {/* Live categories from /api/menu (Sarees, Suits, ...) */}
               {categories.map((category) => (
                 <button
                   key={category.category_slug}

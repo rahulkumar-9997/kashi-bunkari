@@ -14,20 +14,24 @@ import {
   ImageOff,
   SearchX,
 } from "lucide-react";
-import { useShop } from "@/hooks/useShop";
-import type { ShopFilter } from "@/types/shop";
-type Props = { slug: string[] };
+import { useSearchResults } from "@/hooks/useSearchResults";
+import type { SearchFilter } from "@/types/product";
+
+type Props = { query: string };
+
 const SORT_OPTIONS = [
   { label: "Newest First", value: "new-arrivals" },
   { label: "Price: Low to High", value: "price-low-to-high" },
   { label: "Price: High to Low", value: "price-high-to-low" },
   { label: "A to Z", value: "a-to-z-order" },
 ];
-const RESERVED_PARAMS = new Set(["filter", "sort", "page"]);
+
+const RESERVED_PARAMS = new Set(["query", "filter", "sort", "page"]);
 
 function formatPrice(value: number) {
   return `₹${value.toLocaleString("en-IN")}`;
 }
+
 function buildQueryString(params: Record<string, string>): string {
   return Object.entries(params)
     .map(
@@ -43,7 +47,7 @@ function FilterSection({
   onToggle,
   defaultOpen = false,
 }: {
-  filter: ShopFilter;
+  filter: SearchFilter;
   selectedValues: string[];
   onToggle: (value: string) => void;
   defaultOpen?: boolean;
@@ -111,10 +115,11 @@ function FilterSection({
   );
 }
 
-export default function ShopPage({ slug }: Props) {
+export default function SearchPage({ query }: Props) {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
+
   const [selected, setSelected] = useState<Record<string, string[]>>(() => {
     const initial: Record<string, string[]> = {};
     searchParams.forEach((value, key) => {
@@ -126,6 +131,7 @@ export default function ShopPage({ slug }: Props) {
   const [sort, setSort] = useState(searchParams.get("sort") || "new-arrivals");
   const [sortOpen, setSortOpen] = useState(false);
   const [drawerOpen, setDrawerOpen] = useState(false);
+
   const filterParams = useMemo(() => {
     const params: Record<string, string> = {};
     const hasActiveFilters = Object.values(selected).some((v) => v.length > 0);
@@ -138,10 +144,11 @@ export default function ShopPage({ slug }: Props) {
     if (sort && sort !== "new-arrivals") params.sort = sort;
     return params;
   }, [selected, sort]);
+
   useEffect(() => {
-    const qs = buildQueryString(filterParams);
-    router.replace(qs ? `${pathname}?${qs}` : pathname, { scroll: false });
-  }, [filterParams]);
+    const qs = buildQueryString({ query, ...filterParams });
+    router.replace(`${pathname}?${qs}`, { scroll: false });
+  }, [filterParams, query]);
 
   const {
     data,
@@ -150,18 +157,14 @@ export default function ShopPage({ slug }: Props) {
     fetchNextPage,
     hasNextPage,
     isFetchingNextPage,
-  } = useShop(slug, filterParams);
+  } = useSearchResults(query, filterParams);
 
   const pages = data?.pages ?? [];
   const firstPage = pages[0];
   const products = useMemo(() => pages.flatMap((p) => p.products), [pages]);
   const totalProducts = firstPage?.pagination.total_products ?? 0;
   const filters = firstPage?.product_filters ?? [];
-
- const heading = firstPage?.attribute_value && firstPage?.category
-      ? `${firstPage.attribute_value.name} ${firstPage.category.title}`
-      : firstPage?.category?.title || firstPage?.tag?.title || firstPage?.label?.title || "Collection";
-  
+  const matchedCategories = firstPage?.categories ?? [];
 
   const isConfirmedEmpty = !isLoading && !isError && products.length === 0;
 
@@ -181,12 +184,8 @@ export default function ShopPage({ slug }: Props) {
     (sum, arr) => sum + arr.length,
     0,
   );
-
-  // Full-page "nothing here" only makes sense when there's genuinely
-  // nothing to filter (no active filters). If the user applied filters
-  // and got zero results, the sidebar must stay visible so they can
-  // adjust/clear them — only the product grid area shows "No products".
   const isEmptyWithNoFilters = isConfirmedEmpty && activeCount === 0;
+
   const loadMoreRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
     const el = loadMoreRef.current;
@@ -225,46 +224,46 @@ export default function ShopPage({ slug }: Props) {
     </div>
   );
 
+  if (!query.trim()) {
+    return (
+      <div className="w-full min-h-screen flex flex-col items-center justify-center py-24 text-center px-4">
+        <SearchX size={26} className="text-gray-300 mb-4" />
+        <h3 className="font-serif text-[18px] font-bold text-gray-800 mb-2">
+          Search for something
+        </h3>
+        <p className="font-sans text-[13px] text-gray-400">
+          Type a product, fabric, or category name to get started.
+        </p>
+      </div>
+    );
+  }
+
   return (
-    
     <div className="w-full min-h-screen">
-      <Breadcrumb items={[{ label: "Home", href: "/" }, { label: heading }]} />
+      <Breadcrumb
+        items={[{ label: "Home", href: "/" }, { label: `Search: "${query}"` }]}
+      />
 
       <section className="w-full lg:px-12 md:px-10 px-4">
         <div className="mx-auto w-full max-w-7xl relative lg:py-10 md:py-10 sm:py-10 py-8">
           {isEmptyWithNoFilters ? (
-            /* ── EMPTY, NO FILTERS ACTIVE: clean full-width message, no
-                sidebar, no sort dropdown — genuinely nothing to filter
-                or sort (category/tag has zero products). ── */
             <div className="flex flex-col items-center justify-center py-24 text-center">
               <div className="w-16 h-16 rounded-2xl bg-pink/8 border border-pink/15 flex items-center justify-center mb-5">
                 <SearchX size={26} className="text-pink" />
               </div>
               <Heading
                 level={1}
-                text={heading}
+                text={`No results for "${query}"`}
                 className="font-serif text-[22px] font-semibold text-maroon mb-2"
                 decorator="none"
               />
-              <h3 className="font-sans text-[15px] text-gray-500 mb-1">
-                No products found
-              </h3>
               <p className="font-sans text-[13px] text-gray-400 mb-6 max-w-sm">
-                {activeCount > 0
-                  ? "Try adjusting or clearing your filters."
-                  : "There are no products in this collection yet — please check back soon."}
+                Try a different spelling, or search for a fabric, color, or
+                category.
               </p>
-              {activeCount > 0 && (
-                <button
-                  onClick={clearAll}
-                  className="font-sans text-[11px] font-bold uppercase tracking-[0.16em] text-white bg-pink px-6 py-2.5 rounded-xl hover:opacity-90 transition-opacity"
-                >
-                  Clear Filters
-                </button>
-              )}
               <Link
                 href="/"
-                className="mt-4 font-sans text-[12.5px] text-gray-400 hover:text-maroon transition-colors underline"
+                className="font-sans text-[12.5px] text-gray-400 hover:text-maroon transition-colors underline"
               >
                 Back to Home
               </Link>
@@ -304,7 +303,7 @@ export default function ShopPage({ slug }: Props) {
                 </div>
               </aside>
 
-              {/* ── PRODUCTS AREA ── */}
+              {/* ── RESULTS AREA ── */}
               <div className="flex-1 min-w-0">
                 <div className="sticky top-0 z-40 hidden lg:block bg-white/90 backdrop-blur-md">
                   <div className="flex items-center justify-end gap-3 py-2.5">
@@ -319,7 +318,6 @@ export default function ShopPage({ slug }: Props) {
                           className={`transition-transform duration-200 ${sortOpen ? "rotate-180" : ""}`}
                         />
                       </button>
-
                       {sortOpen && (
                         <div className="absolute right-0 top-full z-50 mt-2 w-52 overflow-hidden rounded-xl border border-gray-100 bg-white shadow-xl">
                           {SORT_OPTIONS.map((opt) => (
@@ -351,7 +349,7 @@ export default function ShopPage({ slug }: Props) {
                   <div>
                     <Heading
                       level={1}
-                      text={heading}
+                      text={`Results for "${query}"`}
                       className="font-serif text-[25px] font-semibold leading-none tracking-tight text-maroon"
                       decorator="none"
                     />
@@ -365,7 +363,6 @@ export default function ShopPage({ slug }: Props) {
                     </p>
                   </div>
                 </div>
-
                 {/* Active chips */}
                 {activeCount > 0 && (
                   <div className="flex flex-wrap gap-2 mb-5">
@@ -396,7 +393,7 @@ export default function ShopPage({ slug }: Props) {
                   </div>
                 )}
 
-                {/* ── Loading / Error / Grid ── */}
+                {/* ── Loading / Error / Empty(filtered) / Grid ── */}
                 {isLoading ? (
                   <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-4 gap-x-2 md:gap-x-3 gap-y-5 md:gap-y-8">
                     {Array.from({ length: 8 }).map((_, i) => (
@@ -419,7 +416,7 @@ export default function ShopPage({ slug }: Props) {
                 ) : isError ? (
                   <div className="flex flex-col items-center justify-center py-20 text-center">
                     <p className="font-serif text-[18px] font-bold text-gray-800 mb-2">
-                      Couldn&apos;t load products
+                      Couldn&apos;t load results
                     </p>
                     <p className="font-sans text-[13px] text-gray-400">
                       Please try again in a moment.
@@ -445,27 +442,23 @@ export default function ShopPage({ slug }: Props) {
                   </div>
                 ) : (
                   <>
-                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-4 gap-x-2 md:gap-x-3 gap-y-5 md:gap-y-2">
+                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-4 gap-x-2 md:gap-x-3 gap-y-5 md:gap-y-8">
                       {products.map((product) => {
-                        
-                        const price = product.offer_price ?? product.mrp;
+                        const price = product.offer_rate ?? product.mrp;
                         const hasDiscount =
-                          product.offer_price != null &&
+                          product.offer_rate != null &&
                           product.mrp != null &&
-                          product.mrp > product.offer_price;
+                          product.mrp > product.offer_rate;
                         const discountPct = hasDiscount
                           ? Math.round(
-                              (1 - product.offer_price! / product.mrp!) * 100,
+                              (1 - product.offer_rate! / product.mrp!) * 100,
                             )
                           : null;
-                        const productHref = product.attributes_value_slug
-                          ? `/product/${product.slug}/${product.attributes_value_slug}`
-                          : `/product/${product.slug}`;
 
                         return (
                           <Link
                             key={product.id}
-                            href={productHref}
+                            href={`/product/${product.slug}/${product.attribute_value_slug}`}
                             className="prod-card group block outline-none select-none w-full border border-gray-200 rounded-xl bg-white transition-all duration-300 ease-in-out hover:border-maroon/30 cursor-pointer hover:shadow-md overflow-hidden"
                           >
                             <div
@@ -504,13 +497,10 @@ export default function ShopPage({ slug }: Props) {
                               </div>
                             </div>
                             <div className="px-3 py-3">
-                              <div className="flex items-center gap-1.5 flex-wrap mb-2">
-                                {product.category && (
-                                  <span className="text-[11px] px-1.5 py-0.5 border border-maroon/30 bg-maroon/20 rounded-full w-max text-primary-500 inline-block text-maroon mb-2">
-                                    {product.category}
-                                  </span>
-                                )}
-                              </div>
+                              {/* Real category from the API — no guessing needed here */}
+                              <span className="text-[11px] px-1.5 py-0.5 border border-maroon/30 bg-maroon/10 rounded-full w-max inline-block text-maroon mb-2">
+                                {product.category.title}
+                              </span>
                               <p className="font-sans text-[13px] md:text-[13.5px] font-semibold text-gray-800 leading-snug line-clamp-2 mb-2">
                                 {product.title}
                               </p>
@@ -537,7 +527,7 @@ export default function ShopPage({ slug }: Props) {
                         );
                       })}
                     </div>
-                    {/* Infinite-scroll sentinel */}
+
                     <div
                       ref={loadMoreRef}
                       className="flex items-center justify-center py-10"
@@ -557,8 +547,7 @@ export default function ShopPage({ slug }: Props) {
         </div>
       </section>
 
-      {/* ══ MOBILE FLOATING FILTER + SORT PILLS — hidden entirely when
-          there's genuinely nothing to filter/sort. ══ */}
+      {/* ══ MOBILE FLOATING FILTER + SORT PILLS ══ */}
       {!isEmptyWithNoFilters && (
         <div className="lg:hidden fixed left-0 right-0 z-290 flex items-center justify-center gap-2.5 px-4 pointer-events-none bottom-[calc(3.5rem+12px+env(safe-area-inset-bottom))]">
           <button
@@ -665,7 +654,6 @@ export default function ShopPage({ slug }: Props) {
         </div>
       )}
 
-      {/* Mobile spacer */}
       {!isEmptyWithNoFilters && <div className="lg:hidden h-16" />}
     </div>
   );

@@ -103,4 +103,50 @@ export type ProductDetailApiResponse = {
   message: string;
   data: ProductDetailData;
 };
+
+
+/** Search results type (/api/search?query=...) — NOTE: this endpoint */
+export type SearchResultProduct = {
+  id: number;
+  title: string;
+  slug: string;
+  mrp: number | null;
+  offer_rate: number | null;
+  sku: string | null;
+  attribute_value_slug: string;
+  category: ProductCategory;
+  image: string | null;
+};
+ 
+export type SearchResultCategory = { id: number; title: string; slug: string };
+ 
+export type SearchFilterValue = { id: number; name: string; slug: string };
+export type SearchFilter = {
+  id: number;
+  title: string;
+  slug: string;
+  values: SearchFilterValue[];
+};
+ 
+export type SearchPagination = {
+  current_page: number;
+  total_pages: number;
+  per_page: number;
+  total_products: number;
+  next_page_url: string | null;
+  previous_page_url: string | null;
+  has_next_page: boolean;
+  has_previous_page: boolean;
+};
+ 
+export type SearchResultsMeta = { title: string; description: string; keywords: string };
+ 
+export type SearchResultsData = {
+  meta: SearchResultsMeta;
+  products: SearchResultProduct[];
+  pagination: SearchPagination;
+  categories: SearchResultCategory[];
+  product_filters: SearchFilter[];
+  query: string;
+};
  

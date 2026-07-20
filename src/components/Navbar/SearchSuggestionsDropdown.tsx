@@ -52,12 +52,19 @@ const SearchSuggestionsDropdown = forwardRef<
   useEffect(() => {
     itemRefs.current[highlightedIndex]?.scrollIntoView({ block: "nearest" });
   }, [highlightedIndex]);
-
-  // FIX: was `/product/${slug}/${attr}` (singular, 404s) — the real
-  // route folder is app/products/[parentSlug]/[slug] (plural).
   const selectItem = (item: SearchSuggestionItem) => {
     if (item.type === "suggestion") {
       onSelectText(item.title);
+    } else {
+      router.push(`/products/${item.slug}/${item.attributes_value_slug}`);
+      onNavigate();
+    }
+  };
+  const selectItemViaKeyboard = (item: SearchSuggestionItem) => {
+    if (item.type === "suggestion") {
+      onSelectText(item.title);
+      router.push(`/search?query=${encodeURIComponent(item.title)}`);
+      onNavigate();
     } else {
       router.push(`/products/${item.slug}/${item.attributes_value_slug}`);
       onNavigate();
@@ -79,7 +86,7 @@ const SearchSuggestionsDropdown = forwardRef<
       } else if (e.key === "Enter") {
         if (highlightedIndex >= 0 && highlightedIndex < items.length) {
           e.preventDefault();
-          selectItem(items[highlightedIndex]);
+          selectItemViaKeyboard(items[highlightedIndex]);
         }
       }
     },
@@ -102,7 +109,7 @@ const SearchSuggestionsDropdown = forwardRef<
 
   return (
     <div
-      className="absolute left-0 right-0 top-[calc(100%+8px)] z-[310] bg-white border border-gray-100 rounded-xl shadow-xl overflow-hidden max-h-[70vh] overflow-y-auto"
+      className="absolute left-0 right-0 top-[calc(100%+8px)] z-310 bg-white border border-gray-100 rounded-xl shadow-xl overflow-hidden max-h-[70vh] overflow-y-auto"
       data-lenis-prevent
     >
       {isTooShort ? (
@@ -124,7 +131,7 @@ const SearchSuggestionsDropdown = forwardRef<
         <div className="py-2">
           {textHints.length > 0 && (
             <div className="px-2 pb-1">
-              <p className="px-2.5 py-1.5 font-sans text-[10px] font-bold uppercase tracking-[0.1em] text-gray-400">
+              <p className="px-2.5 py-1.5 font-sans text-[10px] font-bold uppercase tracking-wides text-gray-400">
                 Suggestions
               </p>
               {textHints.map(({ item, i }) => (
@@ -154,7 +161,7 @@ const SearchSuggestionsDropdown = forwardRef<
             <div
               className={`px-2 pt-1 ${textHints.length > 0 ? "border-t border-gray-50" : ""}`}
             >
-              <p className="px-2.5 py-1.5 font-sans text-[10px] font-bold uppercase tracking-[0.1em] text-gray-400">
+              <p className="px-2.5 py-1.5 font-sans text-[10px] font-bold uppercase tracking-wides text-gray-400">
                 Products
               </p>
               {products.map(({ item, i }) => (

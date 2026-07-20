@@ -15,6 +15,7 @@ export const API_ENDPOINTS = {
   productDetail: (parentSlug: string, attributeValueSlug: string) =>
   `${API_BASE_URL}/api/products/${parentSlug}/${attributeValueSlug}`,
   searchSuggestion: `${API_BASE_URL}/api/search-suggestion`,
+  search: `${API_BASE_URL}/api/search`
 };
 
 export const AUTH_ENDPOINTS = {
