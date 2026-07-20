@@ -1,5 +1,5 @@
 import { Suspense  } from "react";
-import { CartProvider } from "@/components/CartContext";
+import { CartProvider } from "@/components/Cart/CartContext";
 import HeroSliderServer from "@/components/HeroSlider/HeroSliderServer";
 import HeroSliderSkeleton from "@/components/HeroSlider/HeroSliderSkeleton";
 import HomeCollectionsSkeleton from "@/components/HomeCollections/HomeCollectionsSkeleton";

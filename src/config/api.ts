@@ -15,7 +15,14 @@ export const API_ENDPOINTS = {
   productDetail: (parentSlug: string, attributeValueSlug: string) =>
   `${API_BASE_URL}/api/products/${parentSlug}/${attributeValueSlug}`,
   searchSuggestion: `${API_BASE_URL}/api/search-suggestion`,
-  search: `${API_BASE_URL}/api/search`
+  search: `${API_BASE_URL}/api/search`,
+  cart: {
+    add: `${API_BASE_URL}/api/cart/add`,
+    list: `${API_BASE_URL}/api/cart/list`,
+    update: (productId: number | string) => `${API_BASE_URL}/api/cart/${productId}`,
+    remove: (productId: number | string) => `${API_BASE_URL}/api/cart/${productId}`,
+    clear: `${API_BASE_URL}/api/cart`,
+  },
 };
 
 export const AUTH_ENDPOINTS = {
@@ -26,3 +33,4 @@ export const AUTH_ENDPOINTS = {
   profile: `${API_BASE_URL}/api/customer/profile`,
   updateProfile: `${API_BASE_URL}/api/customer/update-profile`,
 };
+

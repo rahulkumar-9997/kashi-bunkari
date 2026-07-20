@@ -5,6 +5,7 @@ import Link from "next/link";
 import "@fancyapps/ui/dist/fancybox/fancybox.css";
 import Heading from "@/components/Heading/Heading";
 import Breadcrumb from "@/components/Breadcrumb/Breadcrumb";
+import { useCart } from "@/components/Cart/CartContext";
 import {
   ChevronUp,
   Heart,
@@ -64,7 +65,9 @@ function formatPrice(value: number) {
   return `₹${value.toLocaleString("en-IN")}`;
 }
 export default function ProductDetailsPage({ product: data }: Props) {
-  const product = data.product_details;
+  const { addToCart } = useCart();
+  const [addingToCart, setAddingToCart] = useState(false); 
+  const product = data.product_details;  
   const [activeThumb, setActiveThumb] = useState(0);
   const [qty, setQty] = useState(1);
   const [wished, setWished] = useState(false);
@@ -78,6 +81,17 @@ export default function ProductDetailsPage({ product: data }: Props) {
   const thumbRailRef = useRef<HTMLDivElement>(null);
   const mobileThumbRailRef = useRef<HTMLDivElement>(null);
   const fancyboxRef = useRef<any>(null);
+
+  const handleAddToCart = async () => {
+    try {
+      setAddingToCart(true);
+      await addToCart(product.id, qty);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setAddingToCart(false);
+    }
+  };
 
   useEffect(() => {
     (async () => {
@@ -452,13 +466,13 @@ export default function ProductDetailsPage({ product: data }: Props) {
                   </button>
                 </div>
                 <button
-                  disabled={!inStock}
+                  disabled={!inStock || addingToCart} onClick={handleAddToCart}
                   className="flex-1 flex items-center justify-center gap-2 sm:gap-2.5 rounded-xl font-sans text-[12px] sm:text-[13px] font-bold uppercase tracking-widest sm:tracking-[0.12em] text-white py-3 sm:py-0 transition-all duration-200 hover:opacity-90 hover:-translate-y-0.5 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-y-0"
                   style={{ background: "linear-gradient(135deg,#8b1a34,#e91e8c)" }}
                 >
                   <ShoppingBag size={15} className="sm:hidden" />
                   <ShoppingBag size={17} className="hidden sm:block" />
-                  Add to Cart
+                   {addingToCart ? "Adding..." : "Add to Cart"}
                 </button>
               </div>
 

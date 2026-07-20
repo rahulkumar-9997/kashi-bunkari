@@ -1,10 +1,10 @@
 "use client";
 import { useState } from "react";
-import { CartProvider } from "@/components/CartContext";
+import { CartProvider } from "@/components/Cart/CartContext";
 import { TopBar } from "@/components/Navbar/TopBar";
 import Navbar from "@/components/Navbar/Navbar";
 import MobileCanvas from "@/components/Navbar/MobileCanvas";
-import CartDrawer from "@/components/CartDrawer";
+import CartDrawer from "@/components/Cart/CartDrawer";
 import Footer from "@/components/Footer";
 import { AuthModalProvider } from "@/context/AuthModalContext";
 import LoginModal from "@/components/Auth/LoginModal";
