@@ -239,7 +239,7 @@ export default function NavBarComponents() {
             </li>
 
             {/* ── Under ₹2,500 ── */}
-            <li className="group">
+            {/* <li className="group">
               <Link
                 href="#"
                 className="relative flex items-center gap-1.5 px-4 h-11 font-sans text-[15px] font-medium whitespace-nowrap transition-colors duration-200 text-gray-600"
@@ -250,7 +250,7 @@ export default function NavBarComponents() {
                 </span>
                 <span className="nav-underline" style={{ background: "#d97706" }} />
               </Link>
-            </li>
+            </li> */}
 
             {/* ── About ── */}
             <li

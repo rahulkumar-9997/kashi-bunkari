@@ -62,6 +62,7 @@ export default function LogoSearchBar({
     window.addEventListener("scroll", h, { passive: true });
     return () => window.removeEventListener("scroll", h);
   }, []);
+ 
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -188,7 +189,7 @@ export default function LogoSearchBar({
 
   return (
     <>
-      <div
+       <div
         className="w-full bg-white border-b border-gray-100 sticky top-0 z-[300] transition-shadow"
         style={{
           boxShadow: scrolled ? "0 2px 16px rgba(0,0,0,0.08)" : "none",
