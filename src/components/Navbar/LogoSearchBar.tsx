@@ -137,9 +137,6 @@ export default function LogoSearchBar({
       openLogin();
     }
   };
-
-  // Navigates to the full search-results page. Used when the user hits
-  // Enter with no suggestion highlighted, or clicks the search icon.
   const goToSearchResults = (value: string) => {
     const q = value.trim();
     if (!q) return;
@@ -323,8 +320,9 @@ export default function LogoSearchBar({
               <SearchSuggestionsDropdown
                 ref={desktopDropdownRef}
                 query={searchValue}
-                onNavigate={() => {
+                onNavigate={(clearInput = true) => {
                   setShowDesktopSuggestions(false);
+                  if (clearInput) setSearchValue("");
                 }}
                 onSelectText={(text) => setSearchValue(text)}
               />
@@ -573,9 +571,10 @@ export default function LogoSearchBar({
               <SearchSuggestionsDropdown
                 ref={mobileDropdownRef}
                 query={mobileSearchValue}
-                onNavigate={() => {
+                onNavigate={(clearInput = true) => {
                   setShowMobileSuggestions(false);
                   setSearchOpen(false);
+                  if (clearInput) setMobileSearchValue("");
                 }}
                 onSelectText={(text) => setMobileSearchValue(text)}
               />
