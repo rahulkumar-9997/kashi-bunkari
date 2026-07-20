@@ -55,14 +55,6 @@ const SearchSuggestionsDropdown = forwardRef<
   const selectItem = (item: SearchSuggestionItem) => {
     if (item.type === "suggestion") {
       onSelectText(item.title);
-    } else {
-      router.push(`/product/${item.slug}/${item.attributes_value_slug}`);
-      onNavigate();
-    }
-  };
-  const selectItemViaKeyboard = (item: SearchSuggestionItem) => {
-    if (item.type === "suggestion") {
-      onSelectText(item.title);
       router.push(`/search?query=${encodeURIComponent(item.title)}`);
       onNavigate();
     } else {
@@ -86,7 +78,7 @@ const SearchSuggestionsDropdown = forwardRef<
       } else if (e.key === "Enter") {
         if (highlightedIndex >= 0 && highlightedIndex < items.length) {
           e.preventDefault();
-          selectItemViaKeyboard(items[highlightedIndex]);
+          selectItem(items[highlightedIndex]);
         }
       }
     },
