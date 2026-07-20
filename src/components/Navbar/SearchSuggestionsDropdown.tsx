@@ -27,7 +27,7 @@ export type SearchSuggestionsDropdownHandle = {
 
 type Props = {
   query: string;
-  onNavigate: (clearInput?: boolean) => void;
+  onNavigate: () => void;
   onSelectText: (text: string) => void;
 };
 
@@ -60,12 +60,11 @@ const SearchSuggestionsDropdown = forwardRef<
       onNavigate();
     }
   };
-
   const selectItemViaKeyboard = (item: SearchSuggestionItem) => {
     if (item.type === "suggestion") {
       onSelectText(item.title);
       router.push(`/search?query=${encodeURIComponent(item.title)}`);
-      onNavigate(false);
+      onNavigate();
     } else {
       router.push(`/product/${item.slug}/${item.attributes_value_slug}`);
       onNavigate();

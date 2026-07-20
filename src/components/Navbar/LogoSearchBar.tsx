@@ -1,6 +1,6 @@
 "use client";
 import { useState, useEffect, useRef } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import { useCart } from "@/components/CartContext";
 import { useAuth } from "@/context/AuthContext";
 import { useAuthModal } from "@/context/AuthModalContext";
@@ -24,6 +24,7 @@ export default function LogoSearchBar({
   onMenuOpen: () => void;
 }) {
   const router = useRouter();
+  const pathname = usePathname();
   const { cartCount, openCart } = useCart();
   const { openLogin } = useAuthModal();
   const { isAuthenticated, customer, logout } = useAuth();
@@ -114,6 +115,12 @@ export default function LogoSearchBar({
       if (hoverTimeout.current) clearTimeout(hoverTimeout.current);
     };
   }, []);
+  useEffect(() => {
+    if (!pathname.startsWith("/search")) {
+      setSearchValue("");
+      setMobileSearchValue("");
+    }
+  }, [pathname]);
   const handleLogout = () => {
     logout();
     setShowAccountMenu(false);
@@ -265,6 +272,7 @@ export default function LogoSearchBar({
               <input
                 ref={inputRef}
                 type="search"
+                autoComplete="off"
                 value={searchValue}
                 onChange={(e) => {
                   setSearchValue(e.target.value);
@@ -320,9 +328,8 @@ export default function LogoSearchBar({
               <SearchSuggestionsDropdown
                 ref={desktopDropdownRef}
                 query={searchValue}
-                onNavigate={(clearInput = true) => {
+                onNavigate={() => {
                   setShowDesktopSuggestions(false);
-                  if (clearInput) setSearchValue("");
                 }}
                 onSelectText={(text) => setSearchValue(text)}
               />
@@ -531,6 +538,7 @@ export default function LogoSearchBar({
           <div className="relative" ref={mobileSearchWrapRef}>
             <input
               type="search"
+              autoComplete="off"
               value={mobileSearchValue}
               onChange={(e) => {
                 setMobileSearchValue(e.target.value);
@@ -571,10 +579,9 @@ export default function LogoSearchBar({
               <SearchSuggestionsDropdown
                 ref={mobileDropdownRef}
                 query={mobileSearchValue}
-                onNavigate={(clearInput = true) => {
+                onNavigate={() => {
                   setShowMobileSuggestions(false);
                   setSearchOpen(false);
-                  if (clearInput) setMobileSearchValue("");
                 }}
                 onSelectText={(text) => setMobileSearchValue(text)}
               />
