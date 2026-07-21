@@ -1,4 +1,5 @@
 import { AUTH_ENDPOINTS } from "@/config/api";
+import { getCartToken } from "@/lib/cartToken";
 import type {
   SendOtpResponse,
   ResendOtpResponse,
@@ -12,7 +13,10 @@ async function postJson<T>(
 ): Promise<T> {
   const res = await fetch(url, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: {
+       "Content-Type": "application/json",
+       "X-Cart-Token": getCartToken(),
+      },
     body: JSON.stringify(body),
   });
 
