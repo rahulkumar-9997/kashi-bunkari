@@ -1,5 +1,6 @@
 import { API_ENDPOINTS } from "@/config/api";
 import type { CartApiResponse, CartErrorResponse } from "@/types/cart";
+import { getCartToken } from "@/lib/cartToken";
 
 async function handleResponse(res: Response): Promise<CartApiResponse> {
   const json = await res.json();
@@ -12,17 +13,20 @@ async function handleResponse(res: Response): Promise<CartApiResponse> {
   return json as CartApiResponse;
 }
 
-const jsonHeaders = {
-  "Content-Type": "application/json",
-  Accept: "application/json",
-};
+function jsonHeaders(): Record<string, string> {
+  return {
+    "Content-Type": "application/json",
+    Accept: "application/json",   
+    "X-Cart-Token": getCartToken(),
+  };
+}
 
 export const cartService = {
   async getCart(): Promise<CartApiResponse> {
     const res = await fetch(API_ENDPOINTS.cart.list, {
       method: "GET",
       credentials: "include",
-      headers: jsonHeaders,
+      headers: jsonHeaders(),
     });
     return handleResponse(res);
   },
@@ -34,7 +38,7 @@ export const cartService = {
     const res = await fetch(API_ENDPOINTS.cart.add, {
       method: "POST",
       credentials: "include",
-      headers: jsonHeaders,
+      headers: jsonHeaders(),
       body: JSON.stringify({ product_id: productId, quantity }),
     });
     return handleResponse(res);
@@ -47,7 +51,7 @@ export const cartService = {
     const res = await fetch(API_ENDPOINTS.cart.update(productId), {
       method: "PUT",
       credentials: "include",
-      headers: jsonHeaders,
+      headers: jsonHeaders(),
       body: JSON.stringify({ quantity }),
     });
     return handleResponse(res);
@@ -57,7 +61,7 @@ export const cartService = {
     const res = await fetch(API_ENDPOINTS.cart.remove(productId), {
       method: "DELETE",
       credentials: "include",
-      headers: jsonHeaders,
+      headers: jsonHeaders(),
     });
     return handleResponse(res);
   },
@@ -66,7 +70,7 @@ export const cartService = {
     const res = await fetch(API_ENDPOINTS.cart.clear, {
       method: "DELETE",
       credentials: "include",
-      headers: jsonHeaders,
+      headers: jsonHeaders(),
     });
     return handleResponse(res);
   },
