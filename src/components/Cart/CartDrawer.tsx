@@ -53,31 +53,19 @@ export default function CartDrawer() {
     changeQty,
     removeItem,
   } = useCart();
-
-  const remainingForFreeDelivery = Math.max(
-    0,
-    FREE_DELIVERY_THRESHOLD - cartTotal,
-  );
-  const qualifiesForFreeDelivery = remainingForFreeDelivery === 0;
-
   const handleCheckout = () => {
     closeCart();
     router.push("/checkout");
   };
-
   return (
     <>
-      {/* Overlay */}
       <div
         className={`drawer-overlay fixed inset-0 z-[400] bg-black/50 ${isOpen ? "open" : ""}`}
         onClick={closeCart}
       />
-
-      {/* Panel */}
       <aside
         className={`cart-panel fixed top-0 right-0 bottom-0 z-[500] flex flex-col bg-white w-[min(400px,100vw)] shadow-xl ${isOpen ? "open" : ""}`}
       >
-        {/* Header */}
         <div className="flex items-center justify-between px-6 py-5 border-b border-gray-100 shrink-0">
           <div className="flex items-center gap-2.5">
             <h2 className="font-serif text-[22px] font-bold text-maroon">
@@ -95,39 +83,6 @@ export default function CartDrawer() {
             <X size={20} />
           </button>
         </div>
-
-        {/* Free delivery banner */}
-        {cartCount > 0 && (
-          <div className="px-6 pt-4 pb-4 border-b border-gray-100 shrink-0">
-            <div className="flex items-center gap-2.5 mb-3">
-              <Package size={18} className="text-maroon shrink-0" />
-              <p className="font-sans text-[13px] font-medium text-gray-700">
-                {qualifiesForFreeDelivery ? (
-                  "Your order is free delivery!"
-                ) : (
-                  <>
-                    Add{" "}
-                    <span className="font-bold text-maroon">
-                      {formatPrice(remainingForFreeDelivery)}
-                    </span>{" "}
-                    more for free delivery
-                  </>
-                )}
-              </p>
-            </div>
-            <div className="h-1 w-full rounded-full bg-gray-100 overflow-hidden">
-              <div
-                className="h-full rounded-full transition-all duration-500"
-                style={{
-                  width: `${Math.min(100, (cartTotal / FREE_DELIVERY_THRESHOLD) * 100)}%`,
-                  background: "linear-gradient(90deg,#8b1a34,#e91e8c)",
-                }}
-              />
-            </div>
-          </div>
-        )}
-
-        {/* Items */}
         <div
           className="flex-1 min-h-0 overflow-y-auto px-6 py-4"
           data-lenis-prevent

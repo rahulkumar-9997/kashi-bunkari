@@ -1,5 +1,6 @@
 "use client";
 import { useState, useEffect, useRef } from "react";
+import { useRouter } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 import "@fancyapps/ui/dist/fancybox/fancybox.css";
@@ -23,6 +24,7 @@ import {
   Copy,
   Eye,
   ImageOff,
+  Loader2,
 } from "lucide-react";
 import type { ProductDetailData } from "@/types/product";
 
@@ -66,9 +68,9 @@ function formatPrice(value: number) {
   return `₹${value.toLocaleString("en-IN")}`;
 }
 export default function ProductDetailsPage({ product: data }: Props) {
-  const { addToCart } = useCart();
-  const [addingToCart, setAddingToCart] = useState(false);
   const product = data.product_details;
+  const router = useRouter();
+  const { addToCart, loading: cartLoading } = useCart();  
   const [activeThumb, setActiveThumb] = useState(0);
   const [qty, setQty] = useState(1);
   const [wished, setWished] = useState(false);
@@ -83,19 +85,7 @@ export default function ProductDetailsPage({ product: data }: Props) {
 
   const thumbRailRef = useRef<HTMLDivElement>(null);
   const mobileThumbRailRef = useRef<HTMLDivElement>(null);
-  const fancyboxRef = useRef<any>(null);
-
-  const handleAddToCart = async () => {
-    try {
-      setAddingToCart(true);
-      await addToCart(product.id, qty);
-      //toast.success("Added to cart!");
-    } catch (err: any) {
-      toast.error(err.message || "Could not add product to cart.");
-    } finally {
-      setAddingToCart(false);
-    }
-  };
+  const fancyboxRef = useRef<any>(null); 
 
   useEffect(() => {
     (async () => {
@@ -121,6 +111,38 @@ export default function ProductDetailsPage({ product: data }: Props) {
     setActiveThumb(0);
   }, [product?.id]);
 
+   const checkStockAvailable = (requestedQty: number): boolean => {
+    if (product.stock_quantity != null && product.stock_quantity <= 0) {
+      toast.error("This product is currently out of stock.");
+      return false;
+    }
+    if (product.stock_quantity != null && requestedQty > product.stock_quantity) {
+      toast.error(`Only ${product.stock_quantity} unit(s) left in stock.`);
+      return false;
+    }
+    return true;
+  };
+ 
+  const handleAddToCart = async () => {
+    if (!checkStockAvailable(qty)) return;
+    try {
+      await addToCart(product.id, qty);
+      toast.success(`${product.title} added to cart.`);
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Couldn't add to cart. Please try again.");
+    }
+  };
+ 
+  const handleBuyNow = async () => {
+    if (!checkStockAvailable(qty)) return;
+    try {
+      await addToCart(product.id, qty);
+      router.push("/checkout");
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Couldn't add to cart. Please try again.");
+    }
+  };
+ 
   const handleCopyLink = async () => {
     try {
       await navigator.clipboard.writeText(pageUrl);
@@ -130,6 +152,7 @@ export default function ProductDetailsPage({ product: data }: Props) {
       setCopied(false);
     }
   };
+ 
 
   const shareTargets = product
     ? [
@@ -539,28 +562,45 @@ export default function ProductDetailsPage({ product: data }: Props) {
                     {qty}
                   </span>
                   <button
-                    onClick={() => setQty((q) => q + 1)}
-                    className="w-10 h-11 cursor-pointer sm:w-11 sm:h-12 flex items-center justify-center text-gray-500 hover:text-pink hover:bg-gray-50 transition-colors"
+                    onClick={() =>
+                      setQty((q) =>
+                        product.stock_quantity != null
+                          ? Math.min(q + 1, product.stock_quantity)
+                          : q + 1,
+                      )
+                    }
+                    disabled={product.stock_quantity != null && qty >= product.stock_quantity}
+                    title={
+                      product.stock_quantity != null && qty >= product.stock_quantity
+                        ? "No more stock available"
+                        : undefined
+                    }
+                    className="w-10 h-11 cursor-pointer sm:w-11 sm:h-12 flex items-center justify-center text-gray-500 hover:text-pink hover:bg-gray-50 transition-colors disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-transparent"
                   >
                     <Plus size={14} />
                   </button>
                 </div>
                 <button
-                  disabled={!inStock || addingToCart}
                   onClick={handleAddToCart}
+                  disabled={!inStock || cartLoading}
                   className="flex-1 flex items-center justify-center gap-2 sm:gap-2.5 rounded-xl font-sans text-[12px] sm:text-[13px] font-bold uppercase tracking-widest sm:tracking-[0.12em] text-white py-3 sm:py-0 transition-all duration-200 hover:opacity-90 hover:-translate-y-0.5 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-y-0"
-                  style={{
-                    background: "linear-gradient(135deg,#8b1a34,#e91e8c)",
-                  }}
+                  style={{ background: "linear-gradient(135deg,#8b1a34,#e91e8c)" }}
                 >
-                  <ShoppingBag size={15} className="sm:hidden" />
-                  <ShoppingBag size={17} className="hidden sm:block" />
-                  {addingToCart ? "Adding..." : "Add to Cart"}
+                  {cartLoading ? (
+                    <Loader2 size={16} className="animate-spin" />
+                  ) : (
+                    <>
+                      <ShoppingBag size={15} className="sm:hidden" />
+                      <ShoppingBag size={17} className="hidden sm:block" />
+                    </>
+                  )}
+                  Add to Cart
                 </button>
               </div>
 
               <button
-                disabled={!inStock}
+                onClick={handleBuyNow}
+                disabled={!inStock || cartLoading}
                 className="w-full rounded-xl border-2 border-gray-900 text-gray-900 font-sans text-[12px] sm:text-[13px] font-bold uppercase tracking-widest sm:tracking-[0.12em] py-3 sm:py-3.5 mb-6 sm:mb-7 hover:bg-gray-900 hover:text-white transition-all duration-200 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed">
                 Buy Now
               </button>
