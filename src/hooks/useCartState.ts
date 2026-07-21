@@ -12,7 +12,7 @@ export function useCartState() {
 
   const applyCartData = useCallback((data: CartData) => {
     setCart(data.items);
-    setCartCount(data.total_quantity);
+    setCartCount(data.item_count); // distinct products in cart, not total units
     setCartTotal(data.subtotal);
   }, []);
 
