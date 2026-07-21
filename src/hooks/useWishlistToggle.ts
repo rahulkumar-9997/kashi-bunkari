@@ -22,13 +22,10 @@ export function useWishlistToggle(productId: number) {
       .list()
       .then((res) => {
         if (!cancelled) {
-          setWishlisted(
-            res.data.items.some((item) => item.product_id === productId),
-          );
+          setWishlisted(res.data.items.some((item) => item.id === productId));
         }
       })
       .catch(() => {
-        
       })
       .finally(() => {
         if (!cancelled) setChecking(false);

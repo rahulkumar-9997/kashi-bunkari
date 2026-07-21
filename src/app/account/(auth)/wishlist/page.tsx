@@ -1,9 +1,9 @@
-import WishlistPage from "./WishlistPage";
 import type { Metadata } from "next";
+import WishlistPage from "./WishlistPage";
 
 export const metadata: Metadata = {
-  title: "My Wishlist",
-  description: "View and manage your favorite items in your wishlist.",
+  title: "My Wishlist | Kasibunkari",
+  robots: { index: false, follow: false },
 };
 
 export default function Page() {

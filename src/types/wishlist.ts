@@ -4,13 +4,15 @@ export type WishlistItemCategory = {
 };
 
 export type WishlistItem = {
-  product_id: number;
+  id: number;
   title: string;
   slug: string;
-  category: WishlistItemCategory;
-  image: string | null;
   mrp: string | number | null;
   offer_rate: string | number | null;
+  sku: string | null;
+  attribute_value: string | null;
+  category: WishlistItemCategory;
+  image: string | null;
   in_stock: boolean;
 };
 

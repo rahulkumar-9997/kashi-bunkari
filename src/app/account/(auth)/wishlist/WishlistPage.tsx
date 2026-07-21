@@ -1,322 +1,151 @@
 "use client";
+import Image from "next/image";
 import Link from "next/link";
-import Heading from "@/components/Heading/Heading";
-import { useState } from "react";
-import {
-  Heart,
-  ShoppingBag,
-  Trash2,
-  ShoppingCart,
-  Star,
-  Eye,
-  ChevronRight,
-  AlertCircle,
-} from "lucide-react";
-import { useAuth } from "@/context/AuthContext";
+import { Heart, ImageOff, Loader2, ShoppingBag, Trash2 } from "lucide-react";
+import { useCart } from "@/components/Cart/CartContext";
+import { useWishlist } from "@/hooks/useWishlist";
+import { toast } from "sonner";
 
-type WishlistItem = {
-  id: string;
-  name: string;
-  image: string;
-  price: string;
-  originalPrice?: string;
-  rating: number;
-  reviews: number;
-  inStock: boolean;
-  category: string;
-  addedDate: string;
-};
-
-const SAMPLE_WISHLIST: WishlistItem[] = [
-  {
-    id: "1",
-    name: "Banarasi Katan Silk Saree - Red",
-    image: "/images/products/1.webp",
-    price: "Rs.145.00",
-    originalPrice: "$180.00",
-    rating: 4.8,
-    reviews: 124,
-    inStock: true,
-    category: "Sarees",
-    addedDate: "December 15, 2024",
-  },
-  {
-    id: "2",
-    name: "Tissue Silk Saree - Gold",
-    image: "/images/products/2.webp",
-    price: "Rs.100.00",
-    originalPrice: "$130.00",
-    rating: 4.6,
-    reviews: 89,
-    inStock: true,
-    category: "Sarees",
-    addedDate: "December 10, 2024",
-  },
-  {
-    id: "3",
-    name: "Ayodhya Temple Tour Package",
-    image: "/images/products/3.webp",
-    price: "Rs.89.50",
-    originalPrice: "$110.00",
-    rating: 4.9,
-    reviews: 56,
-    inStock: true,
-    category: "Tours",
-    addedDate: "December 5, 2024",
-  },
-  {
-    id: "4",
-    name: "Prayagraj Kumbh Package",
-    image: "/images/products/4.webp",
-    price: "Rs.120.00",
-    originalPrice: "$150.00",
-    rating: 4.7,
-    reviews: 78,
-    inStock: false,
-    category: "Tours",
-    addedDate: "November 28, 2024",
-  },
-  {
-    id: "5",
-    name: "Varanasi Special Package",
-    image: "/images/products/5.webp",
-    price: "Rs.245.00",
-    originalPrice: "$300.00",
-    rating: 4.9,
-    reviews: 203,
-    inStock: true,
-    category: "Packages",
-    addedDate: "November 20, 2024",
-  },
-  {
-    id: "6",
-    name: "Lucknow Heritage Walk",
-    image: "/images/products/6.webp",
-    price: "Rs.62.00",
-    originalPrice: "$75.00",
-    rating: 4.5,
-    reviews: 45,
-    inStock: true,
-    category: "Tours",
-    addedDate: "November 15, 2024",
-  },
-];
-
-function StarRating({ rating }: { rating: number }) {
-  const fullStars = Math.floor(rating);
-  const hasHalfStar = rating % 1 >= 0.5;
-
-  return (
-    <div className="flex items-center gap-0.5">
-      {[...Array(5)].map((_, i) => {
-        if (i < fullStars) {
-          return (
-            <Star key={i} size={12} className="fill-amber-400 text-amber-400" />
-          );
-        } else if (i === fullStars && hasHalfStar) {
-          return (
-            <Star key={i} size={12} className="fill-amber-400 text-amber-400" />
-          );
-        } else {
-          return <Star key={i} size={12} className="text-gray-300" />;
-        }
-      })}
-    </div>
-  );
+function formatPrice(value: string | number | null) {
+  if (value == null) return null;
+  const n = typeof value === "string" ? parseFloat(value) : value;
+  if (!Number.isFinite(n)) return null;
+  return `₹${n.toLocaleString("en-IN")}`;
 }
 
 export default function WishlistPage() {
-  const { customer, isLoading } = useAuth();
-  const [wishlistItems, setWishlistItems] = useState(SAMPLE_WISHLIST);
+  const { items, loading, removingId, removeItem } = useWishlist();
+  const { addToCart } = useCart();
 
-  if (isLoading) {
-    return (
-      <div className="flex items-center justify-center min-h-100">
-        <div className="w-8 h-8 border-4 border-maroon border-t-transparent rounded-full animate-spin" />
-      </div>
-    );
-  }
-
-  if (!customer) {
-    return (
-      <div className="flex flex-col items-center justify-center min-h-100 text-center">
-        <div className="w-16 h-16 rounded-full bg-[#FBF6ED] border border-[#E4D9C4] flex items-center justify-center mb-4">
-          <Heart size={28} className="text-[#AD8A3B]" />
-        </div>
-        <h2 className="font-serif text-xl font-bold text-maroon mb-2">
-          Please Login to View Wishlist
-        </h2>
-        <p className="text-sm text-gray-500 mb-6 max-w-xs">
-          You need to be logged in to access your wishlist.
-        </p>
-        <Link
-          href="/login"
-          className="inline-flex items-center gap-2 px-6 py-2.5 bg-maroon text-white text-sm font-medium rounded-lg hover:bg-maroon/90 transition-colors"
-        >
-          Login Now
-          <ChevronRight size={16} />
-        </Link>
-      </div>
-    );
-  }
-  const handleRemoveItem = (id: string) => {
-    setWishlistItems(wishlistItems.filter((item) => item.id !== id));
-  };
-
-  const handleMoveToCart = (id: string) => {
-    console.log("Moving item to cart:", id);
-    setWishlistItems(wishlistItems.filter((item) => item.id !== id));
+  const handleMoveToCart = async (productId: number, title: string) => {
+    try {
+      await addToCart(productId, 1);
+      toast.success(`${title} added to cart.`);
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Couldn't add to cart.");
+    }
   };
 
   return (
-    <div className="space-y-8">
-      {/* Header */}
-      <div>
-        <div className="flex items-center gap-3 mb-2">          
-          <div>
-            <Heading
-              level={1}
-              text="Wishlist"
-              className="text-maroon text-[24px]"
-              decorator="underline-pink"
-              allowHTML
-            />
-          </div>
-        </div>
-      </div>
-      {wishlistItems.length === 0 ? (
-        <div className="rounded-xl border border-[#E4D9C4] bg-[#FBF6ED] px-6 py-12 text-center">
-          <div className="w-16 h-16 mx-auto rounded-full bg-white border border-[#E4D9C4] flex items-center justify-center mb-4">
-            <Heart size={28} className="text-[#AD8A3B]" />
-          </div>
-          <p className="font-serif text-lg font-bold text-maroon mb-1.5">
-            Your wishlist is empty
+    <>
+      <div className="space-y-6">
+        <div>
+          <h1 className="font-serif text-[22px] sm:text-[24px] font-bold text-maroon">
+            My Wishlist
+          </h1>
+          <p className="font-sans text-[12.5px] text-gray-400 mt-0.5">
+            {items.length > 0
+              ? `${items.length} item${items.length === 1 ? "" : "s"} saved`
+              : "Products you love, saved for later"}
           </p>
-          <p className="text-sm text-gray-500 mb-6 max-w-xs mx-auto">
-            Start adding your favorite items to your wishlist
-          </p>
-          <Link
-            href="/collections"
-            className="inline-flex items-center gap-2 text-sm font-medium text-maroon border-b-2 border-maroon pb-1 hover:gap-3 transition-all"
-          >
-            Start Shopping
-            <ChevronRight size={16} />
-          </Link>
         </div>
-      ) : (
-        <>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {wishlistItems.map((item) => (
-              <div
-                key={item.id}
-                className="group bg-white rounded-xl border border-[#E4D9C4] overflow-hidden hover:border-[#AD8A3B]/30 hover:shadow-lg transition-all duration-300"
-              >
-                {/* Image */}
-                <Link href={`/product/${item.id}`} className="block relative">
-                  <div className="relative aspect-square bg-gray-100 overflow-hidden">
-                    <img
-                      src={item.image}
-                      alt={item.name}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                      onError={(e) => {
-                        const target = e.target as HTMLImageElement;
-                        target.src = "/images/kasibunkari_logo.webp";
-                      }}
-                    />
-                    {!item.inStock && (
-                      <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
-                        <span className="bg-red-600 text-white text-xs font-bold px-3 py-1 rounded-full">
-                          Out of Stock
-                        </span>
+
+        {loading ? (
+          <div className="flex items-center justify-center py-20">
+            <Loader2 size={24} className="text-maroon animate-spin" />
+          </div>
+        ) : items.length === 0 ? (
+          <div className="flex flex-col items-center justify-center py-16 text-center">
+            <div className="w-14 h-14 rounded-2xl bg-pink/8 border border-pink/15 flex items-center justify-center mb-4">
+              <Heart size={22} className="text-pink" />
+            </div>
+            <h3 className="font-serif text-[17px] font-bold text-gray-800 mb-1.5">
+              Your wishlist is empty
+            </h3>
+            <p className="font-sans text-[13px] text-gray-400 mb-5">
+              Tap the heart icon on any product to save it here.
+            </p>
+            <Link
+              href="/"
+              className="font-sans text-[11px] font-bold uppercase tracking-[0.16em] text-white bg-pink px-6 py-2.5 rounded-xl hover:opacity-90 transition-opacity"
+            >
+              Continue Shopping
+            </Link>
+          </div>
+        ) : (
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-3 gap-3 sm:gap-4">
+            {items.map((item) => {
+              const price = formatPrice(item.offer_rate) ?? formatPrice(item.mrp);
+              const isRemoving = removingId === item.id;
+
+              return (
+                <div
+                  key={item.id}
+                  className="group relative border border-gray-200 rounded-xl bg-white overflow-hidden transition-all duration-200 hover:border-maroon/30 hover:shadow-md"
+                >
+                  <button
+                    onClick={() => removeItem(item.id)}
+                    disabled={isRemoving}
+                    aria-label="Remove from wishlist"
+                    className="absolute top-2.5 right-2.5 z-20 w-8 h-8 rounded-full bg-white/90 backdrop-blur-sm shadow-sm flex items-center justify-center text-gray-500 hover:text-red-500 hover:bg-white transition-colors disabled:opacity-50 cursor-pointer"
+                  >
+                    {isRemoving ? (
+                      <Loader2 size={14} className="animate-spin" />
+                    ) : (
+                      <Trash2 size={14} />
+                    )}
+                  </button>
+
+                  <Link
+                    href={`/product/${item.slug}/${item.attribute_value}`}
+                    className="block relative bg-gray-100"
+                    style={{ aspectRatio: "3/4" }}
+                  >
+                    {item.image ? (
+                      <Image
+                        src={item.image}
+                        alt={item.title}
+                        fill
+                        className="object-cover object-top transition-transform duration-500 group-hover:scale-105"
+                        sizes="(max-width:640px) 50vw,(max-width:1024px) 33vw,25vw"
+                        onError={(e) => {
+                          e.currentTarget.style.display = "none";
+                        }}
+                      />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center">
+                        <ImageOff size={22} className="text-gray-300" />
                       </div>
                     )}
-                    {/* Remove button */}
-                    <button
-                      onClick={() => handleRemoveItem(item.id)}
-                      className="absolute top-2 right-2 p-1.5 bg-white/90 rounded-full shadow-md hover:bg-red-50 hover:text-red-600 transition-colors opacity-0 group-hover:opacity-100"
-                    >
-                      <Trash2
-                        size={16}
-                        className="text-gray-600 group-hover:text-red-600"
-                      />
-                    </button>
-                  </div>
-                </Link>
-
-                {/* Content */}
-                <div className="p-4">
-                  <div className="flex items-start justify-between gap-2">
-                    <Link href={`/product/${item.id}`} className="flex-1">
-                      <h3 className="font-medium text-gray-800 text-[18px] hover:text-maroon transition-colors line-clamp-2">
-                        {item.name}
-                      </h3>
-                    </Link>
-                  </div>
-
-                  <div className="mt-1 flex items-center gap-2">
-                    <span className="text-[14px] text-gray-400">
-                      {item.category}
-                    </span>
-                  </div>
-
-                  {/* Rating */}
-                  <div className="mt-1.5 flex items-center gap-2">
-                    <StarRating rating={item.rating} />
-                    <span className="text-xs text-gray-400">
-                      ({item.reviews})
-                    </span>
-                  </div>
-
-                  {/* Price */}
-                  <div className="mt-2 flex items-center gap-2">
-                    <span className="text-base font-bold text-maroon">
-                      {item.price}
-                    </span>
-                    {item.originalPrice && (
-                      <span className="text-xs text-gray-400 line-through">
-                        {item.originalPrice}
+                    {!item.in_stock && (
+                      <span className="absolute bottom-2.5 left-2.5 z-10 font-sans text-[9.5px] font-bold uppercase tracking-wide text-white bg-gray-900/80 px-2 py-1 rounded-full">
+                        Out of Stock
                       </span>
                     )}
-                  </div>
+                  </Link>
 
-                  {/* Buttons */}
-                  <div className="mt-3 flex items-center gap-2">
-                    {item.inStock ? (
-                      <button
-                        onClick={() => handleMoveToCart(item.id)}
-                        className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 bg-maroon hover:bg-maroon/90 text-white text-xs font-medium rounded-lg transition-colors"
-                      >
-                        <ShoppingCart size={14} />
-                        Add to Cart
-                      </button>
-                    ) : (
-                      <button
-                        disabled
-                        className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 bg-gray-200 text-gray-500 text-xs font-medium rounded-lg cursor-not-allowed"
-                      >
-                        <AlertCircle size={14} />
-                        Out of Stock
-                      </button>
+                  <div className="px-3 py-3">
+                    {item.category?.title && (
+                      <span className="inline-block text-[10px] px-1.5 py-0.5 border border-maroon/30 bg-maroon/10 rounded-full text-maroon mb-1.5">
+                        {item.category.title}
+                      </span>
                     )}
                     <Link
-                      href={`/products/${item.id}`}
-                      className="p-2 rounded-lg border border-[#E4D9C4] hover:border-maroon/30 hover:bg-[#FBF6ED] transition-colors"
+                      href={`/products/${item.slug}`}
+                      className="block font-sans text-[13px] font-semibold text-gray-800 leading-snug line-clamp-2 mb-2 hover:text-maroon transition-colors"
                     >
-                      <Eye
-                        size={16}
-                        className="text-gray-400 hover:text-maroon"
-                      />
+                      {item.title}
                     </Link>
+                    {price && (
+                      <p className="font-sans text-[13.5px] font-bold text-gray-900 mb-3">{price}</p>
+                    )}
+
+                    <button
+                      onClick={() => handleMoveToCart(item.id, item.title)}
+                      disabled={!item.in_stock}
+                      className="w-full flex items-center justify-center gap-1.5 rounded-lg font-sans text-[11px] font-bold uppercase tracking-[0.1em] text-white py-2.5 transition-opacity hover:opacity-90 disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
+                      style={{ background: "linear-gradient(135deg,#8b1a34,#e91e8c)" }}
+                    >
+                      <ShoppingBag size={13} />
+                      {item.in_stock ? "Move to Cart" : "Unavailable"}
+                    </button>
                   </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
-          <div className="text-center text-sm text-gray-400 pt-2">
-            Total {wishlistItems.length} items in your wishlist
-          </div>
-        </>
-      )}
-    </div>
+        )}
+      </div>
+    </>
   );
 }
