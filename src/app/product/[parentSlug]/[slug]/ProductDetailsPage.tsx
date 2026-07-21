@@ -3,11 +3,13 @@ import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
+import { toast } from "sonner";
 import "@fancyapps/ui/dist/fancybox/fancybox.css";
 import Heading from "@/components/Heading/Heading";
 import Breadcrumb from "@/components/Breadcrumb/Breadcrumb";
 import { useCart } from "@/components/Cart/CartContext";
-import { toast } from "sonner";
+import { useWishlistToggle } from "@/hooks/useWishlistToggle";
+import { useAuthModal } from "@/context/AuthModalContext";
 import {
   ChevronUp,
   Heart,
@@ -70,10 +72,15 @@ function formatPrice(value: number) {
 export default function ProductDetailsPage({ product: data }: Props) {
   const product = data.product_details;
   const router = useRouter();
-  const { addToCart, loading: cartLoading } = useCart();  
+  const { addToCart, loading: cartLoading } = useCart();
+  const { openLogin } = useAuthModal();
+  const {
+    wishlisted,
+    loading: wishlistLoading,
+    toggle: toggleWishlist,
+  } = useWishlistToggle(product.id);
   const [activeThumb, setActiveThumb] = useState(0);
   const [qty, setQty] = useState(1);
-  const [wished, setWished] = useState(false);
   const [expandedAccordion, setExpandedAccordion] = useState<string | null>(
     "description",
   );
@@ -85,7 +92,7 @@ export default function ProductDetailsPage({ product: data }: Props) {
 
   const thumbRailRef = useRef<HTMLDivElement>(null);
   const mobileThumbRailRef = useRef<HTMLDivElement>(null);
-  const fancyboxRef = useRef<any>(null); 
+  const fancyboxRef = useRef<any>(null);
 
   useEffect(() => {
     (async () => {
@@ -111,38 +118,72 @@ export default function ProductDetailsPage({ product: data }: Props) {
     setActiveThumb(0);
   }, [product?.id]);
 
-   const checkStockAvailable = (requestedQty: number): boolean => {
+  // Checked before every add-to-cart/buy-now call — avoids an
+  // unnecessary round-trip when we already know the request will fail.
+  // (The backend still validates this too — this is a UX shortcut, not
+  // a replacement for that check.)
+  const checkStockAvailable = (requestedQty: number): boolean => {
     if (product.stock_quantity != null && product.stock_quantity <= 0) {
       toast.error("This product is currently out of stock.");
       return false;
     }
-    if (product.stock_quantity != null && requestedQty > product.stock_quantity) {
+    if (
+      product.stock_quantity != null &&
+      requestedQty > product.stock_quantity
+    ) {
       toast.error(`Only ${product.stock_quantity} unit(s) left in stock.`);
       return false;
     }
     return true;
   };
- 
+
+  const handleWishlistToggle = async () => {
+    try {
+      const nowWishlisted = await toggleWishlist();
+      toast.success(
+        nowWishlisted ? "Added to wishlist." : "Removed from wishlist.",
+      );
+    } catch (err) {
+      if (err instanceof Error && err.message.includes("log in")) {
+        openLogin();
+        return;
+      }
+      toast.error(
+        err instanceof Error ? err.message : "Couldn't update your wishlist.",
+      );
+    }
+  };
+
   const handleAddToCart = async () => {
     if (!checkStockAvailable(qty)) return;
     try {
       await addToCart(product.id, qty);
       toast.success(`${product.title} added to cart.`);
+      // addToCart already opens the CartDrawer (see useCartState) —
+      // no extra navigation needed here.
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Couldn't add to cart. Please try again.");
+      toast.error(
+        err instanceof Error
+          ? err.message
+          : "Couldn't add to cart. Please try again.",
+      );
     }
   };
- 
+
   const handleBuyNow = async () => {
     if (!checkStockAvailable(qty)) return;
     try {
       await addToCart(product.id, qty);
       router.push("/checkout");
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Couldn't add to cart. Please try again.");
+      toast.error(
+        err instanceof Error
+          ? err.message
+          : "Couldn't add to cart. Please try again.",
+      );
     }
   };
- 
+
   const handleCopyLink = async () => {
     try {
       await navigator.clipboard.writeText(pageUrl);
@@ -152,7 +193,6 @@ export default function ProductDetailsPage({ product: data }: Props) {
       setCopied(false);
     }
   };
- 
 
   const shareTargets = product
     ? [
@@ -279,7 +319,7 @@ export default function ProductDetailsPage({ product: data }: Props) {
             ? [
                 {
                   label: data.attributes_value_name.title,
-                  href: `/shop/${data.product_details.category.slug}/${data.attribute.slug}/${data.attributes_value_name.slug}`,
+                  href: `/shop/${product.category.slug}/${data.attribute.slug}/${data.attributes_value_name.slug}`,
                 },
               ]
             : []),
@@ -385,7 +425,7 @@ export default function ProductDetailsPage({ product: data }: Props) {
                   )}
                 </div>
               </div>
-              {/* For mobile code   */}
+
               {thumbs.length > 1 && (
                 <div className="flex md:hidden items-center gap-1.5 mt-2.5 sm:mt-3">
                   <button
@@ -415,7 +455,6 @@ export default function ProductDetailsPage({ product: data }: Props) {
                           fill
                           className="object-contain p-1"
                           sizes="64px"
-                          // sizes="(max-width:768px) 100vw, (max-width:1200px) 50vw, 33vw"
                           onError={(e) => {
                             e.currentTarget.style.display = "none";
                           }}
@@ -433,23 +472,29 @@ export default function ProductDetailsPage({ product: data }: Props) {
                   </button>
                 </div>
               )}
-              {/* For mobile code   */}
-              {/* For mobile code   */}
+
               <div className="flex lg:hidden items-center gap-2 mt-2.5 sm:mt-3">
                 <button
-                  onClick={() => setWished((v) => !v)}
-                  className={`w-8 h-8 sm:w-9 sm:h-9 rounded-full flex items-center justify-center shadow-sm border transition-all duration-200 ${wished ? "bg-pink border-pink text-white" : "bg-white border-gray-200 text-gray-400"}`}
+                  onClick={handleWishlistToggle}
+                  disabled={wishlistLoading}
+                  className={`w-8 h-8 sm:w-9 sm:h-9 rounded-full flex items-center justify-center shadow-sm border transition-all duration-200 disabled:opacity-60 ${wishlisted ? "bg-pink border-pink text-white" : "bg-maroon border-gray-200 text-gray-400"}`}
                 >
-                  <Heart
-                    size={14}
-                    className="sm:hidden"
-                    fill={wished ? "currentColor" : "none"}
-                  />
-                  <Heart
-                    size={15}
-                    className="hidden sm:block"
-                    fill={wished ? "currentColor" : "none"}
-                  />
+                  {wishlistLoading ? (
+                    <Loader2 size={14} className="animate-spin" />
+                  ) : (
+                    <>
+                      <Heart
+                        size={14}
+                        className="sm:hidden"
+                        fill={wishlisted ? "currentColor" : "none"}
+                      />
+                      <Heart
+                        size={15}
+                        className="hidden sm:block"
+                        fill={wishlisted ? "currentColor" : "none"}
+                      />
+                    </>
+                  )}
                 </button>
                 <button
                   onClick={() => setShareOpen(true)}
@@ -459,7 +504,6 @@ export default function ProductDetailsPage({ product: data }: Props) {
                   <Share2 size={14} className="hidden sm:block" />
                 </button>
               </div>
-              {/* For mobile code   */}
             </div>
 
             {/* ── RIGHT: Product info ── */}
@@ -533,19 +577,26 @@ export default function ProductDetailsPage({ product: data }: Props) {
               <div className="flex flex-col xs:flex-row sm:flex-row items-stretch gap-2.5 sm:gap-3 mb-3.5 sm:mb-4">
                 <div className="relative group flex items-center">
                   <button
-                    onClick={() => setWished((v) => !v)}
-                    className={`w-8 h-8 sm:w-9 sm:h-9 rounded-full flex items-center cursor-pointer justify-center shadow-sm border transition-all duration-200 ${wished ? "bg-pink border-pink text-white" : "bg-white border-gray-200 text-gray-400"}`}
+                    onClick={handleWishlistToggle}
+                    disabled={wishlistLoading}
+                    className={`w-8 h-8 sm:w-9 sm:h-9 rounded-full flex items-center cursor-pointer justify-center shadow-sm border transition-all duration-200 disabled:opacity-60 ${wishlisted ? "bg-magenta border-pink text-white" : "bg-white border-gray-400 text-gray-500"}`}
                   >
-                    <Heart
-                      size={14}
-                      className="sm:hidden"
-                      fill={wished ? "currentColor" : "none"}
-                    />
-                    <Heart
-                      size={15}
-                      className="hidden sm:block"
-                      fill={wished ? "currentColor" : "none"}
-                    />
+                    {wishlistLoading ? (
+                      <Loader2 size={14} className="animate-spin" />
+                    ) : (
+                      <>
+                        <Heart
+                          size={14}
+                          className="sm:hidden"
+                          fill={wishlisted ? "currentColor" : "none"}
+                        />
+                        <Heart
+                          size={15}
+                          className="hidden sm:block"
+                          fill={wishlisted ? "currentColor" : "none"}
+                        />
+                      </>
+                    )}
                   </button>
                   <span className="absolute -bottom-8 left-1/2 -translate-x-1/2 whitespace-nowrap bg-gray-800 text-white text-[10px] font-medium px-2 py-0.5 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none">
                     Wishlist
@@ -569,9 +620,13 @@ export default function ProductDetailsPage({ product: data }: Props) {
                           : q + 1,
                       )
                     }
-                    disabled={product.stock_quantity != null && qty >= product.stock_quantity}
+                    disabled={
+                      product.stock_quantity != null &&
+                      qty >= product.stock_quantity
+                    }
                     title={
-                      product.stock_quantity != null && qty >= product.stock_quantity
+                      product.stock_quantity != null &&
+                      qty >= product.stock_quantity
                         ? "No more stock available"
                         : undefined
                     }
@@ -584,7 +639,9 @@ export default function ProductDetailsPage({ product: data }: Props) {
                   onClick={handleAddToCart}
                   disabled={!inStock || cartLoading}
                   className="flex-1 flex items-center justify-center gap-2 sm:gap-2.5 rounded-xl font-sans text-[12px] sm:text-[13px] font-bold uppercase tracking-widest sm:tracking-[0.12em] text-white py-3 sm:py-0 transition-all duration-200 hover:opacity-90 hover:-translate-y-0.5 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-y-0"
-                  style={{ background: "linear-gradient(135deg,#8b1a34,#e91e8c)" }}
+                  style={{
+                    background: "linear-gradient(135deg,#8b1a34,#e91e8c)",
+                  }}
                 >
                   {cartLoading ? (
                     <Loader2 size={16} className="animate-spin" />
@@ -601,7 +658,8 @@ export default function ProductDetailsPage({ product: data }: Props) {
               <button
                 onClick={handleBuyNow}
                 disabled={!inStock || cartLoading}
-                className="w-full rounded-xl border-2 border-gray-900 text-gray-900 font-sans text-[12px] sm:text-[13px] font-bold uppercase tracking-widest sm:tracking-[0.12em] py-3 sm:py-3.5 mb-6 sm:mb-7 hover:bg-gray-900 hover:text-white transition-all duration-200 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed">
+                className="w-full rounded-xl border-2 border-gray-900 text-gray-900 font-sans text-[12px] sm:text-[13px] font-bold uppercase tracking-widest sm:tracking-[0.12em] py-3 sm:py-3.5 mb-6 sm:mb-7 hover:bg-gray-900 hover:text-white transition-all duration-200 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+              >
                 Buy Now
               </button>
 

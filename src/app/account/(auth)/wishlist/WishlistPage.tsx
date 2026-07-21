@@ -212,7 +212,7 @@ export default function WishlistPage() {
                 className="group bg-white rounded-xl border border-[#E4D9C4] overflow-hidden hover:border-[#AD8A3B]/30 hover:shadow-lg transition-all duration-300"
               >
                 {/* Image */}
-                <Link href={`/products/${item.id}`} className="block relative">
+                <Link href={`/product/${item.id}`} className="block relative">
                   <div className="relative aspect-square bg-gray-100 overflow-hidden">
                     <img
                       src={item.image}

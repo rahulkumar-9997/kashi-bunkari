@@ -23,6 +23,12 @@ export const API_ENDPOINTS = {
     remove: (productId: number | string) => `${API_BASE_URL}/api/cart/${productId}`,
     clear: `${API_BASE_URL}/api/cart`,
   },
+  wishlist: {
+    add: `${API_BASE_URL}/api/customer/wishlist/add`,
+    list: `${API_BASE_URL}/api/customer/wishlist/list`,
+    remove: (productId: number | string) => `${API_BASE_URL}/api/customer/wishlist/${productId}`,
+    toggle: `${API_BASE_URL}/api/customer/wishlist/toggle`,
+  },
 };
 
 export const AUTH_ENDPOINTS = {
