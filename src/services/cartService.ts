@@ -1,6 +1,7 @@
 import { API_ENDPOINTS } from "@/config/api";
 import type { CartApiResponse, CartErrorResponse } from "@/types/cart";
 import { getCartToken } from "@/lib/cartToken";
+import { getToken } from "@/lib/authSession";
 
 async function handleResponse(res: Response): Promise<CartApiResponse> {
   const json = await res.json();
@@ -14,11 +15,17 @@ async function handleResponse(res: Response): Promise<CartApiResponse> {
 }
 
 function jsonHeaders(): Record<string, string> {
-  return {
+  const headers: Record<string, string> = {
     "Content-Type": "application/json",
-    Accept: "application/json",   
+    Accept: "application/json",
     "X-Cart-Token": getCartToken(),
   };
+  const token = getToken();
+  if (token) {
+    headers.Authorization = `Bearer ${token}`;
+  }
+
+  return headers;
 }
 
 export const cartService = {
