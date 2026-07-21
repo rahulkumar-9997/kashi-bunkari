@@ -1,24 +1,69 @@
 "use client";
+import { useRouter } from "next/navigation";
 import Image from "next/image";
-import { useCart } from "./CartContext";
-import { ImageOff } from "lucide-react";
+import Link from "next/link";
+import {
+  X,
+  Package,
+  Minus,
+  Plus,
+  ImageOff,
+  StickyNote,
+  Tag,
+  Loader2,
+  ShoppingBag,
+} from "lucide-react";
+import { useCart } from "@/components/Cart/CartContext";
+import type { CartItem } from "@/types/cart";
 
-function formatPrice(value: number | string | null) {
+const FREE_DELIVERY_THRESHOLD = 2000;
+
+function formatPrice(value: number) {
+  return `Rs. ${value.toLocaleString("en-IN", { minimumFractionDigits: 2 })}`;
+}
+
+// mrp/offer_rate can arrive as either a string or a number from the API.
+function toNumber(value: string | number | null | undefined): number | null {
   if (value == null) return null;
-  return `₹${Number(value).toLocaleString("en-IN")}`;
+  const n = typeof value === "string" ? parseFloat(value) : value;
+  return Number.isFinite(n) ? n : null;
+}
+
+function getUnitPrice(item: CartItem): number | null {
+  const offerRate = toNumber(item.offer_rate);
+  const mrp = toNumber(item.mrp);
+  return offerRate ?? mrp;
+}
+
+function getLineTotal(item: CartItem): number | null {
+  if (item.line_total != null) return item.line_total;
+  const unitPrice = getUnitPrice(item);
+  return unitPrice != null ? unitPrice * item.quantity : null;
 }
 
 export default function CartDrawer() {
+  const router = useRouter();
   const {
     cart,
-    isOpen,
-    closeCart,
-    removeItem,
-    changeQty,
     cartCount,
     cartTotal,
+    isOpen,
     loading,
+    closeCart,
+    changeQty,
+    removeItem,
   } = useCart();
+
+  const remainingForFreeDelivery = Math.max(
+    0,
+    FREE_DELIVERY_THRESHOLD - cartTotal,
+  );
+  const qualifiesForFreeDelivery = remainingForFreeDelivery === 0;
+
+  const handleCheckout = () => {
+    closeCart();
+    router.push("/checkout");
+  };
 
   return (
     <>
@@ -33,58 +78,106 @@ export default function CartDrawer() {
         className={`cart-panel fixed top-0 right-0 bottom-0 z-[500] flex flex-col bg-white w-[min(400px,100vw)] shadow-xl ${isOpen ? "open" : ""}`}
       >
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100">
-          <div className="flex items-center gap-3">
-            <h2 className="font-serif text-[20px] font-bold text-gray-900">Shopping Cart</h2>
-            <span className="bg-pink text-white font-inter text-[9px] font-bold px-2.5 py-0.5 rounded-full">
-              {cartCount} {cartCount === 1 ? "item" : "items"}
+        <div className="flex items-center justify-between px-6 py-5 border-b border-gray-100 shrink-0">
+          <div className="flex items-center gap-2.5">
+            <h2 className="font-serif text-[22px] font-bold text-maroon">
+              Cart
+            </h2>
+            <span className="flex items-center justify-center w-6 h-6 rounded-full bg-maroon text-white font-sans text-[12px] font-bold">
+              {cartCount}
             </span>
           </div>
           <button
             onClick={closeCart}
-            className="flex items-center gap-1.5 text-gray-400 hover:text-pink font-inter text-[10px] uppercase tracking-wide transition-colors"
+            aria-label="Close cart"
+            className="w-9 h-9 flex items-center justify-center rounded-full text-gray-400 hover:text-gray-700 hover:bg-gray-100 transition-colors cursor-pointer"
           >
-            <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="1.8">
-              <path d="M18 6L6 18M6 6l12 12" strokeLinecap="round" />
-            </svg>
-            Close
+            <X size={20} />
           </button>
         </div>
 
-        {/* Body */}
-        <div className="flex-1 overflow-y-auto">
-          {cart.length === 0 ? (
-            <div className="flex flex-col items-center justify-center py-16 px-8 text-center gap-4">
-              <svg className="w-14 h-14 text-gray-200" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="1.2">
-                <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z" strokeLinecap="round" />
-                <line x1="3" y1="6" x2="21" y2="6" />
-                <path d="M16 10a4 4 0 01-8 0" strokeLinecap="round" />
-              </svg>
-              <h3 className="font-serif text-gray-800 text-[20px]">Your cart is empty</h3>
-              <button
+        {/* Free delivery banner */}
+        {cartCount > 0 && (
+          <div className="px-6 pt-4 pb-4 border-b border-gray-100 shrink-0">
+            <div className="flex items-center gap-2.5 mb-3">
+              <Package size={18} className="text-maroon shrink-0" />
+              <p className="font-sans text-[13px] font-medium text-gray-700">
+                {qualifiesForFreeDelivery ? (
+                  "Your order is free delivery!"
+                ) : (
+                  <>
+                    Add{" "}
+                    <span className="font-bold text-maroon">
+                      {formatPrice(remainingForFreeDelivery)}
+                    </span>{" "}
+                    more for free delivery
+                  </>
+                )}
+              </p>
+            </div>
+            <div className="h-1 w-full rounded-full bg-gray-100 overflow-hidden">
+              <div
+                className="h-full rounded-full transition-all duration-500"
+                style={{
+                  width: `${Math.min(100, (cartTotal / FREE_DELIVERY_THRESHOLD) * 100)}%`,
+                  background: "linear-gradient(90deg,#8b1a34,#e91e8c)",
+                }}
+              />
+            </div>
+          </div>
+        )}
+
+        {/* Items */}
+        <div
+          className="flex-1 min-h-0 overflow-y-auto px-6 py-4"
+          data-lenis-prevent
+        >
+          {loading && cart.length === 0 ? (
+            <div className="flex items-center justify-center py-16">
+              <Loader2 size={22} className="text-maroon animate-spin" />
+            </div>
+          ) : cart.length === 0 ? (
+            <div className="flex flex-col items-center justify-center py-16 text-center">
+              <div className="w-14 h-14 rounded-2xl bg-pink/8 border border-pink/15 flex items-center justify-center mb-4">
+                <ShoppingBag size={22} className="text-pink" />
+              </div>
+              <h3 className="font-serif text-[17px] font-bold text-gray-800 mb-1.5">
+                Your cart is empty
+              </h3>
+              <p className="font-sans text-[13px] text-gray-400 mb-5">
+                Looks like you haven&apos;t added anything yet.
+              </p>
+              <Link
+                href="/"
                 onClick={closeCart}
-                className="bg-pink text-white font-inter text-[11px] font-bold uppercase px-8 py-2.5 hover:bg-pink-dark transition-colors border-none rounded-sm"
+                className="font-sans text-[11px] font-bold uppercase tracking-[0.16em] text-white bg-pink px-6 py-2.5 rounded-xl hover:opacity-90 transition-opacity"
               >
-                Start Shopping
-              </button>
+                Continue Shopping
+              </Link>
             </div>
           ) : (
-            <>
+            <div className="space-y-5">
               {cart.map((item) => {
-                const price = item.offer_rate ?? item.mrp;
+                const unitPrice = getUnitPrice(item);
+                const lineTotal = getLineTotal(item);
+                const hasDiscount =
+                  toNumber(item.offer_rate) != null &&
+                  toNumber(item.mrp) != null &&
+                  toNumber(item.mrp)! > toNumber(item.offer_rate)!;
+                const atStockLimit =
+                  item.available_stock != null &&
+                  item.quantity >= item.available_stock;
+
                 return (
-                  <div
-                    key={item.product_id}
-                    className="relative flex gap-3.5 px-5 py-4 border-b border-gray-100"
-                  >
-                    <div className="w-[66px] h-[84px] flex-shrink-0 rounded overflow-hidden bg-gray-50 relative">
+                  <div key={item.product_id} className="flex gap-3.5">
+                    <div className="relative w-20 h-24 rounded-lg overflow-hidden bg-gray-100 border border-gray-100 shrink-0">
                       {item.image ? (
                         <Image
                           src={item.image}
                           alt={item.title}
                           fill
                           className="object-cover"
-                          sizes="66px"
+                          sizes="80px"
                           onError={(e) => {
                             e.currentTarget.style.display = "none";
                           }}
@@ -95,102 +188,128 @@ export default function CartDrawer() {
                         </div>
                       )}
                     </div>
-                    <div className="flex-1 min-w-0">
-                      <h4 className="font-serif text-[14px] font-semibold text-gray-900 leading-tight mb-0.5 line-clamp-2">
-                        {item.title}
-                      </h4>
-                      {item.category.title && (
-                        <p className="font-inter text-[10px] text-pink uppercase tracking-wide mb-2">
-                          {item.category.title}
+
+                    <div className="flex-1 min-w-0 flex flex-col justify-between">
+                      <div>
+                        {item.category?.title && (
+                          <span className="inline-block text-[10px] px-1.5 py-0.5 border border-maroon/30 bg-maroon/10 rounded-full text-maroon mb-1">
+                            {item.category.title}
+                          </span>
+                        )}
+                        <p className="font-sans text-[13.5px] font-semibold text-gray-800 leading-snug line-clamp-2 mb-1">
+                          {item.title}
                         </p>
-                      )}
-                      {!item.in_stock && (
-                        <p className="font-inter text-[10px] text-red-500 font-semibold mb-2">
-                          Out of stock
-                        </p>
-                      )}
-                      <div className="flex items-center">
-                        <button
-                          onClick={() => changeQty(item.product_id, -1)}
-                          disabled={loading || item.quantity <= 1}
-                          className="w-7 h-7 flex items-center justify-center bg-gray-100 text-gray-500 text-[14px] hover:bg-pink hover:text-white transition-colors rounded-sm disabled:opacity-40"
-                        >
-                          −
-                        </button>
-                        <div className="w-8 h-7 flex items-center justify-center border-t border-b border-gray-200 font-inter text-[12.5px] font-semibold text-gray-800">
-                          {item.quantity}
-                        </div>
-                        <button
-                          onClick={() => changeQty(item.product_id, 1)}
-                          disabled={
-                            loading ||
-                            (item.available_stock != null &&
-                              item.quantity >= item.available_stock)
-                          }
-                          className="w-7 h-7 flex items-center justify-center bg-gray-100 text-gray-500 text-[14px] hover:bg-pink hover:text-white transition-colors rounded-sm disabled:opacity-40"
-                        >
-                          +
-                        </button>
+
+                        {!item.in_stock ? (
+                          <p className="font-sans text-[11.5px] font-semibold text-red-500">
+                            Out of stock
+                          </p>
+                        ) : unitPrice != null ? (
+                          <p className="font-sans text-[12.5px] text-gray-500 flex items-center gap-1.5 flex-wrap">
+                            {formatPrice(unitPrice)} × {item.quantity}
+                            {lineTotal != null && (
+                              <span className="font-semibold text-gray-800">
+                                = {formatPrice(lineTotal)}
+                              </span>
+                            )}
+                            {hasDiscount && (
+                              <span className="text-gray-400 line-through">
+                                {formatPrice(toNumber(item.mrp)!)}
+                              </span>
+                            )}
+                          </p>
+                        ) : (
+                          <p className="font-sans text-[12px] text-gray-400">
+                            Price on request
+                          </p>
+                        )}
                       </div>
-                      <div className="font-inter text-[14px] font-bold text-gray-900 mt-1">
-                        {item.line_total != null
-                          ? formatPrice(item.line_total)
-                          : formatPrice(price)}
+
+                      <div className="flex items-center justify-between mt-2">
+                        <div className="flex items-center border border-gray-200 rounded-full overflow-hidden">
+                          <button
+                            onClick={() => changeQty(item.product_id, -1)}
+                            disabled={item.quantity <= 1 || loading}
+                            className="w-7 h-7 flex items-center justify-center text-gray-500 hover:text-pink hover:bg-gray-50 transition-colors disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
+                          >
+                            <Minus size={12} />
+                          </button>
+                          <span className="w-8 text-center font-sans text-[12.5px] font-semibold text-gray-800">
+                            {item.quantity}
+                          </span>
+                          <button
+                            onClick={() => changeQty(item.product_id, 1)}
+                            disabled={loading || !item.in_stock || atStockLimit}
+                            title={
+                              atStockLimit
+                                ? "No more stock available"
+                                : undefined
+                            }
+                            className="w-7 h-7 flex items-center justify-center text-gray-500 hover:text-pink hover:bg-gray-50 transition-colors disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
+                          >
+                            <Plus size={12} />
+                          </button>
+                        </div>
+
+                        <button
+                          onClick={() => removeItem(item.product_id)}
+                          disabled={loading}
+                          className="font-sans text-[11.5px] text-gray-400 hover:text-pink underline transition-colors cursor-pointer disabled:opacity-40"
+                        >
+                          Remove
+                        </button>
                       </div>
                     </div>
-                    <button
-                      onClick={() => removeItem(item.product_id)}
-                      disabled={loading}
-                      className="absolute top-4 right-5 text-gray-200 hover:text-red-400 text-xl leading-none transition-colors disabled:opacity-40"
-                    >
-                      ×
-                    </button>
                   </div>
                 );
               })}
-
-              {/* Promo */}
-              <div className="px-5 py-3 border-b border-gray-100">
-                <div className="flex gap-2">
-                  <input
-                    placeholder="Promo code"
-                    className="flex-1 bg-gray-50 border border-gray-200 px-3.5 py-2 font-inter text-[12px] text-gray-700 outline-none focus:border-pink transition-colors rounded-sm placeholder-gray-300"
-                  />
-                  <button className="bg-gray-800 hover:bg-pink text-white font-inter text-[10px] uppercase font-bold px-4 transition-colors border-none rounded-sm">
-                    Apply
-                  </button>
-                </div>
-              </div>
-            </>
+            </div>
           )}
         </div>
 
-        {/* Footer */}
+        {/* Footer — only when there are items */}
         {cart.length > 0 && (
-          <div className="flex-shrink-0 px-6 py-4 border-t border-gray-100 bg-gray-50">
+          <div className="border-t border-gray-100 px-6 pt-4 pb-6 shrink-0">
+            <div className="flex items-center gap-5 pb-4 mb-4 border-b border-gray-100">
+              <button className="flex items-center gap-1.5 font-sans text-[12.5px] text-gray-600 hover:text-maroon transition-colors cursor-pointer">
+                <StickyNote size={14} />
+                Order Note
+              </button>
+              <button className="flex items-center gap-1.5 font-sans text-[12.5px] text-gray-600 hover:text-maroon transition-colors cursor-pointer">
+                <Tag size={14} />
+                Coupon
+              </button>
+            </div>
+
             <div className="flex items-center justify-between mb-1">
-              <span className="font-inter text-[12px] uppercase font-semibold text-gray-400 tracking-wide">
-                Subtotal
+              <span className="font-sans text-[15px] font-bold text-gray-800">
+                Total:
               </span>
-              <span className="font-serif text-[22px] font-bold text-gray-900">
+              <span className="font-sans text-[17px] font-bold text-gray-900">
                 {formatPrice(cartTotal)}
               </span>
             </div>
-            <p className="font-inter text-[11px] text-green-600 font-medium mb-4">
-              ✓ Free shipping applied
+            <p className="font-sans text-[11.5px] text-gray-400 mb-5">
+              Taxes and shipping calculated at checkout
             </p>
+
             <button
+              onClick={handleCheckout}
               disabled={loading}
-              className="w-full bg-pink hover:bg-pink-dark text-white font-inter text-[12.5px] font-bold tracking-wide uppercase py-3.5 transition-colors border-none rounded-sm mb-2 disabled:opacity-50"
+              className="w-full flex items-center justify-center gap-2 rounded-xl text-white font-sans text-[13px] font-bold uppercase tracking-[0.14em] py-3.5 mb-3 transition-opacity hover:opacity-90 disabled:opacity-60 cursor-pointer"
+              style={{ background: "linear-gradient(135deg,#8b1a34,#4a0e1c)" }}
             >
-              Proceed to Checkout
+              {loading && <Loader2 size={15} className="animate-spin" />}
+              Check Out
             </button>
-            <button
+
+            <Link
+              href="/cart"
               onClick={closeCart}
-              className="w-full bg-transparent text-gray-500 font-inter text-[11px] uppercase tracking-wide hover:text-pink transition-colors border-none"
+              className="block text-center font-sans text-[12.5px] font-semibold text-gray-600 hover:text-maroon underline underline-offset-2 transition-colors"
             >
-              ← Continue Shopping
-            </button>
+              View Cart
+            </Link>
           </div>
         )}
       </aside>

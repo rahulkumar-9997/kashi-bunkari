@@ -1,11 +1,12 @@
 import { API_ENDPOINTS } from "@/config/api";
-import type { CartApiResponse } from "@/types/cart";
+import type { CartApiResponse, CartErrorResponse } from "@/types/cart";
 
 async function handleResponse(res: Response): Promise<CartApiResponse> {
   const json = await res.json();
 
   if (!res.ok || json.success === false) {
-    throw new Error(json.message || "Something went wrong with the cart.");
+    const err = json as CartErrorResponse;
+    throw new Error(err.message || "Something went wrong with the cart.");
   }
 
   return json as CartApiResponse;
@@ -20,7 +21,7 @@ export const cartService = {
   async getCart(): Promise<CartApiResponse> {
     const res = await fetch(API_ENDPOINTS.cart.list, {
       method: "GET",
-      credentials: "include", // sends the guest-cart session cookie
+      credentials: "include",
       headers: jsonHeaders,
     });
     return handleResponse(res);

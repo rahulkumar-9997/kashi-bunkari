@@ -1,4 +1,3 @@
-
 export type CartItemCategory = {
   title: string | null;
   slug: string | null;
