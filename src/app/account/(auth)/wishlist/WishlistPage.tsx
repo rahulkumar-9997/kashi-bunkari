@@ -246,7 +246,7 @@ export default function WishlistPage() {
                 {/* Content */}
                 <div className="p-4">
                   <div className="flex items-start justify-between gap-2">
-                    <Link href={`/products/${item.id}`} className="flex-1">
+                    <Link href={`/product/${item.id}`} className="flex-1">
                       <h3 className="font-medium text-gray-800 text-[18px] hover:text-maroon transition-colors line-clamp-2">
                         {item.name}
                       </h3>
