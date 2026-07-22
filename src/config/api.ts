@@ -29,10 +29,6 @@ export const API_ENDPOINTS = {
     remove: (productId: number | string) => `${API_BASE_URL}/api/customer/wishlist/${productId}`,
     toggle: `${API_BASE_URL}/api/customer/wishlist/toggle`,
   },
-  payment: {
-    createOrder: `${API_BASE_URL}/api/payment/create-order`,
-    verify: `${API_BASE_URL}/api/payment/verify`,
-  },
   addresses: {
     list: `${API_BASE_URL}/api/customer/addresses`,
     create: `${API_BASE_URL}/api/customer/addresses`,
@@ -41,6 +37,10 @@ export const API_ENDPOINTS = {
     setDefault: (id: number) => `${API_BASE_URL}/api/customer/addresses/${id}/set-default`,
   },
   states: `${API_BASE_URL}/api/states`,
+  checkout: {
+    placeOrder: `${API_BASE_URL}/api/checkout/place-order`,
+    verifyPayment: `${API_BASE_URL}/api/checkout/verify-payment`,
+  },
 };
 
 export const AUTH_ENDPOINTS = {

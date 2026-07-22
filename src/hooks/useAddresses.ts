@@ -3,10 +3,11 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { addressService, stateService } from "@/services/addressService";
 import type { AddressPayload } from "@/types/address";
 
-export function useAddresses() {
+export function useAddresses(enabled: boolean = true) {
   return useQuery({
     queryKey: ["addresses"],
     queryFn: () => addressService.list().then((r) => r.data),
+    enabled,
   });
 }
 
