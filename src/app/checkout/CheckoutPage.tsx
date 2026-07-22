@@ -10,6 +10,7 @@ import { useCart } from "@/components/Cart/CartContext";
 import { useAuth } from "@/context/AuthContext";
 import { useAuthModal } from "@/context/AuthModalContext";
 import { paymentService } from "@/services/paymentService";
+import Breadcrumb from "@/components/Breadcrumb/Breadcrumb";
 import { formatPrice, getUnitPrice, getLineTotal } from "@/lib/cartHelpers";
 
 declare global {
@@ -27,10 +28,10 @@ export default function CheckoutPage() {
   const [scriptReady, setScriptReady] = useState(false);
 
   const handlePay = async () => {
-    if (!isAuthenticated) {
-      openLogin();
-      return;
-    }
+    // if (!isAuthenticated) {
+    //   openLogin();
+    //   return;
+    // }
     if (!scriptReady) {
       toast.error("Payment is still loading — please try again in a moment.");
       return;
@@ -102,9 +103,11 @@ export default function CheckoutPage() {
   return (
     <>
       <Script src="https://checkout.razorpay.com/v1/magic-checkout.js" onLoad={() => setScriptReady(true)} />
-
-      <div className="w-full min-h-screen bg-white">
-        <section className="w-full lg:px-12 md:px-10 px-4 py-8 md:py-10">
+      <Breadcrumb
+        items={[{ label: "Home", href: "/" }, { label: "Checkout" }]}
+      />
+      <section className="w-full py-10 md:py-14 overflow-hidden">
+        <div className="mx-auto max-w-7xl px-4 md:px-2 lg:px-1">
           <div className="mx-auto w-full max-w-5xl">
             <h1 className="font-serif text-[26px] md:text-[30px] font-bold text-maroon mb-7">
               Checkout
@@ -224,7 +227,7 @@ export default function CheckoutPage() {
                       {processing && (
                         <Loader2 size={15} className="animate-spin" />
                       )}
-                      {isAuthenticated ? "Pay Now" : "Log in to Pay"}
+                      Pay Now
                     </button>
 
                     <p className="flex items-center justify-center gap-1.5 font-sans text-[11px] text-gray-400 mt-4">
@@ -236,8 +239,8 @@ export default function CheckoutPage() {
               </div>
             )}
           </div>
-        </section>
-      </div>
+        </div>
+      </section>
     </>
   );
 }

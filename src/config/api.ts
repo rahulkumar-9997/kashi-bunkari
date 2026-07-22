@@ -33,6 +33,14 @@ export const API_ENDPOINTS = {
     createOrder: `${API_BASE_URL}/api/payment/create-order`,
     verify: `${API_BASE_URL}/api/payment/verify`,
   },
+  addresses: {
+    list: `${API_BASE_URL}/api/customer/addresses`,
+    create: `${API_BASE_URL}/api/customer/addresses`,
+    update: (id: number) => `${API_BASE_URL}/api/customer/addresses/${id}`,
+    delete: (id: number) => `${API_BASE_URL}/api/customer/addresses/${id}`,
+    setDefault: (id: number) => `${API_BASE_URL}/api/customer/addresses/${id}/set-default`,
+  },
+  states: `${API_BASE_URL}/api/states`,
 };
 
 export const AUTH_ENDPOINTS = {

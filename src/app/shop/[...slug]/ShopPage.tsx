@@ -446,7 +446,7 @@ export default function ShopPage({ slug }: Props) {
                 ) : (
                   <>
                     <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-4 gap-x-2 md:gap-x-3 gap-y-5 md:gap-y-2">
-                      {products.map((product) => {
+                      {products.map((product, index) => {
                         
                         const price = product.offer_price ?? product.mrp;
                         const hasDiscount =
@@ -464,7 +464,7 @@ export default function ShopPage({ slug }: Props) {
 
                         return (
                           <Link
-                            key={product.id}
+                            key={product.id != null ? `${product.id}-${index}` : `product-${index}`}
                             href={productHref}
                             className="prod-card group block outline-none select-none w-full border border-gray-200 rounded-xl bg-white transition-all duration-300 ease-in-out hover:border-maroon/30 cursor-pointer hover:shadow-md overflow-hidden"
                           >
