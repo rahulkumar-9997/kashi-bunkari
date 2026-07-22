@@ -29,6 +29,10 @@ export const API_ENDPOINTS = {
     remove: (productId: number | string) => `${API_BASE_URL}/api/customer/wishlist/${productId}`,
     toggle: `${API_BASE_URL}/api/customer/wishlist/toggle`,
   },
+  payment: {
+    createOrder: `${API_BASE_URL}/api/payment/create-order`,
+    verify: `${API_BASE_URL}/api/payment/verify`,
+  },
 };
 
 export const AUTH_ENDPOINTS = {
