@@ -265,10 +265,9 @@ export default function CheckoutPage() {
           }
         },
         modal: {
-          ondismiss: function () {
-            
+          ondismiss: function () {            
             toast.info("Payment not completed. You can retry from your order.");
-            router.push(`/order-success/${order_number}?ex=${encodeURIComponent(expires)}`);
+            //router.push(`/order-success/${order_number}?ex=${encodeURIComponent(expires)}`);
             setProcessing(false);
           },
         },
