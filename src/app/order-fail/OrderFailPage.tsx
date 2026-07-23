@@ -1,15 +1,30 @@
 "use client";
-import { useSearchParams } from "next/navigation";
+import { useEffect } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
-import { XCircle, RefreshCcw } from "lucide-react";
+import { XCircle, RefreshCcw, Loader2 } from "lucide-react";
 
 export default function OrderFailPage({
   orderNumber,
 }: {
   orderNumber: string;
 }) {
+  const router = useRouter();
   const searchParams = useSearchParams();
   const reason = searchParams.get("reason");
+  useEffect(() => {
+    if (!orderNumber) {
+      router.replace("/");
+    }
+  }, [orderNumber, router]);
+
+  if (!orderNumber) {
+    return (
+      <div className="w-full min-h-screen flex items-center justify-center">
+        <Loader2 size={24} className="text-maroon animate-spin" />
+      </div>
+    );
+  }
 
   return (
     <div className="w-full min-h-screen flex flex-col items-center justify-center text-center px-4 py-16">
