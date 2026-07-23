@@ -56,9 +56,12 @@ const EMPTY_ADDRESS: AddressPayload = {
   country: "India",
 };
 export default function CheckoutPage() {
+  
   const router = useRouter();
   const { cart, cartTotal, cartCount, refreshCart } = useCart();
   const { customer, isAuthenticated } = useAuth();
+  const [processing, setProcessing] = useState(false);
+  const [scriptReady, setScriptReady] = useState(false);
 
   const { data: addresses = [], isLoading: loadingAddresses } =
     useAddresses(isAuthenticated);
@@ -66,10 +69,7 @@ export default function CheckoutPage() {
   const deleteAddressMutation = useDeleteAddress();
   const setDefaultMutation = useSetDefaultAddress();
   const placeOrderMutation = usePlaceOrder();
-  const verifyPaymentMutation = useVerifyPayment();
-
-  const [processing, setProcessing] = useState(false);
-  const [scriptReady, setScriptReady] = useState(false);
+  const verifyPaymentMutation = useVerifyPayment(); 
 
   const [selectedAddressId, setSelectedAddressId] = useState<number | null>(
     null,
@@ -86,7 +86,12 @@ export default function CheckoutPage() {
   const [guestEmailError, setGuestEmailError] = useState<string | undefined>(
     undefined,
   );
-
+  useEffect(() => {
+    if (typeof window !== "undefined" && window.Razorpay) {
+      setScriptReady(true);
+    }
+  }, []);
+  
   useEffect(() => {
     if (isAuthenticated && addresses.length > 0) {
       const def = addresses.find((a) => a.is_default) ?? addresses[0];
