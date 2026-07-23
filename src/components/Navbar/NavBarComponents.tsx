@@ -60,8 +60,8 @@ export default function NavBarComponents() {
                   sum + Math.max(1, Math.ceil(attr.values.length / VALUES_PER_COLUMN)),
                 0,
               );
-              const panelWidth = Math.min(920, 220 + totalColumns * 170);
-
+              const panelWidth = Math.min(1180, 220 + totalColumns * 190);
+ 
               return (
                 <li
                   key={category.category_slug}
@@ -71,7 +71,7 @@ export default function NavBarComponents() {
                 >
                   <Link
                     href={`/shop/${category.category_slug}`}
-                    className="text-gray-600 hover:text-maroon relative flex items-center gap-1.5 px-4 h-11 font-sans text-[15px] font-medium whitespace-nowrap transition-colors duration-200 cursor-pointer"
+                    className="text-gray-600 relative flex items-center gap-1.5 px-4 h-11 font-sans text-[15px] font-medium whitespace-nowrap transition-colors duration-200 cursor-pointer"
                   >
                     {category.title}
                     {category.attributes.length > 0 && (
@@ -88,10 +88,10 @@ export default function NavBarComponents() {
                     )}
                     <span className={`nav-underline ${isOpen ? "active" : ""}`} />
                   </Link>
-
+ 
                   {category.attributes.length > 0 && (
                     <div
-                      className={`mega-panel ${isOpen ? "open" : "closed"} absolute top-full left-0 z-9999 bg-white border border-gray-100 rounded-2xl p-7 overflow-hidden`}
+                      className={`mega-panel ${isOpen ? "open" : "closed"} absolute top-full left-0 z-9999 bg-white border border-gray-100 rounded-2xl p-7`}
                       style={{
                         boxShadow: "0 24px 64px rgba(107,22,38,0.18)",
                         width: `${panelWidth}px`,
@@ -129,7 +129,7 @@ export default function NavBarComponents() {
                                   style={{ background: "linear-gradient(90deg,#AD8A3B,#E91E8C)" }}
                                 />
                               </div>
-
+ 
                               <div className="flex gap-6">
                                 {columns.map((columnValues, ci) => (
                                   <ColumnList
@@ -149,6 +149,7 @@ export default function NavBarComponents() {
                 </li>
               );
             })}
+
             {occasionItems.length > 0 && (
               <li
                 className="nav-dd relative group"
