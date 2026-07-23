@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import CheckoutPage from "./CheckoutPage";
 
 export const metadata: Metadata = {
-  title: "Checkout | Kasibunkari",
+  title: "Checkout",
   robots: { index: false, follow: false },
 };
 
