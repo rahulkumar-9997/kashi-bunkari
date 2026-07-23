@@ -42,6 +42,9 @@ export const API_ENDPOINTS = {
     verifyPayment: `${API_BASE_URL}/api/checkout/verify-payment`,
   },
   orderDetail: (orderNumber: string) => `${API_BASE_URL}/api/order-success/${orderNumber}`,
+  orders: {
+    list: `${API_BASE_URL}/api/customer/orders`,
+  },
 };
 
 

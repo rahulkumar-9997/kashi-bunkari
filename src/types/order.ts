@@ -1,3 +1,38 @@
+export type OrderPreviewItem = {
+  title: string;
+  image: string | null;
+};
+
+export type OrderSummary = {
+  id: number;
+  order_number: string;
+  order_date: string;
+  status: string | null;
+  status_color: string | null;
+  payment_mode: "cod" | "online" | string;
+  payment_received: boolean;
+  grand_total: number;
+  item_count: number;
+  preview_items: OrderPreviewItem[];
+};
+
+export type OrderListPagination = {
+  current_page: number;
+  total_pages: number;
+  per_page: number;
+  total_orders: number;
+  has_next_page: boolean;
+};
+
+export type OrderListResponse = {
+  success: boolean;
+  message: string;
+  data: {
+    orders: OrderSummary[];
+    pagination: OrderListPagination;
+  };
+};
+
 export type OrderItem = {
   product_id: number;
   title: string;
