@@ -278,7 +278,7 @@ export default function CheckoutPage() {
       rzp.on("payment.failed", function (response: any) {
         const reason = response?.error?.description || "Payment failed. Please try again.";
         toast.error(reason);
-        router.push(`/payment-failed/${order_number}?reason=${encodeURIComponent(reason)}`);
+        router.push(`/order-fail/${order_number}?reason=${encodeURIComponent(reason)}`);
         setProcessing(false);
       });
       rzp.open();
