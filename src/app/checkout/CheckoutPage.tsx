@@ -198,7 +198,6 @@ export default function CheckoutPage() {
       if (!validateAddressFormFields()) return;
       addressPayload = { address: addressForm, save_address: false };
     }
-
     if (paymentMethod === "razorpay" && !scriptReady) {
       toast.error("Payment is still loading — please try again in a moment.");
       return;
