@@ -213,14 +213,14 @@ export default function CheckoutPage() {
       };
 
       const res = await placeOrderMutation.mutateAsync(payload);
-
+      const expires = Date.now() + 60 * 60 * 1000; 
       if (paymentMethod === "cod") {
         const { order_number } = (res as PlaceOrderCodResponse).data;
         toast.success(
           "Order placed successfully! We'll confirm your order shortly.",
         );
         await refreshCart();
-        router.push(`/order-success/${order_number}`);
+        router.push(`/order-success/${order_number}?ex=${encodeURIComponent(expires)}`);
         setProcessing(false);
         return;
       }
@@ -267,8 +267,9 @@ export default function CheckoutPage() {
         },
         modal: {
           ondismiss: function () {
+            
             toast.info("Payment not completed. You can retry from your order.");
-            router.push(`/order-success/${order_number}`);
+            router.push(`/order-success/${order_number}?ex=${encodeURIComponent(expires)}`);
             setProcessing(false);
           },
         },

@@ -110,7 +110,7 @@ export default function OrderSuccessPage({
                   <CheckCircle2 size={28} className="text-emerald-600" />
                 </div>
                 <h1 className="font-serif text-[24px] md:text-[28px] font-bold text-gray-800 mb-1.5">
-                  Order Confirmed!
+                  Your Order Placed!
                 </h1>
                 <p className="font-sans text-[13.5px] text-gray-500 max-w-md">
                   {order.payment_mode === "cod"
@@ -141,7 +141,7 @@ export default function OrderSuccessPage({
             </div>
             <div>
               <p className="font-sans text-[10.5px] uppercase tracking-wide text-gray-400 mb-0.5">
-                Status
+                Order Status
               </p>
               <span
                 className="inline-flex items-center gap-1.5 font-sans text-[12px] font-bold px-2.5 py-1 rounded-full"
