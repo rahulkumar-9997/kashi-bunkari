@@ -41,7 +41,9 @@ export const API_ENDPOINTS = {
     placeOrder: `${API_BASE_URL}/api/checkout/place-order`,
     verifyPayment: `${API_BASE_URL}/api/checkout/verify-payment`,
   },
+  orderDetail: (orderNumber: string) => `${API_BASE_URL}/api/order-success/${orderNumber}`,
 };
+
 
 export const AUTH_ENDPOINTS = {
   login: `${API_BASE_URL}/api/customer/login`,

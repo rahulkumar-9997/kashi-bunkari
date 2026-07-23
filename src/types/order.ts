@@ -1,16 +1,44 @@
-export type OrderStatus = "Processing" | "Shipped" | "Delivered" | "Cancelled";
-
 export type OrderItem = {
-  name: string;
-  image: string;
+  product_id: number;
+  title: string;
+  sku: string | null;
   quantity: number;
+  price: number;
+  total_price: number;
+  image: string | null;
+  slug: string | null;
 };
 
-export type Order = {
-  id: string;
-  orderNumber: string;
-  date: string;
-  status: OrderStatus;
-  total: string;
+export type OrderAddressSummary = {
+  full_name: string;
+  phone_number: string;
+  address: string;
+  locality: string | null;
+  city: string;
+  state: string;
+  pin_code: string;
+  landmark: string | null;
+};
+
+export type OrderDetail = {
+  id: number;
+  order_number: string;
+  order_date: string;
+  status: string | null;
+  status_color: string | null;
+  payment_mode: "cod" | "online" | string;
+  payment_received: boolean;
+  payment_fail_reason: string | null;
+  subtotal: number;
+  shipping_amount: number;
+  tax_amount: number;
+  grand_total: number;
+  address: OrderAddressSummary | null;
   items: OrderItem[];
+};
+
+export type OrderDetailResponse = {
+  success: boolean;
+  message: string;
+  data: OrderDetail;
 };

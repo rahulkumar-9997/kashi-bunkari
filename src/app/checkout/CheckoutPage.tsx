@@ -35,7 +35,7 @@ import {
   type AddressFormErrors,
 } from "@/lib/addressValidation";
 import type { AddressPayload } from "@/types/address";
-import type { PlaceOrderRazorpayResponse } from "@/types/checkout";
+import type { PlaceOrderRazorpayResponse, PlaceOrderCodResponse,  } from "@/types/checkout";
 import Heading from "@/components/Heading/Heading";
 declare global {
   interface Window {
@@ -215,17 +215,19 @@ export default function CheckoutPage() {
       const res = await placeOrderMutation.mutateAsync(payload);
 
       if (paymentMethod === "cod") {
+        const { order_number } = (res as PlaceOrderCodResponse).data;
         toast.success(
           "Order placed successfully! We'll confirm your order shortly.",
         );
         await refreshCart();
-        router.push(`/order-success?order_id=${(res as any).data.order_id}`);
+        router.push(`/order-success/${order_number}`);
         setProcessing(false);
         return;
       }
-      const { order_id, amount, currency, key } = (
+      const { order_number, razorpay_order_id, amount, currency, key } = (
         res as PlaceOrderRazorpayResponse
       ).data;
+
       const selectedAddr = isAuthenticated
         ? addresses.find((a) => a.id === selectedAddressId)
         : null;
@@ -236,7 +238,7 @@ export default function CheckoutPage() {
         currency,
         name: "Kasibunkari",
         description: "Order Payment",
-        order_id,
+        order_id: razorpay_order_id,
         prefill: {
           name: isAuthenticated ? customer?.name : addressForm.name,
           email: isAuthenticated ? customer?.email : guestEmail,
@@ -251,22 +253,22 @@ export default function CheckoutPage() {
           razorpay_signature: string;
         }) {
           try {
-            const verifyRes = await verifyPaymentMutation.mutateAsync(response);
+            await verifyPaymentMutation.mutateAsync(response);
             toast.success("Payment successful!");
-            await refreshCart();
-            router.push(`/order-success?order_id=${verifyRes.data.order_id}`);
           } catch (err) {
             toast.error(
-              err instanceof Error
-                ? err.message
-                : "Payment was received but verification failed. Please contact support.",
+              "Payment could not be verified. Please check your order status.",
             );
           } finally {
+            await refreshCart();
+            router.push(`/order-success/${order_number}`);
             setProcessing(false);
           }
         },
         modal: {
           ondismiss: function () {
+            toast.info("Payment not completed. You can retry from your order.");
+            router.push(`/order-success/${order_number}`);
             setProcessing(false);
           },
         },
@@ -274,9 +276,9 @@ export default function CheckoutPage() {
 
       const rzp = new window.Razorpay(options);
       rzp.on("payment.failed", function (response: any) {
-        toast.error(
-          response?.error?.description || "Payment failed. Please try again.",
-        );
+        const reason = response?.error?.description || "Payment failed. Please try again.";
+        toast.error(reason);
+        router.push(`/payment-failed/${order_number}?reason=${encodeURIComponent(reason)}`);
         setProcessing(false);
       });
       rzp.open();
@@ -325,7 +327,8 @@ export default function CheckoutPage() {
         <input
           type="tel"
           placeholder="Enter 10-digit mobile number"
-          value={addressForm.phone_number} maxLength={10}
+          value={addressForm.phone_number}
+          maxLength={10}
           onChange={(e) => handleAddressField(e, "phone_number")}
           className={inputClass(!!addressFormErrors.phone_number)}
         />
@@ -438,13 +441,13 @@ export default function CheckoutPage() {
         />
         <section className="w-full relative overflow-hidden">
           <div className="mx-auto max-w-7xl lg:py-15 md:py-10 sm:py-10 py-8 px-4 relative z-10">
-              <Heading
-                level={1}
-                text='Checkout'
-                className="font-serif text-[26px] md:text-[30px] font-bold text-maroon mb-7"
-                decorator="none"
-                allowHTML
-              />
+            <Heading
+              level={1}
+              text="Checkout"
+              className="font-serif text-[26px] md:text-[30px] font-bold text-maroon mb-7"
+              decorator="none"
+              allowHTML
+            />
 
             {cart.length === 0 ? (
               <div className="flex flex-col items-center justify-center py-20 text-center">
@@ -470,7 +473,7 @@ export default function CheckoutPage() {
                     <div className="bg-white rounded-xl border border-[#E4D9C4] p-4">
                       <Heading
                         level={2}
-                        text='Contact'
+                        text="Contact"
                         className="font-serif text-[22px] text-maroon mb-2 flex items-center gap-2"
                         decorator="none"
                         allowHTML
@@ -479,7 +482,7 @@ export default function CheckoutPage() {
                         <label className="block text-sm font-medium text-gray-700 mb-1">
                           Email <span className="text-red-500">*</span>
                         </label>
-                        <div className="relative">                          
+                        <div className="relative">
                           <input
                             type="email"
                             placeholder="Enter your email"
@@ -497,10 +500,10 @@ export default function CheckoutPage() {
                   )}
 
                   {/* Delivery */}
-                  <div className="bg-white rounded-xl border border-[#E4D9C4] p-4">                    
+                  <div className="bg-white rounded-xl border border-[#E4D9C4] p-4">
                     <Heading
                       level={2}
-                      text='Delivery Address'
+                      text="Delivery Address"
                       className="font-serif text-[22px] text-maroon mb-2 flex items-center gap-2"
                       decorator="none"
                       allowHTML
@@ -641,19 +644,17 @@ export default function CheckoutPage() {
                             ))}
                           </div>
                         ) : (
-                          <div>                            
-                            {renderAddressFormFields()}
-                          </div>
+                          <div>{renderAddressFormFields()}</div>
                         )}
                       </>
                     )}
                   </div>
 
                   {/* Payment Method */}
-                  <div className="bg-white rounded-xl border border-[#E4D9C4] p-4">                    
+                  <div className="bg-white rounded-xl border border-[#E4D9C4] p-4">
                     <Heading
                       level={2}
-                      text='Payment Option'
+                      text="Payment Option"
                       className="font-serif text-[22px] text-maroon mb-2 flex items-center gap-2"
                       decorator="none"
                       allowHTML
@@ -723,7 +724,7 @@ export default function CheckoutPage() {
                   <div className="rounded-2xl border border-gray-100 p-4 shadow">
                     <Heading
                       level={3}
-                      text='Order Summary'
+                      text="Order Summary"
                       className="font-serif text-[22px] font-bold text-maroon mb-5"
                       decorator="none"
                       allowHTML

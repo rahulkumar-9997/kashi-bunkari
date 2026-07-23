@@ -17,7 +17,14 @@ export type PlaceOrderCodResponse = {
 export type PlaceOrderRazorpayResponse = {
   success: boolean;
   message: string;
-  data: { order_id: string; amount: number; currency: string; key: string };
+  data: {
+    order_id: number;          // ✅ hamari local Order id — turant milti hai
+    order_number: string;
+    razorpay_order_id: string; // Razorpay checkout ke liye
+    amount: number;
+    currency: string;
+    key: string;
+  };
 };
 
 export type VerifyPaymentPayload = {
