@@ -1,5 +1,7 @@
 export type OrderPreviewItem = {
   title: string;
+  quantity: number;
+  price: number;
   image: string | null;
 };
 

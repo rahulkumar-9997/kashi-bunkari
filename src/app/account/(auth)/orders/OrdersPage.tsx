@@ -1,7 +1,13 @@
 "use client";
 import Image from "next/image";
 import Link from "next/link";
-import { Loader2, Package, ImageOff, ChevronRight, ShoppingBag } from "lucide-react";
+import {
+  Loader2,
+  Package,
+  ImageOff,
+  ChevronRight,
+  ShoppingBag,
+} from "lucide-react";
 import { useOrders } from "@/hooks/useOrders";
 
 function formatPrice(value: number) {
@@ -17,7 +23,8 @@ function formatDate(dateStr: string) {
 }
 
 export default function OrdersPage() {
-  const { orders, pagination, loading, loadingMore, error, loadMore } = useOrders();
+  const { orders, pagination, loading, loadingMore, error, loadMore } =
+    useOrders();
 
   return (
     <>
@@ -63,7 +70,8 @@ export default function OrdersPage() {
           <>
             <div className="space-y-3.5">
               {orders.map((order) => {
-                const isUnpaid = order.payment_mode === "online" && !order.payment_received;
+                const isUnpaid =
+                  order.payment_mode === "online" && !order.payment_received;
 
                 return (
                   <Link
@@ -76,7 +84,7 @@ export default function OrdersPage() {
                         <p className="font-sans text-[13.5px] font-bold text-gray-800">
                           {order.order_number}
                         </p>
-                        <p className="font-sans text-[12px] text-gray-400 mt-0.5">
+                        <p className="font-sans text-[14px] text-gray-400 mt-0.5">
                           {formatDate(order.order_date)} · {order.item_count}{" "}
                           {order.item_count === 1 ? "item" : "items"}
                         </p>
@@ -91,23 +99,41 @@ export default function OrdersPage() {
                         >
                           {order.status || "Processing"}
                         </span>
-                        <ChevronRight size={16} className="text-gray-300" />
+                        <ChevronRight size={16} className="text-maroon  " />
                       </div>
                     </div>
+                    {order.preview_items[0] && (
+                      <p className="font-sans text-[13px] text-gray-600 mb-3 line-clamp-1">
+                        <span className="font-medium text-gray-800">
+                          {order.preview_items[0].title}
+                        </span>
+                        <span className="text-gray-400">
+                          {" "}
+                          · Qty {order.preview_items[0].quantity} ·{" "}
+                          {formatPrice(order.preview_items[0].price)}
+                        </span>
+                        {order.item_count > 1 && (
+                          <span className="text-gray-400">
+                            {" "}
+                            · +{order.item_count - 1} more
+                          </span>
+                        )}
+                      </p>
+                    )}
 
                     <div className="flex items-center justify-between gap-3">
                       <div className="flex items-center -space-x-2">
                         {order.preview_items.map((item, i) => (
                           <div
                             key={i}
-                            className="relative w-10 h-12 rounded-md overflow-hidden bg-gray-100 border-2 border-white shrink-0"
+                            className="relative w-20 h-20 rounded-md overflow-hidden bg-gray-100 border-2 border-white shrink-0"
                           >
                             {item.image ? (
                               <Image
                                 src={item.image}
                                 alt={item.title}
                                 fill
-                                className="object-cover"
+                                className="object-contain"
                                 sizes="40px"
                                 onError={(e) => {
                                   e.currentTarget.style.display = "none";
@@ -134,7 +160,11 @@ export default function OrdersPage() {
                           {formatPrice(order.grand_total)}
                         </p>
                         <p className="font-sans text-[11px] text-gray-400">
-                          {order.payment_mode === "cod" ? "COD" : isUnpaid ? "Payment Pending" : "Paid Online"}
+                          {order.payment_mode === "cod"
+                            ? "COD"
+                            : isUnpaid
+                              ? "Payment Pending"
+                              : "Paid Online"}
                         </p>
                       </div>
                     </div>
@@ -150,7 +180,9 @@ export default function OrdersPage() {
                   disabled={loadingMore}
                   className="flex items-center gap-2 font-sans text-[12px] font-bold uppercase tracking-[0.14em] text-maroon border-2 border-gray-200 hover:border-maroon px-6 py-2.5 rounded-xl transition-colors disabled:opacity-60 cursor-pointer"
                 >
-                  {loadingMore && <Loader2 size={14} className="animate-spin" />}
+                  {loadingMore && (
+                    <Loader2 size={14} className="animate-spin" />
+                  )}
                   Load More
                 </button>
               </div>
