@@ -1,120 +1,85 @@
 "use client";
 import { useState } from "react";
+import { ArrowRight, Check, AlertCircle } from "lucide-react";
 import {
-  ArrowRight,
-  Check,
-  AlertCircle,
-} from "lucide-react";
-
-type FormState = {
-  name: string;
-  email: string;
-  phone: string;
-  message: string;
-};
-
-type FormErrors = {
-  name?: string;
-  email?: string;
-  phone?: string;
-  message?: string;
-};
-
-const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-const PHONE_REGEX = /^[0-9]{10}$/;
+  bulkOrderEnquiryService,
+  ValidationError,
+} from "@/services/enquiryService";
+type FormErrors = Partial<
+  Record<"name" | "email" | "phone" | "message", string>
+>;
 
 export default function BulkOrderForm() {
-  const [form, setForm] = useState<FormState>({
-    name: "",
-    email: "",
-    phone: "",
-    message: "",
-  });
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [phone, setPhone] = useState("");
+  const [message, setMessage] = useState("");
+  const [website, setWebsite] = useState("");
   const [errors, setErrors] = useState<FormErrors>({});
-  const [submitted, setSubmitted] = useState(false);
   const [submitting, setSubmitting] = useState(false);
-
-  const update =
-    (key: keyof FormState) =>
-    (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-      setForm((f) => ({ ...f, [key]: e.target.value }));
-      if (errors[key]) {
-        setErrors((prev) => ({ ...prev, [key]: undefined }));
-      }
-    };
-  const validateForm = (): boolean => {
-    const newErrors: FormErrors = {};
-    let isValid = true;
-    if (!form.name.trim()) {
-      newErrors.name = "Name is required";
-      isValid = false;
-    } else if (form.name.trim().length < 2) {
-      newErrors.name = "Name must be at least 2 characters";
-      isValid = false;
-    }
-
-    if (!form.email.trim()) {
-      newErrors.email = "Email is required";
-      isValid = false;
-    } else if (!EMAIL_REGEX.test(form.email.trim())) {
-      newErrors.email = "Please enter a valid email address";
-      isValid = false;
-    }
-
-    if (form.phone.trim() && !PHONE_REGEX.test(form.phone.trim())) {
-      newErrors.phone = "Please enter a valid 10-digit phone number";
-      isValid = false;
-    }
-
-    if (!form.message.trim()) {
-      newErrors.message = "Message is required";
-      isValid = false;
-    } else if (form.message.trim().length < 10) {
-      newErrors.message = "Message must be at least 10 characters";
-      isValid = false;
-    }
-
-    setErrors(newErrors);
-    return isValid;
-  };
-
+  const [submitted, setSubmitted] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!validateForm()) {
-      return;
-    }
+    setSubmitError(null);
+    setErrors({});
     setSubmitting(true);
     try {
-      await new Promise((r) => setTimeout(r, 1500));
+      await bulkOrderEnquiryService.submit({
+        name: name.trim(),
+        email: email.trim(),
+        phone: phone.trim(),
+        message: message.trim() || undefined,
+        website,
+      });
       setSubmitted(true);
-    } catch (error) {
-      setErrors({ message: "Something went wrong. Please try again." });
+      setName("");
+      setEmail("");
+      setPhone("");
+      setMessage("");
+    } catch (err) {
+      if (err instanceof ValidationError) {
+        const fieldErrors: FormErrors = {};
+        for (const [field, messages] of Object.entries(err.errors)) {
+          if (messages?.[0]) {
+            fieldErrors[field as keyof FormErrors] = messages[0];
+          }
+        }
+        setErrors(fieldErrors);
+        setSubmitError(err.message);
+      } else {
+        setSubmitError(
+          err instanceof Error ? err.message : "Could not send your enquiry.",
+        );
+      }
     } finally {
       setSubmitting(false);
     }
   };
 
+  const fieldBorder = (hasError: boolean) =>
+    hasError
+      ? "border-[#B3261E] focus:border-[#B3261E] focus:ring-[#B3261E]/10"
+      : "border-[#E4D9C4] focus:border-maroon focus:ring-maroon/10";
+
   if (submitted) {
     return (
       <div className="flex flex-col items-center justify-center text-center py-14 px-6">
-        <div className="w-16 h-16 rounded-full bg-[#AD8A3B]/10 flex items-center justify-center mb-5 animate-pulse">
-          <Check size={28} className="text-[#AD8A3B]" />
-        </div>
-        <h3 className="font-serif text-[22px] font-bold text-maroon mb-2">
-          Request Received! 
+        <span className="w-14 h-14 rounded-full bg-[#AD8A3B]/10 flex items-center justify-center mb-5">
+          <Check size={24} className="text-[#AD8A3B]" />
+        </span>
+        <h3 className="font-serif text-[20px] font-bold text-maroon mb-2">
+          Enquiry Sent
         </h3>
-        <p className="font-sans text-[14px] text-gray-500 leading-relaxed max-w-xs">
-          Thank you for reaching out. Our team will get back to you within 24
-          hours with a custom quote.
+        <p className="font-sans text-[13.5px] text-gray-500 leading-relaxed max-w-xs mb-6">
+          Thank you for your interest in bulk ordering. Our team will get back
+          to you within 24 hours.
         </p>
         <button
-          onClick={() => {
-            setSubmitted(false);
-            setForm({ name: "", email: "", phone: "", message: "" });
-          }}
-          className="mt-6 text-[#AD8A3B] font-sans text-[12px] font-semibold uppercase tracking-widest hover:text-maroon transition-colors"
+          onClick={() => setSubmitted(false)}
+          className="font-sans text-[11.5px] font-bold uppercase tracking-[0.14em] text-maroon hover:underline cursor-pointer"
         >
-          Submit Another Request →
+          Send Another Enquiry
         </button>
       </div>
     );
@@ -122,145 +87,99 @@ export default function BulkOrderForm() {
 
   return (
     <form onSubmit={handleSubmit} noValidate>
-      {/* Error Banner */}
-      {Object.keys(errors).length > 0 && (
+      {submitError && (
         <div className="flex items-start gap-2.5 mb-6 rounded-lg bg-[#FBEAEA] border border-[#E7B8B8] px-4 py-3">
           <AlertCircle size={16} className="text-[#B3261E] shrink-0 mt-0.5" />
-          <div>
-            <p className="font-sans text-[12px] font-semibold text-[#B3261E]">
-              Please fix the following errors:
-            </p>
-            <ul className="list-disc list-inside font-sans text-[12px] text-[#B3261E] mt-1">
-              {Object.values(errors).map((error, index) => (
-                <li key={index}>{error}</li>
-              ))}
-            </ul>
-          </div>
+          <p className="font-sans text-[12.5px] font-medium text-[#B3261E]">
+            {submitError}
+          </p>
         </div>
       )}
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5 mb-4 sm:mb-5">
-        {/* Name Field */}
+      {/* Honeypot — hidden from real users */}
+      <input
+        type="text"
+        name="website"
+        value={website}
+        onChange={(e) => setWebsite(e.target.value)}
+        tabIndex={-1}
+        autoComplete="off"
+        className="absolute -left-[9999px] w-px h-px opacity-0"
+        aria-hidden="true"
+      />
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5 mb-1">
         <div>
-          <label className="font-sans text-[11px] font-semibold text-gray-600 uppercase tracking-widest block mb-1.5">
-            Full Name <span className="text-[#B3261E]">*</span>
-          </label>
-          <div className="relative">            
-            <input
-              type="text"
-              placeholder="Enter your name"
-              value={form.name}
-              onChange={update("name")}
-              className={`w-full rounded-lg border bg-white px-3 py-3 font-sans text-[14px] text-gray-800 placeholder:text-gray-400 outline-none focus:ring-2 transition-all ${
-                errors.name
-                  ? "border-[#B3261E] focus:border-[#B3261E] focus:ring-[#B3261E]/10"
-                  : "border-[#E4D9C4] focus:border-maroon focus:ring-maroon/10"
-              }`}
-            />
-          </div>
+          <input
+            type="text"
+            placeholder="Name *"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            className={`w-full rounded-lg border bg-white px-4 py-3.5 font-sans text-[13.5px] text-gray-800 placeholder:text-gray-400 outline-none focus:ring-2 transition-all ${fieldBorder(!!errors.name)}`}
+          />
           {errors.name && (
-            <p className="mt-1.5 font-sans text-[11.5px] text-[#B3261E]">
+            <p className="font-sans text-[11.5px] text-[#B3261E] mt-1.5">
               {errors.name}
             </p>
           )}
         </div>
-
-        {/* Email Field */}
         <div>
-          <label className="font-sans text-[11px] font-semibold text-gray-600 uppercase tracking-widest block mb-1.5">
-            Email Address <span className="text-[#B3261E]">*</span>
-          </label>
-          <div className="relative">            
-            <input
-              type="email"
-              placeholder="Enter your email"
-              value={form.email}
-              onChange={update("email")}
-              className={`w-full rounded-lg border bg-white px-3 py-3 font-sans text-[14px] text-gray-800 placeholder:text-gray-400 outline-none focus:ring-2 transition-all ${
-                errors.email
-                  ? "border-[#B3261E] focus:border-[#B3261E] focus:ring-[#B3261E]/10"
-                  : "border-[#E4D9C4] focus:border-maroon focus:ring-maroon/10"
-              }`}
-            />
-          </div>
+          <input
+            type="email"
+            placeholder="Email *"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            className={`w-full rounded-lg border bg-white px-4 py-3.5 font-sans text-[13.5px] text-gray-800 placeholder:text-gray-400 outline-none focus:ring-2 transition-all ${fieldBorder(!!errors.email)}`}
+          />
           {errors.email && (
-            <p className="mt-1.5 font-sans text-[11.5px] text-[#B3261E]">
+            <p className="font-sans text-[11.5px] text-[#B3261E] mt-1.5">
               {errors.email}
             </p>
           )}
         </div>
       </div>
 
-      {/* Phone Field */}
-      <div className="mb-4 sm:mb-5">
-        <label className="font-sans text-[11px] font-semibold text-gray-600 uppercase tracking-widest block mb-1.5">
-          Phone Number
-        </label>
-        <div className="relative">          
-          <input
-            type="tel"
-            placeholder="Enter 10-digit phone number"
-            value={form.phone}
-            onChange={update("phone")}
-            className={`w-full rounded-lg border bg-white px-3 py-3 font-sans text-[14px] text-gray-800 placeholder:text-gray-400 outline-none focus:ring-2 transition-all ${
-              errors.phone
-                ? "border-[#B3261E] focus:border-[#B3261E] focus:ring-[#B3261E]/10"
-                : "border-[#E4D9C4] focus:border-maroon focus:ring-maroon/10"
-            }`}
-          />
-        </div>
+      <div className="mb-1 mt-4 sm:mt-5">
+        <input
+          type="tel"
+          placeholder="Phone Number *"
+          inputMode="numeric"
+          maxLength={10}
+          value={phone}
+          onChange={(e) =>
+            setPhone(e.target.value.replace(/\D/g, "").slice(0, 10))
+          }
+          className={`w-full rounded-lg border bg-white px-4 py-3.5 font-sans text-[13.5px] text-gray-800 placeholder:text-gray-400 outline-none focus:ring-2 transition-all ${fieldBorder(!!errors.phone)}`}
+        />
         {errors.phone && (
-          <p className="mt-1.5 font-sans text-[11.5px] text-[#B3261E]">
+          <p className="font-sans text-[11.5px] text-[#B3261E] mt-1.5">
             {errors.phone}
           </p>
         )}
       </div>
 
-      {/* Message Field */}
-      <div className="mb-6 sm:mb-7">
-        <label className="font-sans text-[11px] font-semibold text-gray-600 uppercase tracking-widest block mb-1.5">
-          Your Requirements <span className="text-[#B3261E]">*</span>
-        </label>
-        <div className="relative">          
-          <textarea
-            placeholder="Tell us about your requirement — quantity, occasion, timeline…"
-            value={form.message}
-            onChange={update("message")}
-            rows={4}
-            className={`w-full resize-y rounded-lg border bg-white px-3 py-3 font-sans text-[14px] text-gray-800 placeholder:text-gray-400 outline-none focus:ring-2 transition-all ${
-              errors.message
-                ? "border-[#B3261E] focus:border-[#B3261E] focus:ring-[#B3261E]/10"
-                : "border-[#E4D9C4] focus:border-maroon focus:ring-maroon/10"
-            }`}
-          />
-        </div>
+      <div className="mb-2 mt-4 sm:mt-5">
+        <textarea
+          placeholder="Tell us about your bulk order requirement (optional)"
+          value={message}
+          onChange={(e) => setMessage(e.target.value)}
+          rows={5}
+          className={`w-full resize-y rounded-lg border bg-white px-4 py-3.5 font-sans text-[13.5px] text-gray-800 placeholder:text-gray-400 outline-none focus:ring-2 transition-all ${fieldBorder(!!errors.message)}`}
+        />
         {errors.message && (
-          <p className="mt-1.5 font-sans text-[11.5px] text-[#B3261E]">
+          <p className="font-sans text-[11.5px] text-[#B3261E] mt-1.5">
             {errors.message}
           </p>
         )}
       </div>
 
-      {/* Submit Button */}
       <button
         type="submit"
         disabled={submitting}
-        className="cursor-pointer group inline-flex items-center justify-center gap-2 w-full sm:w-auto rounded-lg bg-linear-to-r from-maroon to-[#8B1A34] text-white font-sans text-[12px] font-bold uppercase tracking-[0.12em] px-8 py-3.5 hover:from-magenta/15 hover:to-magenta transition-all duration-300 hover:shadow-xl hover:shadow-[#AD8A3B]/25 hover:-translate-y-0.5 disabled:opacity-60 disabled:cursor-not-allowed disabled:hover:transform-none"
+        className="mt-4 sm:mt-5 inline-flex items-center gap-2 rounded-lg bg-maroon text-white font-sans text-[12px] font-bold uppercase tracking-[0.12em] px-7 py-3.5 hover:opacity-90 hover:-translate-y-0.5 transition-all duration-200 disabled:opacity-60 disabled:cursor-not-allowed cursor-pointer"
       >
-        {submitting ? (
-          <>
-            <span className="inline-block w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-            Submitting...
-          </>
-        ) : (
-          <>
-            Submit 
-            <ArrowRight
-              size={16}
-              className="group-hover:translate-x-1 transition-transform"
-            />
-          </>
-        )}
+        {submitting ? "Sending…" : "Send Enquiry"}
+        <ArrowRight size={15} />
       </button>
     </form>
   );

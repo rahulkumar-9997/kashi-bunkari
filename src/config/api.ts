@@ -51,6 +51,7 @@ export const API_ENDPOINTS = {
       : `${API_BASE_URL}/api/quick-view/${parentSlug}`,
 
   contactFormEnquiry: `${API_BASE_URL}/api/contact-form/enquiry`,
+  bulkOrderEnquiry: `${API_BASE_URL}/api/bulk-form/enquiry`,
 };
 
 

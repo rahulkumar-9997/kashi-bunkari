@@ -131,14 +131,8 @@ export default function LogoSearchBar({
   };
   const getDisplayName = () => {
     if (!isAuthenticated || !customer) return "Account";
-      const parts = customer.name?.trim().split(/\s+/).filter(Boolean) ?? [];
-    if (parts.length === 0) return "Account";
-    const initials =
-      parts.length > 1
-        ? `${parts[0][0]}${parts[parts.length - 1][0]}`
-        : parts[0].slice(0, 2);
-  
-    return initials.toUpperCase();
+    const name = customer.name?.trim() || "Account";
+    return name.length > 15 ? `${name.slice(0, 15)}...` : name;
   };
   const getUserEmail = () => {
     if (!customer) return "";
