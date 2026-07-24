@@ -91,7 +91,7 @@ export default function AccountSidebar() {
                 </div>
             </div>
             <div className="mt-5 pt-5 border-t border-[#E4D9C4]">
-                <Link href="/account/profile" className="w-full flex items-center justify-center gap-2 text-sm font-medium text-white bg-maroon hover:bg-maroon/90 py-2.5 rounded-lg transition-colors shadow-md shadow-maroon/20">
+                <Link href="/account" className="w-full flex items-center justify-center gap-2 text-sm font-medium text-white bg-maroon hover:bg-maroon/90 py-2.5 rounded-lg transition-colors shadow-md shadow-maroon/20">
                 <User size={16} />
                 Profile Information
                 </Link>            
@@ -105,7 +105,7 @@ export default function AccountSidebar() {
                     <Link
                     key={item.href}
                     href={item.href}
-                    className={`flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 ${
+                    className={`flex items-center gap-3 px-4 py-2.5 rounded-lg text-[16px] font-medium transition-all duration-200 ${
                         isActive
                         ? "bg-[#FBF6ED] text-maroon border border-[#E4D9C4] shadow-sm"
                         : "text-gray-600 hover:bg-gray-50 hover:text-maroon"

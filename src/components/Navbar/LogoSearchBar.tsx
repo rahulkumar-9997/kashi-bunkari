@@ -131,7 +131,14 @@ export default function LogoSearchBar({
   };
   const getDisplayName = () => {
     if (!isAuthenticated || !customer) return "Account";
-    return customer.name?.split(" ")[0] || customer.name || "Account";
+      const parts = customer.name?.trim().split(/\s+/).filter(Boolean) ?? [];
+    if (parts.length === 0) return "Account";
+    const initials =
+      parts.length > 1
+        ? `${parts[0][0]}${parts[parts.length - 1][0]}`
+        : parts[0].slice(0, 2);
+  
+    return initials.toUpperCase();
   };
   const getUserEmail = () => {
     if (!customer) return "";
@@ -655,12 +662,9 @@ export default function LogoSearchBar({
               Wishlist
             </span>
           </button>
-
           {/* Account — opens login modal if signed out, otherwise toggles the menu */}
           <button
-            onClick={
-              isAuthenticated ? () => setShowAccountMenu((v) => !v) : openLogin
-            }
+            onClick={isAuthenticated ? () => router.push("/account") : openLogin}
             className="flex-1 min-w-0 flex flex-col items-center justify-center gap-0.5 py-2.5 text-maroon hover:text-pink transition-colors cursor-pointer"
           >
             <svg
