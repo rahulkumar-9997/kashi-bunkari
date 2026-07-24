@@ -1,3 +1,4 @@
+"use client";
 import {
   Mail,
   Phone,
@@ -5,11 +6,8 @@ import {
   Navigation,
   MessageCircle,
   Clock,
-  Gem,
-  Sparkles,
-  ArrowRight,
-  Shield,
 } from "lucide-react";
+import { useState } from "react";
 import Breadcrumb from "@/components/Breadcrumb/Breadcrumb";
 import ContactForm from "@/components/Form/ContactForm";
 import Heading from "@/components/Heading/Heading";
@@ -32,11 +30,6 @@ const FacebookIcon = ({ size = 16 }: { size?: number }) => (
     <path d="M22 12.06C22 6.5 17.52 2 12 2S2 6.5 2 12.06c0 5.02 3.66 9.18 8.44 9.94v-7.03H7.9v-2.91h2.54V9.85c0-2.51 1.49-3.9 3.77-3.9 1.09 0 2.24.2 2.24.2v2.46h-1.26c-1.24 0-1.63.77-1.63 1.56v1.89h2.78l-.44 2.91h-2.34V22c4.78-.76 8.44-4.92 8.44-9.94Z" />
   </svg>
 );
-const TwitterIcon = ({ size = 16 }: { size?: number }) => (
-  <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor">
-    <path d="M18.9 2H22l-7.6 8.68L23.3 22h-7.02l-5.5-7.19L4.4 22H1.3l8.13-9.29L1 2h7.2l4.97 6.57L18.9 2Zm-1.23 18.06h1.73L6.42 3.85H4.56l13.11 16.21Z" />
-  </svg>
-);
 const YoutubeIcon = ({ size = 16 }: { size?: number }) => (
   <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor">
     <path d="M23.5 6.2a3 3 0 0 0-2.11-2.12C19.5 3.5 12 3.5 12 3.5s-7.5 0-9.39.58A3 3 0 0 0 .5 6.2 31.6 31.6 0 0 0 0 12a31.6 31.6 0 0 0 .5 5.8 3 3 0 0 0 2.11 2.12C4.5 20.5 12 20.5 12 20.5s7.5 0 9.39-.58a3 3 0 0 0 2.11-2.12A31.6 31.6 0 0 0 24 12a31.6 31.6 0 0 0-.5-5.8ZM9.6 15.6V8.4l6.3 3.6-6.3 3.6Z" />
@@ -44,10 +37,9 @@ const YoutubeIcon = ({ size = 16 }: { size?: number }) => (
 );
 
 const SOCIALS = [
-  { icon: InstagramIcon, href: "https://instagram.com", label: "Instagram" },
-  { icon: FacebookIcon, href: "https://facebook.com", label: "Facebook" },
-  { icon: TwitterIcon, href: "https://twitter.com", label: "Twitter" },
-  { icon: YoutubeIcon, href: "https://youtube.com", label: "YouTube" },
+  { icon: InstagramIcon, href: "https://www.instagram.com/kasibunkari", label: "Instagram" },
+  { icon: FacebookIcon, href: "https://www.facebook.com/kasibunkaridotcom", label: "Facebook" },
+  { icon: YoutubeIcon, href: "https://www.youtube.com/@kasibunkari", label: "YouTube" },
 ];
 
 const STORE_ADDRESS =
@@ -57,7 +49,7 @@ const DIRECTIONS_URL = `https://www.google.com/maps/dir/?api=1&destination=${enc
 )}`;
 function SocialRow() {
   return (
-    <div className="flex items-center justify-center gap-3 mb-8 mt-5">
+    <div className="flex items-center justify-start gap-3 mb-8 mt-5">
       {SOCIALS.map((s) => (
         <a
           key={s.label}
@@ -65,7 +57,7 @@ function SocialRow() {
           target="_blank"
           rel="noopener noreferrer"
           aria-label={s.label}
-          className="group w-12 h-12 rounded-full border border-maroon/20 bg-white flex items-center justify-center text-gray-500 hover:text-white hover:bg-maroon hover:border-maroon transition-all duration-300"
+          className="group w-12 h-12 rounded-full border border-maroon/20 bg-maroon flex items-center justify-center text-white hover:text-white hover:bg-maroon hover:border-maroon transition-all duration-300"
         >
           <s.icon size={17} />
         </a>
@@ -74,7 +66,7 @@ function SocialRow() {
   );
 }
 
-export default function ContactUsPage() {
+export default function ContactUsPage() { 
   return (
     <div className="w-full min-h-screen">
       <Breadcrumb
@@ -169,15 +161,15 @@ export default function ContactUsPage() {
               <SocialRow />
             </div>
             <div className="relative">
+              <Heading
+                level={2}
+                text='Contact Us'
+                className="font-serif text-[26px] sm:text-[30px] font-bold text-maroon mb-4"
+                decorator="none"
+                allowHTML
+              />
               <div className="relative rounded-xl shadow-[0_8px_10px_rgb(0,0,0,0.08)] px-4 py-4 bg-white border border-maroon/20 overflow-hidden">
-                <div className="relative">
-                    <Heading
-                    level={2}
-                    text='Contact Us'
-                    className="font-serif text-[26px] sm:text-[30px] font-bold text-maroon mb-4"
-                    decorator="none"
-                    allowHTML
-                    />
+                <div className="relative">                  
                   <ContactForm />
                 </div>
               </div>

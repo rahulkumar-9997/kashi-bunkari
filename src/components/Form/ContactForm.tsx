@@ -1,43 +1,72 @@
-// src/components/ContactForm.tsx
 "use client";
 import { useState } from "react";
 import Link from "next/link";
 import { ArrowRight, Check, AlertCircle } from "lucide-react";
+import {
+  contactFormEnquiryService,
+  ValidationError,
+} from "@/services/enquiryService";
 
-const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const DEFAULT_SUBJECT = "Website Contact Form Enquiry";
 
-type FormState = { name: string; email: string; phone: string; message: string };
+type FormErrors = Partial<
+  Record<"name" | "email" | "phone" | "message", string>
+>;
 
 export default function ContactForm() {
-  const [form, setForm] = useState<FormState>({
-    name: "",
-    email: "",
-    phone: "",
-    message: "",
-  });
-  const [error, setError] = useState<string | null>(null);
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [phone, setPhone] = useState("");
+  const [message, setMessage] = useState("");
+  const [website, setWebsite] = useState("");
+
+  const [errors, setErrors] = useState<FormErrors>({});
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
-
-  const update =
-    (key: keyof FormState) =>
-    (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-      setForm((f) => ({ ...f, [key]: e.target.value }));
-      if (error) setError(null);
-    };
+  const [submitError, setSubmitError] = useState<string | null>(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!form.email.trim() || !EMAIL_REGEX.test(form.email.trim())) {
-      setError("Email is invalid");
-      return;
-    }
+    setSubmitError(null);
+    setErrors({});
     setSubmitting(true);
-    // TODO: wire to a real submission endpoint (API route / email service)
-    await new Promise((r) => setTimeout(r, 600));
-    setSubmitting(false);
-    setSubmitted(true);
+    try {
+      await contactFormEnquiryService.submit({
+        name: name.trim(),
+        email: email.trim(),
+        phone: phone.trim(),
+        message: message.trim(),
+        website,
+      });
+      setSubmitted(true);
+      setName("");
+      setEmail("");
+      setPhone("");
+      setMessage("");
+    } catch (err) {
+      if (err instanceof ValidationError) {
+        const fieldErrors: FormErrors = {};
+        for (const [field, messages] of Object.entries(err.errors)) {
+          if (messages?.[0]) {
+            fieldErrors[field as keyof FormErrors] = messages[0];
+          }
+        }
+        setErrors(fieldErrors);
+        setSubmitError(err.message);
+      } else {
+        setSubmitError(
+          err instanceof Error ? err.message : "Could not send your enquiry.",
+        );
+      }
+    } finally {
+      setSubmitting(false);
+    }
   };
+
+  const fieldBorder = (hasError: boolean) =>
+    hasError
+      ? "border-[#B3261E] focus:border-[#B3261E] focus:ring-[#B3261E]/10"
+      : "border-[#E4D9C4] focus:border-maroon focus:ring-maroon/10";
 
   if (submitted) {
     return (
@@ -48,86 +77,104 @@ export default function ContactForm() {
         <h3 className="font-serif text-[20px] font-bold text-maroon mb-2">
           Message Sent
         </h3>
-        <p className="font-sans text-[13.5px] text-gray-500 leading-relaxed max-w-xs">
-          Thank you for reaching out. Our team will get back to you within
-          24 hours.
+        <p className="font-sans text-[13.5px] text-gray-500 leading-relaxed max-w-xs mb-6">
+          Thank you for reaching out. Our team will get back to you within 24
+          hours.
         </p>
+        <button
+          onClick={() => setSubmitted(false)}
+          className="font-sans text-[11.5px] font-bold uppercase tracking-[0.14em] text-maroon hover:underline cursor-pointer"
+        >
+          Send Another Message
+        </button>
       </div>
     );
   }
 
   return (
     <form onSubmit={handleSubmit} noValidate>
-      {error && (
+      {submitError && (
         <div className="flex items-start gap-2.5 mb-6 rounded-lg bg-[#FBEAEA] border border-[#E7B8B8] px-4 py-3">
           <AlertCircle size={16} className="text-[#B3261E] shrink-0 mt-0.5" />
           <p className="font-sans text-[12.5px] font-medium text-[#B3261E]">
-            {error}
+            {submitError}
           </p>
         </div>
       )}
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5 mb-4 sm:mb-5">
-        <input
-          type="text"
-          placeholder="Name"
-          value={form.name}
-          onChange={update("name")}
-          className="w-full rounded-lg border border-[#E4D9C4] bg-white px-4 py-3.5 font-sans text-[13.5px] text-gray-800 placeholder:text-gray-400 outline-none focus:border-maroon focus:ring-2 focus:ring-maroon/10 transition-all"
-        />
-        <input
-          type="email"
-          placeholder="Email *"
-          value={form.email}
-          onChange={update("email")}
-          className={`w-full rounded-lg border bg-white px-4 py-3.5 font-sans text-[13.5px] text-gray-800 placeholder:text-gray-400 outline-none focus:ring-2 transition-all ${
-            error
-              ? "border-[#B3261E] focus:border-[#B3261E] focus:ring-[#B3261E]/10"
-              : "border-[#E4D9C4] focus:border-maroon focus:ring-maroon/10"
-          }`}
-        />
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5 mb-1">
+        <div>
+          <input
+            type="text"
+            placeholder="Name *"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            className={`w-full rounded-lg border bg-white px-4 py-3.5 font-sans text-[13.5px] text-gray-800 placeholder:text-gray-400 outline-none focus:ring-2 transition-all ${fieldBorder(!!errors.name)}`}
+          />
+          {errors.name && (
+            <p className="font-sans text-[11.5px] text-[#B3261E] mt-1.5">
+              {errors.name}
+            </p>
+          )}
+        </div>
+        <div>
+          <input
+            type="email"
+            placeholder="Email *"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            className={`w-full rounded-lg border bg-white px-4 py-3.5 font-sans text-[13.5px] text-gray-800 placeholder:text-gray-400 outline-none focus:ring-2 transition-all ${fieldBorder(!!errors.email)}`}
+          />
+          {errors.email && (
+            <p className="font-sans text-[11.5px] text-[#B3261E] mt-1.5">
+              {errors.email}
+            </p>
+          )}
+        </div>
       </div>
 
-      <div className="mb-4 sm:mb-5">
+      <div className="mb-1 mt-4 sm:mt-5">
         <input
           type="tel"
-          placeholder="Phone Number"
-          value={form.phone}
-          onChange={update("phone")}
-          className="w-full rounded-lg border border-[#E4D9C4] bg-white px-4 py-3.5 font-sans text-[13.5px] text-gray-800 placeholder:text-gray-400 outline-none focus:border-maroon focus:ring-2 focus:ring-maroon/10 transition-all"
+          placeholder="Phone Number *"
+          inputMode="numeric"
+          maxLength={10}
+          value={phone}
+          onChange={(e) =>
+            setPhone(e.target.value.replace(/\D/g, "").slice(0, 10))
+          }
+          className={`w-full rounded-lg border bg-white px-4 py-3.5 font-sans text-[13.5px] text-gray-800 placeholder:text-gray-400 outline-none focus:ring-2 transition-all ${fieldBorder(!!errors.phone)}`}
         />
+        {errors.phone && (
+          <p className="font-sans text-[11.5px] text-[#B3261E] mt-1.5">
+            {errors.phone}
+          </p>
+        )}
       </div>
 
-      <div className="mb-6 sm:mb-7">
+      <div className="mb-2 mt-4 sm:mt-5">
         <textarea
           placeholder="Message"
-          value={form.message}
-          onChange={update("message")}
+          value={message}
+          onChange={(e) => setMessage(e.target.value)}
           rows={5}
-          className="w-full resize-y rounded-lg border border-[#E4D9C4] bg-white px-4 py-3.5 font-sans text-[13.5px] text-gray-800 placeholder:text-gray-400 outline-none focus:border-maroon focus:ring-2 focus:ring-maroon/10 transition-all"
+          className={`w-full resize-y rounded-lg border bg-white px-4 py-3.5 font-sans text-[13.5px] text-gray-800 placeholder:text-gray-400 outline-none focus:ring-2 transition-all ${fieldBorder(!!errors.message)}`}
         />
+        {errors.message && (
+          <p className="font-sans text-[11.5px] text-[#B3261E] mt-1.5">
+            {errors.message}
+          </p>
+        )}
       </div>
 
       <button
         type="submit"
         disabled={submitting}
-        className="inline-flex items-center gap-2 rounded-lg bg-maroon text-white font-sans text-[12px] font-bold uppercase tracking-[0.12em] px-7 py-3.5 hover:opacity-90 hover:-translate-y-0.5 transition-all duration-200 disabled:opacity-60 disabled:cursor-not-allowed cursor-pointer"
+        className="mt-4 sm:mt-5 inline-flex items-center gap-2 rounded-lg bg-maroon text-white font-sans text-[12px] font-bold uppercase tracking-[0.12em] px-7 py-3.5 hover:opacity-90 hover:-translate-y-0.5 transition-all duration-200 disabled:opacity-60 disabled:cursor-not-allowed cursor-pointer"
       >
-        {submitting ? "Sending…" : "Send"}
+        {submitting ? "Submitting..." : "Submit"}
         <ArrowRight size={15} />
       </button>
-
-      <p className="mt-6 font-sans text-[11.5px] text-gray-400 leading-relaxed">
-        This site is protected by reCAPTCHA and the Google{" "}
-        <Link href="/privacy-policy" className="underline hover:text-maroon">
-          Privacy Policy
-        </Link>{" "}
-        and{" "}
-        <Link href="/terms" className="underline hover:text-maroon">
-          Terms of Service
-        </Link>{" "}
-        apply.
-      </p>
     </form>
   );
 }
