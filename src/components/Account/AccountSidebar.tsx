@@ -127,7 +127,7 @@ export default function AccountSidebar() {
             <button
               onClick={handleLogout}
               disabled={isLoggingOut}
-              className="w-full flex items-center justify-center gap-2 text-sm font-medium text-red-600 hover:bg-red-50 py-2.5 rounded-lg transition-all duration-200 mt-3 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed border border-transparent hover:border-red-200"
+              className="w-full flex items-center justify-center gap-2 text-sm font-medium text-red-600 bg-red-50 py-2.5 rounded-lg transition-all duration-200 mt-3 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed border border-red-200"
             >
               <LogOut size={16} strokeWidth={1.5} />
               {isLoggingOut ? "Logging out..." : "Logout"}

@@ -1,6 +1,7 @@
 "use client";
 import Image from "next/image";
 import Link from "next/link";
+import Heading from "@/components/Heading/Heading";
 import {
   Loader2,
   Package,
@@ -30,9 +31,14 @@ export default function OrdersPage() {
     <>
       <div className="space-y-6">
         <div>
-          <h1 className="font-serif text-[22px] sm:text-[24px] font-bold text-maroon">
-            My Orders
-          </h1>
+          
+          <Heading
+            level={1}
+            text="My Orders"
+            className="text-maroon text-[24px]"
+            decorator="underline-pink"
+            allowHTML
+          />
           <p className="font-sans text-[12.5px] text-gray-400 mt-0.5">
             {pagination
               ? `${pagination.total_orders} order${pagination.total_orders === 1 ? "" : "s"}`

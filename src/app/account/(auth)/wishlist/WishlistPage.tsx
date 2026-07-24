@@ -5,6 +5,7 @@ import { Heart, ImageOff, Loader2, ShoppingBag, Trash2 } from "lucide-react";
 import { useCart } from "@/components/Cart/CartContext";
 import { useWishlist } from "@/hooks/useWishlist";
 import { toast } from "sonner";
+import Heading from "@/components/Heading/Heading";
 
 function formatPrice(value: string | number | null) {
   if (value == null) return null;
@@ -29,10 +30,14 @@ export default function WishlistPage() {
   return (
     <>
       <div className="space-y-6">
-        <div>
-          <h1 className="font-serif text-[22px] sm:text-[24px] font-bold text-maroon">
-            My Wishlist
-          </h1>
+        <div>          
+          <Heading
+            level={1}
+            text="My Wishlist"
+            className="text-maroon text-[24px]"
+            decorator="underline-pink"
+            allowHTML
+          />
           <p className="font-sans text-[12.5px] text-gray-400 mt-0.5">
             {items.length > 0
               ? `${items.length} item${items.length === 1 ? "" : "s"} saved`

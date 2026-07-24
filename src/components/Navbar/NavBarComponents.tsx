@@ -281,8 +281,7 @@ export default function NavBarComponents() {
                   <Link
                     key={label}
                     href={href}
-                    className="group/item flex items-center justify-between px-5 py-2.5 text-[13.5px] text-gray-600 transition-all duration-200 hover:bg-[#AD8A3B]/5 hover:text-[#AD8A3B]"
-                  >
+                    className="group/item flex items-center justify-between px-5 py-2.5 text-[14px] text-gray-600 transition-all duration-200 hover:text-maroon">
                     <span className="flex items-center gap-2.5">
                       <span className="h-1 w-1 rounded-full bg-gray-300 transition-colors group-hover/item:bg-[#AD8A3B]" />
                       {label}
