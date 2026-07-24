@@ -139,20 +139,6 @@ export default function Collections({ data }: Props) {
             />
           </Carousel>
         </div>
-
-        <div className="md:hidden mt-10 flex items-center justify-center gap-3">
-          <span className="h-px flex-1 max-w-14 bg-gray-100 rounded-full" />
-          <Link
-            href="/collections"
-            className="inline-flex items-center gap-2 font-sans text-[11px] font-bold uppercase tracking-[0.16em] text-gray-500 hover:text-pink transition-colors duration-200 group"
-          >
-            View All Collections
-            <span className="inline-flex items-center justify-center w-6 h-6 rounded-full border border-gray-200 group-hover:border-pink group-hover:bg-pink group-hover:text-white transition-all duration-200">
-              <ChevronRight size={10} />
-            </span>
-          </Link>
-          <span className="h-px flex-1 max-w-14 bg-gray-100 rounded-full" />
-        </div>
       </div>
     </section>
   );

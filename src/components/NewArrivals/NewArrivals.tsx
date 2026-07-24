@@ -42,7 +42,7 @@ export default function NewArrivals({ data }: Props) {
             </p>
           </div>
           <Link
-            href="/shop/new-arrivals"
+            href="/shop/new-arrival"
             className="group hidden md:inline-flex items-center gap-3 rounded-full border border-gray-200 bg-white px-6 py-3 font-sans text-[11.5px] font-bold uppercase tracking-[0.18em] text-gray-600 transition-all duration-300 hover:border-pink/30 hover:text-pink hover:shadow-[0_4px_20px_rgba(233,30,140,0.12)]"
           >
             <span className="relative">
@@ -143,7 +143,7 @@ export default function NewArrivals({ data }: Props) {
         <div className="md:hidden mt-8 flex items-center justify-center gap-3">
           <span className="h-px flex-1 max-w-14 bg-gray-100 rounded-full" />
           <Link
-            href="/shop/new-arrivals"
+            href="/shop/new-arrival"
             className="group inline-flex items-center gap-2 font-sans text-[11px] font-bold uppercase tracking-[0.16em] text-gray-500 hover:text-pink transition-colors duration-200"
           >
             View All

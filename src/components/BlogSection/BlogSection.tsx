@@ -274,17 +274,7 @@ export default function BlogSection() {
                   </div>
                 </div>
               </Link>
-            ))}
-            <Link
-              href="/blogs"
-              className="group flex items-center justify-center gap-3 bg-white rounded-xl border border-gray-200 py-4 font-sans text-[11px] font-bold uppercase tracking-[0.18em] text-gray-500 hover:text-[#8b0b13] hover:border-magenta/40 hover:bg-linear-to-r hover:from-pink-50/50 hover:to-rose-50/50 transition-all duration-300"
-            >
-              <span>Explore All Articles</span>
-              <ArrowRight
-                size={13}
-                className="group-hover:translate-x-1 transition-transform duration-300"
-              />
-            </Link>
+            ))}            
           </div>
         </div>
 
