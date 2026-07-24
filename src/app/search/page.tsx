@@ -1,4 +1,3 @@
-// src/app/search/page.tsx
 import { Suspense } from "react";
 import type { Metadata } from "next";
 import SearchPage from "./SearchPage";

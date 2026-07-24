@@ -4,7 +4,7 @@ import Link from "next/link";
 import { ChevronRight, Eye, ArrowRight } from "lucide-react";
 import Heading from "../Heading/Heading";
 import type { ProductItem } from "@/types/product";
-
+import { useQuickView } from "@/context/QuickViewContext";
 type Props = { data: ProductItem[] };
 
 function getPricing(product: ProductItem) {
@@ -21,6 +21,7 @@ function getPricing(product: ProductItem) {
 }
 
 export default function NewArrivals({ data }: Props) {
+  const { open } = useQuickView();
   if (!data || data.length === 0) return null;
 
   return (
@@ -87,11 +88,19 @@ export default function NewArrivals({ data }: Props) {
                     </span>
                   )}
 
-                  <div className="prod-quick absolute bottom-4 left-0 right-0 z-20 flex justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                    <span className="inline-flex items-center gap-1.5 font-sans text-[9.5px] font-bold uppercase tracking-[0.18em] text-white bg-black/60 backdrop-blur-sm px-4 py-2 rounded-full">
+                  <div className="absolute bottom-4 left-0 right-0 z-20 flex justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        open(product.slug, product.attribute_value);
+                      }}
+                      className="inline-flex items-center gap-1.5 font-sans text-[9.5px] font-bold uppercase tracking-[0.18em] text-white bg-black/60 backdrop-blur-sm px-4 py-2 rounded-full cursor-pointer hover:bg-black/75 transition-colors"
+                    >
                       <Eye size={11} />
                       Quick View
-                    </span>
+                    </button>
                   </div>
 
                   <div className="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-colors duration-500" />

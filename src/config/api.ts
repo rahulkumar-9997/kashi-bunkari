@@ -45,6 +45,10 @@ export const API_ENDPOINTS = {
   orders: {
     list: `${API_BASE_URL}/api/customer/orders`,
   },
+    quickView: (parentSlug: string, attributeValueSlug?: string) =>
+    attributeValueSlug
+      ? `${API_BASE_URL}/api/quick-view/${parentSlug}/${attributeValueSlug}`
+      : `${API_BASE_URL}/api/quick-view/${parentSlug}`,
 };
 
 

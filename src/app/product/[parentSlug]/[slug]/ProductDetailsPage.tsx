@@ -10,6 +10,7 @@ import Breadcrumb from "@/components/Breadcrumb/Breadcrumb";
 import { useCart } from "@/components/Cart/CartContext";
 import { useWishlistToggle } from "@/hooks/useWishlistToggle";
 import { useAuthModal } from "@/context/AuthModalContext";
+import { useQuickView } from "@/context/QuickViewContext";
 import {
   ChevronUp,
   Heart,
@@ -70,6 +71,7 @@ function formatPrice(value: number) {
   return `₹${value.toLocaleString("en-IN")}`;
 }
 export default function ProductDetailsPage({ product: data }: Props) {
+  const { open } = useQuickView();
   const product = data.product_details;
   const router = useRouter();
   const { addToCart, loading: cartLoading } = useCart();
@@ -861,11 +863,19 @@ export default function ProductDetailsPage({ product: data }: Props) {
                           {itemDiscountPct}% OFF
                         </span>
                       )}
-                      <div className="prod-quick absolute bottom-4 left-0 right-0 z-20 flex justify-center">
-                        <span className="inline-flex items-center gap-1.5 font-sans text-[9.5px] font-bold uppercase tracking-[0.18em] text-white bg-black/60 backdrop-blur-sm px-4 py-2 rounded-full">
-                          <Eye size={11} />
-                          Quick View
-                        </span>
+                      <div className="prod-quick absolute bottom-4 left-0 right-0 z-20 flex justify-center">                        
+                          <button
+                            type="button"
+                            onClick={(e) => {
+                              e.preventDefault();
+                              e.stopPropagation();
+                              open(item.slug, item.attribute_value_slug);
+                            }}
+                            className="inline-flex items-center gap-1.5 font-sans text-[9.5px] font-bold uppercase tracking-[0.18em] text-white bg-black/60 backdrop-blur-sm px-4 py-2 rounded-full cursor-pointer hover:bg-black/75 transition-colors"
+                          >
+                            <Eye size={11} />
+                            Quick View
+                          </button>
                       </div>
                     </div>
                     <div className="px-3 py-3">

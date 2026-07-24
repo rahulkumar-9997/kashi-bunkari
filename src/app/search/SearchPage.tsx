@@ -5,6 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import Heading from "@/components/Heading/Heading";
 import Breadcrumb from "@/components/Breadcrumb/Breadcrumb";
+import { useQuickView } from "@/context/QuickViewContext";
 import {
   SlidersHorizontal,
   X,
@@ -116,6 +117,7 @@ function FilterSection({
 }
 
 export default function SearchPage({ query }: Props) {
+  const { open } = useQuickView();
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -490,10 +492,18 @@ export default function SearchPage({ query }: Props) {
                                 </span>
                               )}
                               <div className="absolute bottom-4 left-0 right-0 z-20 flex justify-center opacity-0 translate-y-2 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300">
-                                <span className="inline-flex items-center gap-1.5 font-sans text-[9.5px] font-bold uppercase tracking-[0.18em] text-white bg-black/60 backdrop-blur-sm px-4 py-2 rounded-full">
+                                <button
+                                  type="button"
+                                  onClick={(e) => {
+                                    e.preventDefault();
+                                    e.stopPropagation();
+                                    open(product.slug, product.attribute_value_slug);
+                                  }}
+                                  className="inline-flex items-center gap-1.5 font-sans text-[9.5px] font-bold uppercase tracking-[0.18em] text-white bg-black/60 backdrop-blur-sm px-4 py-2 rounded-full cursor-pointer hover:bg-black/75 transition-colors"
+                                >
                                   <Eye size={11} />
                                   Quick View
-                                </span>
+                                </button>
                               </div>
                             </div>
                             <div className="px-3 py-3">
