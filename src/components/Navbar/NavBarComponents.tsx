@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import Link from "next/link";
 import { useMenu } from "@/hooks/useMenu";
 import type { MenuAttributeValue } from "@/types/menu";
@@ -26,19 +26,32 @@ function chunk<T>(items: T[], size: number): T[][] {
 
 export default function NavBarComponents() {
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
+  const [panelWidth, setPanelWidth] = useState<number | null>(null);
+  const containerRef = useRef<HTMLDivElement | null>(null);
   const { data } = useMenu();
   const categories = data?.categories ?? [];
-  const occasionSection = data?.sections?.find((s) => s.slug === "shop-by-occasion");
+  const occasionSection = data?.sections?.find(
+    (s) => s.slug === "shop-by-occasion",
+  );
   const occasionItems = occasionSection?.items ?? [];
-  const collectionSection = data?.sections?.find((s) => s.slug === "shop-by-collection");
+  const collectionSection = data?.sections?.find(
+    (s) => s.slug === "shop-by-collection",
+  );
   const collectionItems = collectionSection?.items ?? [];
+  function openMegaPanel(slug: string) {
+    setActiveDropdown(slug);
+    if (containerRef.current) {
+      setPanelWidth(containerRef.current.getBoundingClientRect().width);
+    }
+  }
+
   return (
     <>
       <nav
         className="hidden lg:block w-full bg-white border-b border-gray-100 relative z-200"
         style={{ boxShadow: "0 2px 12px rgba(0,0,0,0.06)" }}
       >
-        <div className="mx-auto max-w-7xl">
+        <div ref={containerRef} className="mx-auto max-w-7xl relative">
           <ul className="flex items-stretch list-none m-0 p-0">
             {/* ── New Arrivals ── */}
             <li className="group">
@@ -55,23 +68,17 @@ export default function NavBarComponents() {
             </li>
             {categories.map((category) => {
               const isOpen = activeDropdown === category.category_slug;
-              const totalColumns = category.attributes.reduce(
-                (sum, attr) =>
-                  sum + Math.max(1, Math.ceil(attr.values.length / VALUES_PER_COLUMN)),
-                0,
-              );
-              const panelWidth = Math.min(1180, 220 + totalColumns * 190);
- 
+
               return (
                 <li
                   key={category.category_slug}
-                  className="nav-dd relative group"
-                  onMouseEnter={() => setActiveDropdown(category.category_slug)}
+                  className="nav-dd group"
+                  onMouseEnter={() => openMegaPanel(category.category_slug)}
                   onMouseLeave={() => setActiveDropdown(null)}
                 >
                   <Link
                     href={`/shop/${category.category_slug}`}
-                    className="text-gray-600 relative flex items-center gap-1.5 px-4 h-11 font-sans text-[15px] font-medium whitespace-nowrap transition-colors duration-200 cursor-pointer"
+                    className="text-gray-600 relative flex items-center gap-1.5 px-4 h-11 font-sans text-[15px] font-medium whitespace-nowrap transition-colors duration-200 cursor-pointer hover:text-maroon"
                   >
                     {category.title}
                     {category.attributes.length > 0 && (
@@ -86,15 +93,18 @@ export default function NavBarComponents() {
                         <path d="M1 1l4 4 4-4" />
                       </svg>
                     )}
-                    <span className={`nav-underline ${isOpen ? "active" : ""}`} />
+                    <span
+                      className={`nav-underline ${isOpen ? "active" : ""}`}
+                    />
                   </Link>
- 
+
                   {category.attributes.length > 0 && (
                     <div
-                      className={`mega-panel ${isOpen ? "open" : "closed"} absolute top-full left-0 z-9999 bg-white border border-gray-100 rounded-2xl p-7`}
+                      className={`mega-panel ${isOpen ? "open" : "closed"} absolute top-full z-9999 bg-white border border-gray-100 rounded-2xl p-7 overflow-x-auto`}
                       style={{
                         boxShadow: "0 24px 64px rgba(107,22,38,0.18)",
-                        width: `${panelWidth}px`,
+                        left: 0,
+                        width: panelWidth ? `${panelWidth}px` : "100%",
                       }}
                     >
                       <div className="flex items-center gap-3 mb-5">
@@ -103,7 +113,10 @@ export default function NavBarComponents() {
                         </p>
                         <span
                           className="h-px flex-1"
-                          style={{ background: "linear-gradient(90deg, rgb(147 39 20), transparent)" }}
+                          style={{
+                            background:
+                              "linear-gradient(90deg, rgb(147 39 20), transparent)",
+                          }}
                         />
                         <Link
                           href={`/shop/${category.category_slug}`}
@@ -112,13 +125,15 @@ export default function NavBarComponents() {
                           Shop All →
                         </Link>
                       </div>
-                      <div className="flex gap-8">
+                      <div className="flex gap-8 flex-wrap">
                         {category.attributes.map((attr, i) => {
                           const columns = chunk(attr.values, VALUES_PER_COLUMN);
                           return (
                             <div
                               key={attr.slug}
-                              className={i > 0 ? "pl-8 border-l border-[#EEE6D6]" : ""}
+                              className={
+                                i > 0 ? "pl-8 border-l border-[#EEE6D6]" : ""
+                              }
                             >
                               <div className="mb-3">
                                 <p className="font-sans text-[12px] font-bold uppercase tracking-[0.16em] text-maroon">
@@ -126,10 +141,13 @@ export default function NavBarComponents() {
                                 </p>
                                 <span
                                   className="block h-0.5 w-6 mt-1.5 rounded-full"
-                                  style={{ background: "linear-gradient(90deg,#AD8A3B,#E91E8C)" }}
+                                  style={{
+                                    background:
+                                      "linear-gradient(90deg,#AD8A3B,#E91E8C)",
+                                  }}
                                 />
                               </div>
- 
+
                               <div className="flex gap-6">
                                 {columns.map((columnValues, ci) => (
                                   <ColumnList
@@ -168,7 +186,9 @@ export default function NavBarComponents() {
                   >
                     <path d="M1 1l4 4 4-4" />
                   </svg>
-                  <span className={`nav-underline ${activeDropdown === "occasion" ? "active" : ""}`} />
+                  <span
+                    className={`nav-underline ${activeDropdown === "occasion" ? "active" : ""}`}
+                  />
                 </button>
 
                 <div
@@ -207,7 +227,9 @@ export default function NavBarComponents() {
                   >
                     <path d="M1 1l4 4 4-4" />
                   </svg>
-                  <span className={`nav-underline ${activeDropdown === "collection" ? "active" : ""}`} />
+                  <span
+                    className={`nav-underline ${activeDropdown === "collection" ? "active" : ""}`}
+                  />
                 </button>
 
                 <div
@@ -239,20 +261,6 @@ export default function NavBarComponents() {
               </Link>
             </li>
 
-            {/* ── Under ₹2,500 ── */}
-            {/* <li className="group">
-              <Link
-                href="#"
-                className="relative flex items-center gap-1.5 px-4 h-11 font-sans text-[15px] font-medium whitespace-nowrap transition-colors duration-200 text-gray-600"
-              >
-                Under ₹2,500
-                <span className="badge" style={{ background: "#fef3c7", color: "#b45309" }}>
-                  Value
-                </span>
-                <span className="nav-underline" style={{ background: "#d97706" }} />
-              </Link>
-            </li> */}
-
             {/* ── About ── */}
             <li
               className="nav-dd relative group ml-auto"
@@ -271,7 +279,9 @@ export default function NavBarComponents() {
                 >
                   <path d="M1 1l4 4 4-4" />
                 </svg>
-                <span className={`nav-underline ${activeDropdown === "about" ? "active" : ""}`} />
+                <span
+                  className={`nav-underline ${activeDropdown === "about" ? "active" : ""}`}
+                />
               </button>
               <div
                 className="absolute top-[calc(100%+1px)] right-0 z-9999 bg-white border border-gray-100 min-w-50 py-2 rounded-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 ease-out translate-y-1 group-hover:translate-y-0"
@@ -281,7 +291,8 @@ export default function NavBarComponents() {
                   <Link
                     key={label}
                     href={href}
-                    className="group/item flex items-center justify-between px-5 py-2.5 text-[14px] text-gray-600 transition-all duration-200 hover:text-maroon">
+                    className="group/item flex items-center justify-between px-5 py-2.5 text-[14px] text-gray-600 transition-all duration-200 hover:text-maroon"
+                  >
                     <span className="flex items-center gap-2.5">
                       <span className="h-1 w-1 rounded-full bg-gray-300 transition-colors group-hover/item:bg-[#AD8A3B]" />
                       {label}
