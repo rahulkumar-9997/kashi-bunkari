@@ -96,7 +96,7 @@ export default function NewArrivals({ data }: Props) {
                         e.stopPropagation();
                         open(product.slug, product.attribute_value);
                       }}
-                      className="inline-flex items-center gap-1.5 font-sans text-[9.5px] font-bold uppercase tracking-[0.18em] text-white bg-black/60 backdrop-blur-sm px-4 py-2 rounded-full cursor-pointer hover:bg-black/75 transition-colors"
+                      className="pointer-events-auto inline-flex items-center gap-1.5 font-sans text-[9.5px] font-bold uppercase tracking-[0.18em] text-white bg-black/60 backdrop-blur-sm px-4 py-2 rounded-full cursor-pointer hover:bg-black/75 transition-colors"
                     >
                       <Eye size={11} />
                       Quick View
