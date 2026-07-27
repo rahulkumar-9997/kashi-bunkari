@@ -8,6 +8,7 @@ import { fetchMenu } from "@/services/menuService";
 import LenisProvider from "@/components/LenisProvider";
 import LayoutWrapper from "@/components/LayoutWrapper";
 import QueryProvider from "@/providers/QueryProvider";
+import NextTopLoader from "nextjs-toploader";
 
 const cormorant = Cormorant_Garamond({
   subsets: ["latin"],
@@ -85,6 +86,14 @@ export default async function RootLayout({
         <meta name="theme-color" content="#8b0b13"></meta>
       </head>
       <body>
+        <NextTopLoader
+          color="##ef53a1"
+          height={3}
+          showSpinner={false}
+          crawl={true}
+          easing="ease"
+          speed={200}
+        />
         <QueryProvider>
           <HydrationBoundary state={dehydrate(queryClient)}>
             <LenisProvider>
