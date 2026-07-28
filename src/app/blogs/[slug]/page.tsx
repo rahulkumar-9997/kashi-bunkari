@@ -16,10 +16,12 @@ export async function generateMetadata({
   const { slug } = await params;
   try {
     const { blog } = await fetchBlogDetail(slug);
-    const title = blog.meta_title || `${blog.title} | Kasibunkari Journal`;
+    const title =
+      blog.meta_title || `${blog.title} | Kasibunkari Journal`;
     const description =
-      blog.meta_description?.replace(/\r\n/g, " ").trim() ||
-      blog.short_desc ||"";
+      blog.meta_description?.replace(/\r?\n/g, " ").trim() ||
+      blog.short_desc?.replace(/<[^>]*>/g, "").trim() ||
+      "Read the latest Banarasi saree guides, styling tips, and handloom stories from Kasibunkari.";
     const url = `${SITE_URL}/blogs/${slug}`;
     const image = blog.page_image || blog.main_image;
     return {
@@ -27,6 +29,10 @@ export async function generateMetadata({
       description,
       alternates: {
         canonical: url,
+      },
+      robots: {
+        index: true,
+        follow: true,
       },
       openGraph: {
         title,
@@ -53,10 +59,17 @@ export async function generateMetadata({
       },
     };
   } catch {
-    return { title: "Kasibunkari Journal" };
+    return {
+      title: "Kasibunkari Journal",
+      description:
+        "Explore Banarasi saree guides, styling tips, and handloom stories from Kasibunkari.",
+      robots: {
+        index: true,
+        follow: true,
+      },
+    };
   }
 }
-
 async function BlogDetailData({ slug }: { slug: string }) {
   const queryClient = getQueryClient();
 

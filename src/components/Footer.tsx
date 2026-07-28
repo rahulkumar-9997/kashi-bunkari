@@ -310,7 +310,7 @@ export default function Footer() {
       <div className="border-t border-[#8b1a3414] bg-[linear-gradient(135deg,#fff8f6,#ffffff,#fdf4f7)]">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-4 py-5 flex flex-col sm:flex-row items-center justify-between gap-3">
           <p className="font-sans text-[11px] md:text-[12px] text-gray-400 text-center sm:text-left">
-            © {currentYear} Kasibunkari India Pvt. Ltd. All Rights Reserved.
+            © {currentYear} Kasibunkari India . All Rights Reserved.
             <span className="hidden sm:inline ml-1">
               · Crafted with love in Varanasi.
             </span>

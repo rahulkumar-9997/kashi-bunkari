@@ -10,7 +10,7 @@ export const metadata: Metadata = {
     canonical: `${SITE_URL}/about-us`,
   },
   openGraph: {
-    title: "About Us | Kasibunkari — Essence to Elegance",
+    title: "About Us",
     description:
       "Discover the heritage and artistry of Banaras with Kasibunkari's exclusive collection of handwoven Banarasi silk sarees.",
     url: `${SITE_URL}/about-us`,
