@@ -146,7 +146,7 @@ export default function AboutUs() {
               ))}
             </div>
            <Link
-                href="/about"
+                href="/about-us"
                 className="group hidden md:inline-flex items-center gap-2.5 font-sans text-[11px] font-bold uppercase tracking-[0.2em] text-white px-6 py-3 rounded-xl bg-linear-to-r from-maroon to-pink hover:opacity-90 hover:-translate-y-0.5 hover:shadow-[0_10px_28px_rgba(233,30,140,0.28)] transition-all duration-200"
                 >
                 Discover Our Story
