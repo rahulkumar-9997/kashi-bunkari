@@ -26,6 +26,7 @@ import {
   useAddAddress,
   useDeleteAddress,
   useSetDefaultAddress,
+  useStates,
 } from "@/hooks/useAddresses";
 import { usePlaceOrder, useVerifyPayment } from "@/hooks/useCheckout";
 import { formatPrice, getUnitPrice, getLineTotal } from "@/lib/cartHelpers";
@@ -62,7 +63,7 @@ export default function CheckoutPage() {
   const { customer, isAuthenticated } = useAuth();
   const [processing, setProcessing] = useState(false);
   const [scriptReady, setScriptReady] = useState(false);
-
+  const { data: states = [] } = useStates();
   const { data: addresses = [], isLoading: loadingAddresses } =
     useAddresses(isAuthenticated);
   const addAddressMutation = useAddAddress();
@@ -394,13 +395,25 @@ export default function CheckoutPage() {
         <label className="block text-sm font-medium text-gray-700 mb-1">
           State <span className="text-red-500">*</span>
         </label>
-        <input
+        <select
+          value={addressForm.state}
+          onChange={(e) => handleAddressField(e, "state")}
+          className={inputClass(!!addressFormErrors.state)}
+          >
+          <option value="">--Select State--</option>
+          {states.map((s) => (
+            <option key={s.id} value={s.name}>
+              {s.name}
+            </option>
+          ))}
+        </select>
+        {/* <input
           type="text"
           placeholder="Enter state"
           value={addressForm.state}
           onChange={(e) => handleAddressField(e, "state")}
           className={inputClass(!!addressFormErrors.state)}
-        />
+        /> */}
         <FieldError message={addressFormErrors.state} />
       </div>
       <div>
