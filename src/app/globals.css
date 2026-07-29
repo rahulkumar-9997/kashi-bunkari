@@ -459,7 +459,7 @@ a {
 ============================== */
 .body-content {
   font-family: var(--font-sans, "DM Sans", system-ui, sans-serif);
-  font-size: 17px;
+  font-size: 16px;
   line-height: 1.9;
   color: var(--color-gray-400, #282828);
   word-break: break-word;
@@ -498,7 +498,7 @@ a {
   font-size: 1.25rem;
 }
 .body-content h6 {
-  font-size: 1.1rem;
+  font-size: 1.2rem;
 }
 .body-content p {
   margin: 0 0 10px;

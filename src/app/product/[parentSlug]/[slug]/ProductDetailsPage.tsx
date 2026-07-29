@@ -754,7 +754,7 @@ export default function ProductDetailsPage({ product: data }: Props) {
         <section className="w-full pt-0 pb-10 md:pb-7">
           <div className="mx-auto max-w-7xl px-4 md:px-2 lg:px-1">
             <div className="space-y-2.5 sm:space-y-3">
-              <div className="border border-gray-100 rounded-xl overflow-hidden">
+              <div className="border border-gray-200 rounded overflow-hidden">
                 <button
                   onClick={() =>
                     setExpandedAccordion((v) =>
@@ -776,7 +776,7 @@ export default function ProductDetailsPage({ product: data }: Props) {
                     {(product.product_description ||
                       product.product_short_description) && (
                       <div
-                        className="font-sans text-[14px] text-gray-600 leading-relaxed body-content"
+                        className="font-sans text-[14px] text-gray-500 leading-relaxed body-content"
                         dangerouslySetInnerHTML={{
                           __html:
                             product.product_description ||
@@ -787,7 +787,7 @@ export default function ProductDetailsPage({ product: data }: Props) {
                     )}
                     {product.product_specification && (
                       <div
-                        className="font-sans text-[14px] text-gray-600 leading-relaxed"
+                        className="font-sans text-[14px] text-gray-500 leading-relaxed body-content"
                         dangerouslySetInnerHTML={{
                           __html: product.product_specification,
                         }}
