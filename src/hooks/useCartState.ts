@@ -12,7 +12,7 @@ export function useCartState() {
 
   const applyCartData = useCallback((data: CartData) => {
     setCart(data.items);
-    setCartCount(data.item_count); // distinct products in cart, not total units
+    setCartCount(data.item_count);
     setCartTotal(data.subtotal);
   }, []);
 
@@ -34,7 +34,6 @@ export function useCartState() {
 
   useEffect(() => {
     refreshCart();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const addToCart = useCallback(
