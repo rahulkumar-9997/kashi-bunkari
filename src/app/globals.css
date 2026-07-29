@@ -455,7 +455,6 @@ a {
 /*ckeditor css*/
 /* ==============================
    BLOG / CKEDITOR CONTENT
-   src/app/blog-details/blog-content.css
 ============================== */
 .body-content {
   font-family: var(--font-sans, "DM Sans", system-ui, sans-serif);
