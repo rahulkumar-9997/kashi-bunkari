@@ -697,7 +697,7 @@ export default function CheckoutPage() {
                             Pay Online
                           </span>
                           <p className="text-xs text-gray-500">
-                            Credit/Debit Card, UPI, Net Banking
+                            Credit/Debit Card, UPI, Net Banking.
                           </p>
                         </div>
                         <img
