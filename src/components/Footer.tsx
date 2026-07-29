@@ -18,7 +18,7 @@ export const FOOTER_LINKS = [
         href: "/shop/sarees",
       },
       {
-        title: "Souit",
+        title: "Suit",
         href: "/shop/suits",
       },
       {
