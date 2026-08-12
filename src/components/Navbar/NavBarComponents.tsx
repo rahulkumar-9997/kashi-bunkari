@@ -169,86 +169,128 @@ export default function NavBarComponents() {
             })}
 
             {occasionItems.length > 0 && (
-              <li
-                className="nav-dd relative group"
-                onMouseEnter={() => setActiveDropdown("occasion")}
-                onMouseLeave={() => setActiveDropdown(null)}
+            <li
+              className="nav-dd relative"
+              onMouseEnter={() => setActiveDropdown("occasion")}
+              onMouseLeave={() => setActiveDropdown(null)}
+            >
+              <button
+                type="button"
+                onClick={() =>
+                  setActiveDropdown(
+                    activeDropdown === "occasion" ? null : "occasion"
+                  )
+                }
+                className="text-gray-600 hover:text-maroon relative flex items-center gap-1.5 px-4 h-11 font-sans text-[15px] font-medium whitespace-nowrap transition-colors duration-200 cursor-pointer"
               >
-                <button className="text-gray-600 hover:text-maroon relative flex items-center gap-1.5 px-4 h-11 font-sans text-[15px] font-medium whitespace-nowrap transition-colors duration-200 cursor-pointer">
-                  Shop By Occasion
-                  <svg
-                    className={`w-2.5 h-2.5 opacity-50 shrink-0 transition-transform duration-300 ${activeDropdown === "occasion" ? "rotate-180" : ""}`}
-                    viewBox="0 0 10 6"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                  >
-                    <path d="M1 1l4 4 4-4" />
-                  </svg>
-                  <span
-                    className={`nav-underline ${activeDropdown === "occasion" ? "active" : ""}`}
-                  />
-                </button>
+                Shop By Occasion
 
-                <div
-                  className="absolute top-[calc(100%+1px)] left-0 z-9999 bg-white border border-gray-100 min-w-50 py-2 p-5 rounded-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 ease-out translate-y-1 group-hover:translate-y-0"
-                  style={{ boxShadow: "0 8px 32px rgba(107,22,38,0.12)" }}
+                <svg
+                  className={`w-2.5 h-2.5 opacity-50 shrink-0 transition-transform duration-300 ${
+                    activeDropdown === "occasion" ? "rotate-180" : ""
+                  }`}
+                  viewBox="0 0 10 6"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
                 >
-                  {occasionItems.map((item) => (
-                    <Link
-                      key={item.slug}
-                      href={`/shop/${item.slug}`}
-                      className="group/val flex items-center gap-2 py-2 font-sans text-[14px] leading-snug text-gray-600 hover:text-maroon transition-colors duration-150"
-                    >
-                      <span className="w-1 h-1 rounded-full bg-gray-300 group-hover/val:bg-[#AD8A3B] transition-colors shrink-0" />
-                      <span>{item.title}</span>
-                    </Link>
-                  ))}
-                </div>
-              </li>
-            )}
+                  <path d="M1 1l4 4 4-4" />
+                </svg>
 
-            {collectionItems.length > 0 && (
-              <li
-                className="nav-dd relative group"
-                onMouseEnter={() => setActiveDropdown("collection")}
-                onMouseLeave={() => setActiveDropdown(null)}
+                <span
+                  className={`nav-underline ${
+                    activeDropdown === "occasion" ? "active" : ""
+                  }`}
+                />
+              </button>
+
+              <div
+                className={`absolute top-[calc(100%+1px)] left-0 z-[9999] bg-white border border-gray-100 min-w-[200px] py-2 px-5 rounded-xl transition-all duration-200 ease-out ${
+                  activeDropdown === "occasion"
+                    ? "opacity-100 visible translate-y-0"
+                    : "opacity-0 invisible translate-y-1"
+                }`}
+                style={{
+                  boxShadow: "0 8px 32px rgba(107,22,38,0.12)",
+                }}
               >
-                <button className="text-gray-600 hover:text-maroon relative flex items-center gap-1.5 px-4 h-11 font-sans text-[15px] font-medium whitespace-nowrap transition-colors duration-200 cursor-pointer">
-                  Shop By Collection
-                  <svg
-                    className={`w-2.5 h-2.5 opacity-50 shrink-0 transition-transform duration-300 ${activeDropdown === "collection" ? "rotate-180" : ""}`}
-                    viewBox="0 0 10 6"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
+                {occasionItems.map((item) => (
+                  <Link
+                    key={item.slug}
+                    href={`/shop/${item.slug}`}
+                    onClick={() => setActiveDropdown(null)}
+                    className="flex items-center gap-2 py-2 font-sans text-[14px] leading-snug text-gray-600 hover:text-maroon transition-colors duration-150"
                   >
-                    <path d="M1 1l4 4 4-4" />
-                  </svg>
-                  <span
-                    className={`nav-underline ${activeDropdown === "collection" ? "active" : ""}`}
-                  />
-                </button>
+                    <span className="w-1 h-1 rounded-full bg-gray-300 shrink-0" />
+                    <span>{item.title}</span>
+                  </Link>
+                ))}
+              </div>
+            </li>
+          )}
 
-                <div
-                  className="absolute top-[calc(100%+1px)] left-0 z-9999 bg-white border border-gray-100 min-w-50 py-2 p-5 rounded-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 ease-out translate-y-1 group-hover:translate-y-0"
-                  style={{ boxShadow: "0 8px 32px rgba(107,22,38,0.12)" }}
+          {collectionItems.length > 0 && (
+          <li
+            className="nav-dd relative"
+            onMouseEnter={() => setActiveDropdown("collection")}
+            onMouseLeave={() => setActiveDropdown(null)}
+          >
+            <button
+              type="button"
+              onClick={() =>
+                setActiveDropdown(
+                  activeDropdown === "collection" ? null : "collection"
+                )
+              }
+              className="text-gray-600 hover:text-maroon relative flex items-center gap-1.5 px-4 h-11 font-sans text-[15px] font-medium whitespace-nowrap transition-colors duration-200 cursor-pointer"
+            >
+              Shop By Collection
+
+              <svg
+                className={`w-2.5 h-2.5 opacity-50 shrink-0 transition-transform duration-300 ${
+                  activeDropdown === "collection" ? "rotate-180" : ""
+                }`}
+                viewBox="0 0 10 6"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+              >
+                <path d="M1 1l4 4 4-4" />
+              </svg>
+
+              <span
+                className={`nav-underline ${
+                  activeDropdown === "collection" ? "active" : ""
+                }`}
+              />
+            </button>
+
+            <div
+              className={`absolute top-[calc(100%+1px)] left-0 z-[9999] bg-white border border-gray-100 min-w-[200px] py-2 px-5 rounded-xl transition-all duration-200 ease-out ${
+                activeDropdown === "collection"
+                  ? "opacity-100 visible translate-y-0"
+                  : "opacity-0 invisible translate-y-1"
+              }`}
+              style={{
+                boxShadow: "0 8px 32px rgba(107,22,38,0.12)",
+              }}
+            >
+              {collectionItems.map((item) => (
+                <Link
+                  key={item.slug}
+                  href={`/shop/${item.slug}`}
+                  onClick={() => setActiveDropdown(null)}
+                  className="flex items-center gap-2 py-2 font-sans text-[14px] leading-snug text-gray-600 hover:text-maroon transition-colors duration-150"
                 >
-                  {collectionItems.map((item) => (
-                    <Link
-                      key={item.slug}
-                      href={`/shop/${item.slug}`}
-                      className="group/val flex items-center gap-2 py-2 font-sans text-[14px] leading-snug text-gray-600 hover:text-maroon transition-colors duration-150"
-                    >
-                      <span className="w-1 h-1 rounded-full bg-gray-300 group-hover/val:bg-[#AD8A3B] transition-colors shrink-0" />
-                      <span>{item.title}</span>
-                    </Link>
-                  ))}
-                </div>
-              </li>
-            )}
+                  <span className="w-1 h-1 rounded-full bg-gray-300 shrink-0" />
+                  <span>{item.title}</span>
+                </Link>
+              ))}
+            </div>
+          </li>
+        )}
 
             {/* ── Bestsellers ── */}
             <li className="group">
