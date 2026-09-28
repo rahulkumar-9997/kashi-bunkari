@@ -110,12 +110,13 @@ export default function Popular({ data }: Props) {
                             </div>
                         )}
                         </div>
-
+                        {/*
                         {discount != null && (
                           <span className="absolute top-2.5 right-2.5 z-20 font-sans text-[10px] font-bold text-white bg-green-600 px-2 py-1 rounded-sm leading-none shadow-sm">
                             {discount}% OFF
                           </span>
-                        )}                       
+                        )}    
+                        */}
 
                         <div className="absolute bottom-4 left-0 right-0 z-20 flex justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                           <button
