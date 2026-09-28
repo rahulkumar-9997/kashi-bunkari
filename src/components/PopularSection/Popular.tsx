@@ -152,6 +152,7 @@ export default function Popular({ data }: Props) {
                               Price on request
                             </span>
                           )}
+                          {/*
                           {mrp != null && (
                             <span className="font-sans text-[11.5px] text-gray-400 line-through">
                               ₹{mrp.toLocaleString("en-IN")}
@@ -162,6 +163,7 @@ export default function Popular({ data }: Props) {
                               {discount}% off
                             </span>
                           )}
+                          */}
                         </div>
                       </div>
                     </Link>
