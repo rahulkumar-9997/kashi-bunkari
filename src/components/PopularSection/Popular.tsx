@@ -17,9 +17,25 @@ import { useQuickView } from "@/context/QuickViewContext";
 type Props = { data: ProductItem[] };
 
 function getPricing(product: ProductItem) {
+  const mrp = product.mrp != null ? Number(product.mrp) : null;
+  const offerPrice =
+    product.offer_rate != null ? Number(product.offer_rate) : null;
+
+  const hasDiscount =
+    mrp != null &&
+    offerPrice != null &&
+    offerPrice < mrp;
+
+  const price = offerPrice ?? mrp;
+
+  const discount = hasDiscount
+    ? Math.round(((mrp - offerPrice) / mrp) * 100)
+    : null;
+
   return {
-    price: product.mrp,
-    offerRate: product.offer_rate,
+    price,
+    mrp: hasDiscount ? mrp : null,
+    discount,
   };
 }
 
