@@ -369,8 +369,7 @@ export default function AddressesPage() {
               </span>
             )}
           </div>
-        </div>
-        
+        </div>       
 
         <div className="flex flex-col gap-1.5 shrink-0">
           <button
