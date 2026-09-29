@@ -75,7 +75,6 @@ const VALUES = [
     icon: Infinity,
   },
 ];
-
 export default function AboutUsPage() {
   return (
     <div className="w-full min-h-scree">

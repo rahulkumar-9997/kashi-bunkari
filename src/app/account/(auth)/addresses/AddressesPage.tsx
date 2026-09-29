@@ -313,7 +313,6 @@ export default function AddressesPage() {
       </div>
     </div>
   );
-
   const renderAddressCard = (address: Address, isDefaultCard: boolean) => (
     <div
       key={address.id}
@@ -371,6 +370,7 @@ export default function AddressesPage() {
             )}
           </div>
         </div>
+        
 
         <div className="flex flex-col gap-1.5 shrink-0">
           <button
