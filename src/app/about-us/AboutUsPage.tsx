@@ -58,7 +58,6 @@ const STATS = [
   { value: "20,000+", label: "Happy Customers", icon: Users },
   { value: "100%", label: "Handwoven Silk", icon: Leaf },
 ];
-
 const VALUES = [
   {
     title: "Authenticity",
